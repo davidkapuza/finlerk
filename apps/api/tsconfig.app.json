@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "types": ["node"],
+    "emitDecoratorMetadata": true,
+    "target": "es2021",
+    "baseUrl": "./",
+    "paths": {
+      "@auth/*": ["src/modules/auth/*"],
+      "@mail/*": ["src/modules/mail/*"],
+      "@mailer/*": ["src/modules/mailer/*"],
+      "@config/*": ["src/shared/config/*"],
+      "@utils/*": ["src/shared/utils/*"],
+      "@enums/*": ["src/shared/enums/*"],
+      "@entities/*": ["src/shared/entities/*"],
+      "@validators/*": ["src/shared/validators/*"],
+      "@transformers/*": ["src/shared/transformers/*"],
+      "@database/*": ["src/shared/database/*"],
+      "@repositories/*": ["src/shared/repositories/*"],
+      "@types/*": ["src/shared/types/*"]
+    }
+  },
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": ["src/**/*.ts"]
+}
