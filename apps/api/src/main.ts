@@ -12,7 +12,7 @@ import validationOptions from './shared/utils/validation-options';
 import { ConfigType } from './shared/config/config.type';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const configService = app.get(ConfigService<ConfigType>);
 
@@ -23,6 +23,12 @@ async function bootstrap() {
       exclude: ['/'],
     },
   );
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Set this to true
+  });
   app.enableVersioning({
     type: VersioningType.URI,
   });

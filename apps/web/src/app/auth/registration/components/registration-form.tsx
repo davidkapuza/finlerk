@@ -8,9 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface RegistrationFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+export function RegistrationForm({
+  className,
+  ...props
+}: RegistrationFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   async function onSubmit(event: React.SyntheticEvent) {
@@ -36,6 +39,30 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               type="email"
               autoCapitalize="none"
               autoComplete="email"
+              autoCorrect="off"
+              disabled={isLoading}
+            />
+            <Label className="sr-only" htmlFor="password">
+              Password
+            </Label>
+            <Input
+              id="password"
+              placeholder="password"
+              type="password"
+              autoCapitalize="none"
+              autoComplete="password"
+              autoCorrect="off"
+              disabled={isLoading}
+            />
+            <Label className="sr-only" htmlFor="repeat-password">
+              Repeat password
+            </Label>
+            <Input
+              id="repeat-password"
+              placeholder="repeat password"
+              type="password"
+              autoCapitalize="none"
+              autoComplete="repeat-password"
               autoCorrect="off"
               disabled={isLoading}
             />

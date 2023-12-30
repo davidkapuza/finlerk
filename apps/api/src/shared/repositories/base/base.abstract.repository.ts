@@ -34,11 +34,8 @@ export abstract class BaseAbstractRepository<T extends HasId>
     return this.entity.create(data);
   }
 
-  public async findOneById(id: any): Promise<T> {
-    const options: FindOptionsWhere<T> = {
-      id: id,
-    };
-    return await this.entity.findOneBy(options);
+  public async findOneById(id: number): Promise<T> {
+    return await this.entity.findOneBy({ id } as FindOptionsWhere<T>);
   }
 
   public async findByCondition(filterCondition: FindOneOptions<T>): Promise<T> {

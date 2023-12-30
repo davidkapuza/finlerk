@@ -4,8 +4,8 @@ import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import { fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
-import { SiteHeader } from '@/components/site-header';
-import { ThemeProvider } from '@/components/theme-provider';
+import { Header } from '@/components/header';
+import { ThemeProvider } from '@/lib/providers/theme-provider';
 
 export const metadata: Metadata = {
   title: {
@@ -41,7 +41,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
+              <Header />
               <div className="flex-1">{children}</div>
             </div>
           </ThemeProvider>
