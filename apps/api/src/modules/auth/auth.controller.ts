@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { CookieOptions, Response } from 'express';
 import ms from 'ms';
 import { ConfirmEmailDto } from './dtos/confirm-email.dto';
@@ -76,7 +76,7 @@ export class AuthController {
     return user;
   }
 
-  @ApiBearerAuth()
+  @ApiCookieAuth()
   @SerializeOptions({
     groups: ['me'],
   })
@@ -100,7 +100,7 @@ export class AuthController {
       });
   }
 
-  @ApiBearerAuth()
+  @ApiCookieAuth()
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -6,7 +6,6 @@ export async function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get('refreshToken');
   const isAuth = +tokenExpires?.value > Date.now();
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
-
   if (isAuthPage) {
     if (isAuth) {
       return NextResponse.redirect(new URL('/profile', request.url));
@@ -18,7 +17,7 @@ export async function middleware(request: NextRequest) {
   if (!isAuth) {
     if (refreshToken) {
       const response = await fetch(
-        `http://localhost:3000/api/v1/auth/refresh`,
+        `${process.env.BACKEND_DOMAIN}/api/v1/auth/refresh`,
         {
           method: 'POST',
           credentials: 'include',
@@ -26,7 +25,7 @@ export async function middleware(request: NextRequest) {
         },
       );
 
-      if (response.status === 200) {
+      if (response.status === 204) {
         return response.clone();
       }
     }

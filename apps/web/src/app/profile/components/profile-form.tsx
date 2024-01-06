@@ -27,6 +27,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import api from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 const profileFormSchema = z.object({
   username: z
@@ -64,6 +65,7 @@ const defaultValues: Partial<ProfileFormValues> = {
 };
 
 export function ProfileForm() {
+  const router = useRouter();
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
@@ -87,7 +89,9 @@ export function ProfileForm() {
   }
 
   function handleLogout() {
-    api.post('/api/v1/auth/logout');
+    api.post('/api/v1/auth/logout').then(() => {
+      router.push('/auth/login');
+    });
   }
 
   return (

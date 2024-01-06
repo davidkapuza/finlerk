@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import api from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -15,6 +16,7 @@ interface LoginFormData {
 }
 
 export function LoginForm({ className, ...props }: LoginFormProps) {
+  const router = useRouter();
   const [formData, setFormData] = React.useState<LoginFormData>({
     email: '',
     password: '',
@@ -31,11 +33,10 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
-
     api
       .post('/api/v1/auth/login', formData)
-      .then((response) => {
-        localStorage.setItem('token', response.data.accessToken);
+      .then(() => {
+        router.push('/profile');
       })
       .finally(() => {
         setIsLoading(false);
