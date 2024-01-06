@@ -2,9 +2,9 @@ import { ConfigType } from '@config/config.type';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { JwtRefreshPayloadType } from './types/jwt-refresh-payload.type';
+import { Strategy } from 'passport-jwt';
 import { OrNeverType } from 'src/shared/types/or-never.type';
+import { JwtRefreshPayloadType } from './types/jwt-refresh-payload.type';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -13,7 +13,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(configService: ConfigService<ConfigType>) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: (req) => {
+        let token = null;
+        if (req && req.cookies) {
+          token = req.cookies.refreshToken;
+        }
+        return token;
+      },
       secretOrKey: configService.get<string>('auth.refreshSecret', {
         infer: true,
       }),

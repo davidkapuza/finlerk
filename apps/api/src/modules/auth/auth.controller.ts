@@ -1,3 +1,4 @@
+import { User } from '@entities/user.entity';
 import {
   Body,
   Controller,
@@ -6,17 +7,31 @@ import {
   Inject,
   Post,
   Request,
-  UseGuards,
+  Res,
   SerializeOptions,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CookieOptions, Response } from 'express';
+import ms from 'ms';
 import { ConfirmEmailDto } from './dtos/confirm-email.dto';
 import { LoginDto } from './dtos/login.dto';
 import { RegisterDto } from './dtos/register.dto';
 import { AuthServiceInterface } from './interface/auth-service.interface';
-import { LoginResponseType } from './types/login-response.type';
-import { AuthGuard } from '@nestjs/passport';
 
+const accessTokenCookieOptions: CookieOptions = {
+  expires: new Date(ms(process.env.AUTH_JWT_TOKEN_EXPIRES_IN)),
+  maxAge: ms(process.env.AUTH_JWT_TOKEN_EXPIRES_IN),
+  httpOnly: true,
+  sameSite: 'lax',
+};
+const refreshTokenCookieOptions: CookieOptions = {
+  expires: new Date(ms(process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN)),
+  maxAge: ms(process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN),
+  httpOnly: true,
+  sameSite: 'lax',
+};
 @ApiTags('Auth')
 @Controller({
   path: 'auth',
@@ -45,8 +60,20 @@ export class AuthController {
   })
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  public login(@Body() loginDto: LoginDto): Promise<LoginResponseType> {
-    return this.authService.login(loginDto);
+  public async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<User> {
+    const { accessToken, refreshToken, tokenExpires, user } =
+      await this.authService.login(loginDto);
+    res
+      .cookie('accessToken', accessToken, accessTokenCookieOptions)
+      .cookie('refreshToken', refreshToken, refreshTokenCookieOptions)
+      .cookie('tokenExpires', tokenExpires, {
+        ...accessTokenCookieOptions,
+        httpOnly: false,
+      });
+    return user;
   }
 
   @ApiBearerAuth()
@@ -55,20 +82,38 @@ export class AuthController {
   })
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
-  @HttpCode(HttpStatus.OK)
-  public refresh(@Request() request): Promise<Omit<LoginResponseType, 'user'>> {
-    return this.authService.refreshToken({
-      sessionId: request.user.sessionId,
-    });
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async refresh(
+    @Request() request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    const { accessToken, refreshToken, tokenExpires } =
+      await this.authService.refreshToken({
+        sessionId: request.user.sessionId,
+      });
+    res
+      .cookie('accessToken', accessToken, accessTokenCookieOptions)
+      .cookie('refreshToken', refreshToken, refreshTokenCookieOptions)
+      .cookie('tokenExpires', tokenExpires, {
+        ...accessTokenCookieOptions,
+        httpOnly: false,
+      });
   }
 
   @ApiBearerAuth()
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async logout(@Request() request): Promise<void> {
+  public async logout(
+    @Request() request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
     await this.authService.logout({
       sessionId: request.user.sessionId,
     });
+    res
+      .clearCookie('accessToken')
+      .clearCookie('refreshToken')
+      .clearCookie('tokenExpires');
   }
 }

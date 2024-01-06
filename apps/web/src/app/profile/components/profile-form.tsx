@@ -26,6 +26,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import api from '@/lib/api';
 
 const profileFormSchema = z.object({
   username: z
@@ -83,6 +84,10 @@ export function ProfileForm() {
         </pre>
       ),
     });
+  }
+
+  function handleLogout() {
+    api.post('/api/v1/auth/logout');
   }
 
   return (
@@ -185,6 +190,14 @@ export function ProfileForm() {
           </Button>
         </div>
         <Button type="submit">Update profile</Button>
+        <Button
+          onClick={handleLogout}
+          className="ms-2"
+          type="button"
+          variant="destructive"
+        >
+          Logout
+        </Button>
       </form>
     </Form>
   );
