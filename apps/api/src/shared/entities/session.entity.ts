@@ -1,5 +1,5 @@
-import { User } from '@entities/user.entity';
-import { EntityHelper } from '@utils/entity-helper';
+import { UserEntity } from '@shared/entities/user.entity';
+import { EntityHelper } from '@shared/utils/entity-helper';
 import {
   CreateDateColumn,
   Entity,
@@ -14,11 +14,11 @@ export class Session extends EntityHelper {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, {
+  @ManyToOne(() => UserEntity, {
     eager: true,
   })
   @Index()
-  user: User;
+  user: UserEntity;
 
   @CreateDateColumn()
   createdAt: Date;

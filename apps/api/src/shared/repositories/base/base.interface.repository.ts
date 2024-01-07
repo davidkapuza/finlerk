@@ -16,5 +16,5 @@ export interface BaseInterfaceRepository<T> {
   remove(data: T): Promise<T>;
   findWithRelations(relations: FindManyOptions<T>): Promise<T[]>;
   preload(entityLike: DeepPartial<T>): Promise<T>;
-  softDelete(id: number): Promise<UpdateResult>;
+  softDelete(id: number | string): Promise<UpdateResult>;
 }

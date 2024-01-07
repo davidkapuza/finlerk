@@ -1,12 +1,12 @@
 import { Session } from '@entities/session.entity';
-import { User } from '@entities/user.entity';
+import { UserEntity } from '@entities/user.entity';
 import { MailModule } from '@mail/mail.module';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SessionRepository } from '@repositories/session/session.repository';
-import { UserRepository } from '@repositories/user/user.repository';
+import { UsersRepository } from '@modules/users/repository/users.repository';
 import { DoesExist } from '@validators/does-exist.validator';
 import { DoesNotExist } from '@validators/does-not-exist.validator';
 import { AuthController } from './auth.controller';
@@ -16,7 +16,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Session, User]),
+    TypeOrmModule.forFeature([Session, UserEntity]),
     JwtModule.register({}),
     PassportModule,
     MailModule,
@@ -28,8 +28,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     JwtRefreshStrategy,
     { provide: 'AuthServiceInterface', useClass: AuthService },
     {
-      provide: 'UserRepositoryInterface',
-      useClass: UserRepository,
+      provide: 'UsersRepositoryInterface',
+      useClass: UsersRepository,
     },
     {
       provide: 'SessionRepositoryInterface',

@@ -1,7 +1,7 @@
-import { Role } from '@entities/role.entity';
+import { RoleEntity } from '@entities/role.entity';
 import { Session } from '@entities/session.entity';
-import { Status } from '@entities/status.entity';
-import { User } from '@entities/user.entity';
+import { StatusEntity } from '@entities/status.entity';
+import { UserEntity } from '@entities/user.entity';
 import { RolesEnum } from '@enums/roles.enum';
 import { StatusesEnum } from '@enums/statuses.enum';
 import { MailService } from '@mail/mail.service';
@@ -15,7 +15,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { SessionRepositoryInterface } from '@repositories/session/sessiony-repository.interface';
-import { UserRepositoryInterface } from '@repositories/user/user-repository.interface';
+import { UsersRepositoryInterface } from '@modules/users/repository/users-repository.interface';
 import * as bcrypt from 'bcryptjs';
 import { plainToClass } from 'class-transformer';
 import ms from 'ms';
@@ -28,8 +28,8 @@ import { LoginResponseType } from './types/login-response.type';
 @Injectable()
 export class AuthService implements AuthServiceInterface {
   constructor(
-    @Inject('UserRepositoryInterface')
-    private readonly userRepository: UserRepositoryInterface,
+    @Inject('UsersRepositoryInterface')
+    private readonly userRepository: UsersRepositoryInterface,
     @Inject('SessionRepositoryInterface')
     private readonly sessionRepository: SessionRepositoryInterface,
     private readonly jwtService: JwtService,
@@ -44,10 +44,10 @@ export class AuthService implements AuthServiceInterface {
         email: dto.email,
         role: {
           id: RolesEnum.user,
-        } as Role,
+        } as RoleEntity,
         status: {
           id: StatusesEnum.inactive,
-        } as Status,
+        } as StatusEntity,
       }),
     );
 
@@ -73,11 +73,11 @@ export class AuthService implements AuthServiceInterface {
   }
 
   async confirmEmail(hash: string): Promise<void> {
-    let userId: User['id'];
+    let userId: UserEntity['id'];
 
     try {
       const jwtData = await this.jwtService.verifyAsync<{
-        confirmEmailUserId: User['id'];
+        confirmEmailUserId: UserEntity['id'];
       }>(hash, {
         secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
           infer: true,
@@ -108,7 +108,7 @@ export class AuthService implements AuthServiceInterface {
       );
     }
 
-    user.status = plainToClass(Status, {
+    user.status = plainToClass(StatusEntity, {
       id: StatusesEnum.active,
     });
 
@@ -195,7 +195,7 @@ export class AuthService implements AuthServiceInterface {
     }
 
     const { accessToken, refreshToken, tokenExpires } = await this.getTokens({
-      id: session.id,
+      id: session.user.id,
       role: session.user.role,
       sessionId: session.id,
     });
@@ -212,8 +212,8 @@ export class AuthService implements AuthServiceInterface {
   }
 
   private async getTokens(data: {
-    id: User['id'];
-    role: User['role'];
+    id: UserEntity['id'];
+    role: UserEntity['role'];
     sessionId: Session['id'];
   }) {
     const tokenExpiresIn = this.configService.getOrThrow<string>(

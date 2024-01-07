@@ -20,5 +20,8 @@
     "noImplicitAny": false,
     "baseUrl": "."
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }

@@ -7,7 +7,7 @@ import { DoesNotExist } from '@validators/does-not-exist.validator';
 export class RegisterDto {
   @ApiProperty({ example: 'test1@example.com' })
   @Transform(lowerCaseTransformer)
-  @Validate(DoesNotExist, ['User'], {
+  @Validate(DoesNotExist, ['UserEntity'], {
     message: 'emailAlreadyExists',
   })
   @IsEmail()

@@ -2,14 +2,14 @@ import { RolesEnum } from '@enums/roles.enum';
 import { StatusesEnum } from '@enums/statuses.enum';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '@entities/user.entity';
+import { UserEntity } from '@entities/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserSeedService {
   constructor(
-    @InjectRepository(User)
-    private repository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private repository: Repository<UserEntity>,
   ) {}
 
   async run() {

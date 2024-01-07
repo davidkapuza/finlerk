@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { MailModule } from './modules/mail/mail.module';
 import { MailerModule } from './modules/mailer/mailer.module';
+import { UserModule } from './modules/users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +26,7 @@ import { MailerModule } from './modules/mailer/mailer.module';
     AuthModule,
     MailModule,
     MailerModule,
+    UserModule,
   ],
 })
 export class AppModule {}

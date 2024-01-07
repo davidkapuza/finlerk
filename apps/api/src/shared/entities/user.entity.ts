@@ -11,15 +11,15 @@ import {
   BeforeInsert,
   BeforeUpdate,
 } from 'typeorm';
-import { Role } from '@entities/role.entity';
+import { RoleEntity } from '@entities/role.entity';
 import * as bcrypt from 'bcryptjs';
 import { Exclude, Expose } from 'class-transformer';
-import { Status } from '@entities/status.entity';
+import { StatusEntity } from '@entities/status.entity';
 import { AuthProvidersEnum } from '@auth/enums/auth-providers.enum';
 import { EntityHelper } from '@utils/entity-helper';
 
 @Entity()
-export class User extends EntityHelper {
+export class UserEntity extends EntityHelper {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -67,15 +67,15 @@ export class User extends EntityHelper {
   @Column({ type: String, nullable: true })
   lastName: string | null;
 
-  @ManyToOne(() => Role, {
+  @ManyToOne(() => RoleEntity, {
     eager: true,
   })
-  role?: Role | null;
+  role?: RoleEntity | null;
 
-  @ManyToOne(() => Status, {
+  @ManyToOne(() => StatusEntity, {
     eager: true,
   })
-  status?: Status;
+  status?: StatusEntity;
 
   @CreateDateColumn()
   createdAt: Date;

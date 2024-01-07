@@ -1,4 +1,4 @@
-import { Status } from '@entities/status.entity';
+import { StatusEntity } from '@entities/status.entity';
 import { StatusesEnum } from '@enums/statuses.enum';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,8 +7,8 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class StatusSeedService {
   constructor(
-    @InjectRepository(Status)
-    private repository: Repository<Status>,
+    @InjectRepository(StatusEntity)
+    private repository: Repository<StatusEntity>,
   ) {}
 
   async run() {

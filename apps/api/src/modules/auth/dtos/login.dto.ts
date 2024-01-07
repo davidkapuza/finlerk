@@ -7,7 +7,7 @@ import { IsNotEmpty, Validate } from 'class-validator';
 export class LoginDto {
   @ApiProperty({ example: 'test1@example.com' })
   @Transform(lowerCaseTransformer)
-  @Validate(DoesExist, ['User'], {
+  @Validate(DoesExist, ['UserEntity'], {
     message: 'emailDoesNotExists',
   })
   email: string;

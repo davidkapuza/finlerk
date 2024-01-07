@@ -1,4 +1,4 @@
-import { User } from '@entities/user.entity';
+import { UserEntity } from '@entities/user.entity';
 import {
   Body,
   Controller,
@@ -63,7 +63,7 @@ export class AuthController {
   public async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     const { accessToken, refreshToken, tokenExpires, user } =
       await this.authService.login(loginDto);
     res
