@@ -1,7 +1,15 @@
 import { ProfileForm } from './components/profile-form';
 import { Separator } from '@/components/ui/separator';
+import api from '@/lib/api';
 
-export default function SettingsProfilePage() {
+async function getUser() {
+  return await api
+    .get('/api/v1/users/my-profile')
+    .then((response) => response.data);
+}
+
+export default async function SettingsProfilePage() {
+  const user = await getUser();
   return (
     <div className="space-y-6">
       <div>
@@ -11,7 +19,7 @@ export default function SettingsProfilePage() {
         </p>
       </div>
       <Separator />
-      <ProfileForm />
+      <ProfileForm user={user} />
     </div>
   );
 }

@@ -1,14 +1,22 @@
 import axios from 'axios';
 
-interface AuthResponse {
-  user: unknown;
-}
-
-const baseURL = 'http://localhost:3000';
+const baseURL = process.env.NEXT_PUBLIC_API_URL,
+  isServer = typeof window === 'undefined';
 
 const api = axios.create({
+  baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
   withCredentials: true,
-  baseURL: baseURL,
+});
+
+api.interceptors.request.use(async (config) => {
+  if (isServer) {
+    const { cookies } = await import('next/headers');
+    config.headers.Cookie = cookies().toString();
+  }
+  return config;
 });
 
 api.interceptors.response.use(
@@ -23,18 +31,17 @@ api.interceptors.response.use(
       !error.config._isRetry
     ) {
       originalRequest._isRetry = true;
-      try {
-        const response = await axios<AuthResponse>(`/api/v1/auth/refresh`, {
-          method: 'post',
-          withCredentials: true,
-          baseURL: baseURL,
-        });
-        if (response.status === 200) {
+      await axios(`/api/v1/auth/refresh`, {
+        method: 'post',
+        withCredentials: true,
+        baseURL: baseURL,
+      })
+        .then(() => {
           return api.request(originalRequest);
-        }
-      } catch (e) {
-        console.log('Unauthorized');
-      }
+        })
+        .catch(() => {
+          console.log('Unauthorized');
+        });
     }
     throw error;
   },
