@@ -41,7 +41,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Toaster />
-            <div className="relative flex flex-col min-h-screen">
+            <div className="container relative flex flex-col min-h-screen">
               <Header />
               <div className="flex-1">{children}</div>
             </div>
