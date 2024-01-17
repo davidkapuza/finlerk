@@ -5,17 +5,22 @@ import databaseConfig from '@database/config/database.config';
 import { TypeOrmConfigService } from '@database/typeorm-config.service';
 import mailConfig from '@mail/config/mail.config';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { MailModule } from './modules/mail/mail.module';
 import { MailerModule } from './modules/mailer/mailer.module';
 import { UserModule } from './modules/users/users.module';
+import { StocksModule } from './modules/stocks/stocks.module';
+import redisConfig from '@modules/redis-pub-sub/config/redis.config';
+import { RedisPubSubModule } from '@modules/redis-pub-sub/redis-pub-sub.module';
+import { ConfigType } from '@shared/config/config.type';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, authConfig, databaseConfig, mailConfig],
+      load: [appConfig, authConfig, databaseConfig, mailConfig, redisConfig],
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
@@ -23,10 +28,27 @@ import { UserModule } from './modules/users/users.module';
       dataSourceFactory: async (options: DataSourceOptions) =>
         new DataSource(options).initialize(),
     }),
+    RedisPubSubModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService<ConfigType>) => ({
+        host: configService.get('redis.host', {
+          infer: true,
+        }),
+        port: configService.get('redis.port', {
+          infer: true,
+        }),
+      }),
+      inject: [ConfigService],
+    }),
+    EventEmitterModule.forRoot({
+      global: true,
+    }),
     AuthModule,
     MailModule,
     MailerModule,
     UserModule,
+    StocksModule,
   ],
 })
 export class AppModule {}

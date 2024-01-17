@@ -11,6 +11,7 @@
       "@shared/*": ["src/shared/*"],
       "@modules/*": ["src/modules/*"],
       "@auth/*": ["src/modules/auth/*"],
+      "@redis/*": ["src/modules/auth/*"],
       "@mail/*": ["src/modules/mail/*"],
       "@mailer/*": ["src/modules/mailer/*"],
       "@config/*": ["src/shared/config/*"],
