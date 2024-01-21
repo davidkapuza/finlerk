@@ -34,7 +34,16 @@ export class StocksService {
     if (!this.isConnected) this.websocket.connect();
   }
 
+  async disconnect() {
+    if (this.isConnected) this.websocket.disconnect();
+  }
+
   async subscribeForTrades(trades: string[]) {
     this.websocket.subscribeForTrades(trades);
+  }
+  getNews(symbols) {
+    return this.alpaca.getNews({
+      symbols,
+    });
   }
 }

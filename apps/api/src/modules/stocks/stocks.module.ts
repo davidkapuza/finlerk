@@ -4,6 +4,7 @@ import { NewTrade } from './event/new-trade.event';
 import { StocksGateway } from './stocks.gateway';
 import { StocksService } from './stocks.service';
 import { AlpacaModule } from '@modules/alpaca/alpaca.module';
+import { StocksController } from './stocks.controller';
 
 @Module({
   imports: [
@@ -11,5 +12,6 @@ import { AlpacaModule } from '@modules/alpaca/alpaca.module';
     AlpacaModule,
   ],
   providers: [StocksService, StocksGateway],
+  controllers: [StocksController],
 })
 export class StocksModule {}

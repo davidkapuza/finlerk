@@ -6,6 +6,7 @@ import { fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
 import { ThemeProvider } from '@/lib/providers/theme-provider';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export const metadata: Metadata = {
   title: {
@@ -40,11 +41,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Toaster />
-            <div className="container relative flex flex-col min-h-screen">
-              <Header />
-              <div className="flex-1">{children}</div>
-            </div>
+            <TooltipProvider delayDuration={0}>
+              <Toaster />
+              <div className="relative flex flex-col min-h-screen bg-background">
+                <Header />
+                <main className="container">{children}</main>
+              </div>
+            </TooltipProvider>
           </ThemeProvider>
         </body>
       </html>

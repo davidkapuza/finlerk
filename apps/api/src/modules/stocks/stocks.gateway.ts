@@ -7,6 +7,7 @@ import { Inject } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
+  OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
@@ -28,12 +29,16 @@ export enum WebsocketEventSubscribeList {
     origin: '*',
   },
 })
-export class StocksGateway implements OnGatewayInit {
+export class StocksGateway implements OnGatewayInit, OnGatewayDisconnect {
   constructor(
     @Inject(EVENT_SUBSCRIBER_TOKEN)
     private eventSubscriber: EventSubscriberInterface,
     private readonly stocksService: StocksService,
   ) {}
+
+  handleDisconnect() {
+    this.stocksService.disconnect();
+  }
 
   afterInit() {
     this.stocksService.connect();

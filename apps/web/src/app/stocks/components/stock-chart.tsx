@@ -1,17 +1,25 @@
 'use client';
 
+import * as React from 'react';
 import {
   createChart,
-  ColorType,
-  DeepPartial,
-  LayoutOptions,
+  type DeepPartial,
+  type IChartApi,
+  type LayoutOptions,
+  type Range,
 } from 'lightweight-charts';
-import React, { useEffect, useRef } from 'react';
+import { useTheme } from 'next-themes';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '../../../../tailwind.config';
-import { useTheme } from 'next-themes';
 
 const { theme } = resolveConfig(tailwindConfig);
+
+function getVisibleLogicalRange(
+  dataLength: number,
+  addedPoints: number,
+): Range<number> {
+  return { from: addedPoints + 0.5, to: dataLength + addedPoints };
+}
 
 function getLayoutOptionsForTheme(
   isDarkTheme: boolean,
@@ -19,11 +27,11 @@ function getLayoutOptionsForTheme(
   return isDarkTheme
     ? {
         textColor: theme.colors.white,
-        background: { type: ColorType.Solid, color: 'transparent' },
+        background: { color: 'transparent' },
       }
     : {
         textColor: theme.colors.black,
-        background: { type: ColorType.Solid, color: 'transparent' },
+        background: { color: 'transparent' },
       };
 }
 
@@ -42,20 +50,26 @@ function useThemeAwareLayoutOptions(): DeepPartial<LayoutOptions> {
   return layoutOptions;
 }
 
-export const StockChart = (props) => {
-  const { data } = props;
+export const StockChart = ({ chartData }) => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [chart, setChart] = React.useState<IChartApi | null>(null);
+  // const [areaSeries, setAreaSeries] = React.useState<ISeriesApi<'Area'> | null>(
+  //   null,
+  // );
   const layout = useThemeAwareLayoutOptions();
-  const chartContainerRef = useRef(null);
 
-  useEffect(() => {
-    const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-    };
+  React.useEffect(() => {
+    const container = ref.current;
 
-    const chart = createChart(chartContainerRef.current, {
+    if (!container) {
+      return;
+    }
+
+    const c = createChart(container, {
       layout,
       rightPriceScale: {
         borderVisible: false,
+        autoScale: false,
       },
       grid: {
         horzLines: {
@@ -70,28 +84,113 @@ export const StockChart = (props) => {
         fixLeftEdge: true,
         fixRightEdge: true,
       },
-      width: chartContainerRef.current.clientWidth,
+      handleScroll: false,
+      handleScale: false,
       height: 300,
     });
-    chart.timeScale().fitContent();
 
-    const candlestickSeries = chart.addCandlestickSeries({
+    const candlestickSeries = c.addCandlestickSeries({
       upColor: theme.colors.green.DEFAULT,
       downColor: theme.colors.red.DEFAULT,
       borderVisible: false,
       wickUpColor: theme.colors.green.DEFAULT,
       wickDownColor: theme.colors.red.DEFAULT,
     });
-    candlestickSeries.setData(data);
+    candlestickSeries.setData(chartData);
 
-    window.addEventListener('resize', handleResize);
+    // const aS = c.addAreaSeries({
+    //   lineColor: '#2962ff',
+    //   topColor: '#2962ff',
+    //   bottomColor: 'rgba(41, 98, 255, 0.28)',
+    //   lineWidth: 2,
+    // });
+    // console.log('chartData', chartData);
+    // aS.setData(chartData);
+
+    const visibleLogicalRange = getVisibleLogicalRange(chartData.length, 0);
+    c.timeScale().setVisibleLogicalRange(visibleLogicalRange);
+
+    setChart(c);
+    // setAreaSeries(aS);
+
+    container.setAttribute('reveal', 'true');
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-
-      chart.remove();
+      c.remove();
+      setChart(null);
     };
-  }, [data, layout]);
+  }, []);
 
-  return <div ref={chartContainerRef} />;
+  React.useEffect(() => {
+    if (!chart || !ref.current) {
+      return;
+    }
+
+    const container = ref.current;
+
+    const resizeListener = () => {
+      const { width, height } = container.getBoundingClientRect();
+      chart.resize(width, height);
+      const panelWidth = window.innerWidth;
+
+      const showTimeScale = width > 495;
+      const showPriceScale = panelWidth > 299;
+      chart.applyOptions({
+        timeScale: {
+          visible: showTimeScale,
+        },
+        rightPriceScale: {
+          visible: showPriceScale,
+        },
+      });
+
+      const smallerFont = panelWidth < 1024;
+      const smallestFont = panelWidth < 568;
+      chart.applyOptions({
+        layout: {
+          fontSize: smallestFont ? 6 : smallerFont ? 8 : 12,
+        },
+        timeScale: {
+          lockVisibleTimeRangeOnResize: true,
+        },
+      });
+    };
+
+    const observer = new ResizeObserver(resizeListener);
+
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [chart]);
+
+  React.useEffect(() => {
+    if (!chart) {
+      return;
+    }
+
+    chart.applyOptions({ layout });
+  }, [layout, chart]);
+
+  // React.useEffect(() => {
+  //   if (!areaSeries || !chart) {
+  //     return;
+  //   }
+  //   if (updateCount >= 0) {
+  //     areaSeries.update(realtimeData[updateCount]);
+  //     chart
+  //       .timeScale()
+  //       .setVisibleLogicalRange(
+  //         getVisibleLogicalRange(chartData.length, updateCount),
+  //       );
+  //   }
+  //   if (updateCount < realtimeData.length - 1) {
+  //     setTimeout(() => {
+  //       setUpdateCount(updateCount + 1);
+  //     }, realtimeUpdatePeriod);
+  //   }
+  // }, [areaSeries, updateCount, chart]);
+
+  return <div ref={ref} />;
 };

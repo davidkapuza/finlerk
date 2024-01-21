@@ -31,7 +31,7 @@ export function StocksPreviewCarousel() {
           <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/5">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">Bitcoin</CardTitle>
+                <CardTitle className="text-sm font-medium">TSLA</CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
