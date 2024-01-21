@@ -1,3 +1,4 @@
+import { PublishableEventInterface } from '@modules/redis-pub-sub/event/emitter/contract/publishable-event.interface';
 import {
   EVENT_SUBSCRIBER_TOKEN,
   EventSubscriberInterface,
@@ -5,17 +6,19 @@ import {
 import { Inject } from '@nestjs/common';
 import {
   ConnectedSocket,
+  MessageBody,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { Observable, from, map } from 'rxjs';
-import { NewMessageEvent } from './event/new-message.event';
-import { PublishableEventInterface } from '@modules/redis-pub-sub/event/emitter/contract/publishable-event.interface';
 import { type Socket } from 'socket.io';
+import { NewTrade } from './event/new-trade.event';
+import { StocksService } from './stocks.service';
 
 export enum WebsocketEventSubscribeList {
-  FETCH_EVENTS_MESSAGES = 'fetch-events-messages',
-  EVENTS_MESSAGES_STREAM = 'events-messages-stream',
+  FETCH_STOCK_TRADES = 'fetch-stock-trades',
+  STOCK_TRADES_STREAM = 'stock-trades-stream',
 }
 
 @WebSocketGateway({
@@ -25,20 +28,29 @@ export enum WebsocketEventSubscribeList {
     origin: '*',
   },
 })
-export class StocksGateway {
+export class StocksGateway implements OnGatewayInit {
   constructor(
     @Inject(EVENT_SUBSCRIBER_TOKEN)
     private eventSubscriber: EventSubscriberInterface,
+    private readonly stocksService: StocksService,
   ) {}
 
-  @SubscribeMessage(WebsocketEventSubscribeList.FETCH_EVENTS_MESSAGES)
-  async streamMessagesData(@ConnectedSocket() client: Socket) {
+  afterInit() {
+    this.stocksService.connect();
+  }
+
+  @SubscribeMessage(WebsocketEventSubscribeList.FETCH_STOCK_TRADES)
+  async streamMessagesData(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() stocks: string[],
+  ) {
+    this.stocksService.subscribeForTrades(stocks);
     const stream$ = this.createWebsocketStreamFromEventFactory(
       client,
       this.eventSubscriber,
-      NewMessageEvent.publishableEventName,
+      NewTrade.publishableEventName,
     );
-    const event = WebsocketEventSubscribeList.EVENTS_MESSAGES_STREAM;
+    const event = WebsocketEventSubscribeList.STOCK_TRADES_STREAM;
     return from(stream$).pipe(map((data) => ({ event, data })));
   }
 

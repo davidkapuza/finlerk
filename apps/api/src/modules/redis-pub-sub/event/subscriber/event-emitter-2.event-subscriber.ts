@@ -5,7 +5,6 @@ export class EventEmitter2EventSubscriber implements EventSubscriberInterface {
   constructor(private eventEmitter: EventEmitter2) {}
 
   on(name: string, listener): void {
-    console.log('subcsriber', name, listener);
     this.eventEmitter.on(name, listener);
   }
 

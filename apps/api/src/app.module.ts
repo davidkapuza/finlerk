@@ -16,11 +16,20 @@ import redisConfig from '@modules/redis-pub-sub/config/redis.config';
 import { RedisPubSubModule } from '@modules/redis-pub-sub/redis-pub-sub.module';
 import { ConfigType } from '@shared/config/config.type';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AlpacaModule } from './modules/alpaca/alpaca.module';
+import alpacaConfig from '@modules/alpaca/config/alpaca.config';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, authConfig, databaseConfig, mailConfig, redisConfig],
+      load: [
+        appConfig,
+        authConfig,
+        databaseConfig,
+        mailConfig,
+        redisConfig,
+        alpacaConfig,
+      ],
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
@@ -49,6 +58,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     MailerModule,
     UserModule,
     StocksModule,
+    AlpacaModule,
   ],
 })
 export class AppModule {}
