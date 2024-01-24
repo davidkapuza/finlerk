@@ -28,9 +28,29 @@ export class StocksController {
     isArray: true,
     required: true,
   })
-  getNews(@Query('symbols') symbols: string[] | string): Promise<AlpacaNews[]> {
-    return this.stocksService.getNews(
-      Array.isArray(symbols) ? symbols : [symbols],
-    );
+  getNews(@Query('symbols') symbols: string): Promise<AlpacaNews[]> {
+    return this.stocksService.getNews(symbols.split(','));
+  }
+
+  @Get('historical-bars')
+  @HttpCode(HttpStatus.OK)
+  @ApiQuery({
+    name: 'symbol',
+    isArray: false,
+    required: true,
+  })
+  getHistoricalBars(@Query('symbol') symbol: string) {
+    return this.stocksService.getHistoricalBars(symbol);
+  }
+
+  @Get('latest-trades')
+  @HttpCode(HttpStatus.OK)
+  @ApiQuery({
+    name: 'symbols',
+    isArray: true,
+    required: true,
+  })
+  getLatestTrades(@Query('symbols') symbols: string) {
+    return this.stocksService.getLatestTrades(symbols.split(','));
   }
 }

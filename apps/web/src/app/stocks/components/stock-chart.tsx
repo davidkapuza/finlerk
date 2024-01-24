@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {
   createChart,
+  ISeriesApi,
   type DeepPartial,
   type IChartApi,
   type LayoutOptions,
@@ -11,6 +12,7 @@ import {
 import { useTheme } from 'next-themes';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '../../../../tailwind.config';
+import { io } from 'socket.io-client';
 
 const { theme } = resolveConfig(tailwindConfig);
 
@@ -52,10 +54,10 @@ function useThemeAwareLayoutOptions(): DeepPartial<LayoutOptions> {
 
 export const StockChart = ({ chartData }) => {
   const ref = React.useRef<HTMLDivElement>(null);
+  const [bar, setBar] = React.useState(null);
   const [chart, setChart] = React.useState<IChartApi | null>(null);
-  // const [areaSeries, setAreaSeries] = React.useState<ISeriesApi<'Area'> | null>(
-  //   null,
-  // );
+  const [candlestickSeries, setCandlestickSeries] =
+    React.useState<ISeriesApi<'Candlestick'> | null>(null);
   const layout = useThemeAwareLayoutOptions();
 
   React.useEffect(() => {
@@ -89,29 +91,22 @@ export const StockChart = ({ chartData }) => {
       height: 300,
     });
 
-    const candlestickSeries = c.addCandlestickSeries({
+    const cS = c.addCandlestickSeries({
       upColor: theme.colors.green.DEFAULT,
       downColor: theme.colors.red.DEFAULT,
       borderVisible: false,
       wickUpColor: theme.colors.green.DEFAULT,
       wickDownColor: theme.colors.red.DEFAULT,
     });
-    candlestickSeries.setData(chartData);
+    if (!chartData.length) return;
 
-    // const aS = c.addAreaSeries({
-    //   lineColor: '#2962ff',
-    //   topColor: '#2962ff',
-    //   bottomColor: 'rgba(41, 98, 255, 0.28)',
-    //   lineWidth: 2,
-    // });
-    // console.log('chartData', chartData);
-    // aS.setData(chartData);
+    cS.setData(chartData);
 
     const visibleLogicalRange = getVisibleLogicalRange(chartData.length, 0);
     c.timeScale().setVisibleLogicalRange(visibleLogicalRange);
 
     setChart(c);
-    // setAreaSeries(aS);
+    setCandlestickSeries(cS);
 
     container.setAttribute('reveal', 'true');
 
@@ -173,24 +168,32 @@ export const StockChart = ({ chartData }) => {
     chart.applyOptions({ layout });
   }, [layout, chart]);
 
-  // React.useEffect(() => {
-  //   if (!areaSeries || !chart) {
-  //     return;
-  //   }
-  //   if (updateCount >= 0) {
-  //     areaSeries.update(realtimeData[updateCount]);
-  //     chart
-  //       .timeScale()
-  //       .setVisibleLogicalRange(
-  //         getVisibleLogicalRange(chartData.length, updateCount),
-  //       );
-  //   }
-  //   if (updateCount < realtimeData.length - 1) {
-  //     setTimeout(() => {
-  //       setUpdateCount(updateCount + 1);
-  //     }, realtimeUpdatePeriod);
-  //   }
-  // }, [areaSeries, updateCount, chart]);
+  React.useEffect(() => {
+    const socket = io('http://localhost:3000');
+
+    socket.on('connect', () => {
+      socket.emit('fetch-stock-bars', ['TSLA']);
+    });
+    socket.on('stock-bars-stream', (data) => {
+      setBar(data.bar);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!candlestickSeries || !chart) {
+      return;
+    }
+    if (bar) {
+      candlestickSeries.update(bar);
+      chart
+        .timeScale()
+        .setVisibleLogicalRange(getVisibleLogicalRange(chartData.length, 1));
+    }
+  }, [candlestickSeries, bar, chart, chartData.length]);
 
   return <div ref={ref} />;
 };

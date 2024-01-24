@@ -49,6 +49,7 @@
     "@socket.io/redis-adapter": "^8.2.1",
     "axios": "^1.6.3",
     "bcryptjs": "^2.4.3",
+    "bufferutil": "^4.0.8",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "class-variance-authority": "^0.7.0",
@@ -84,6 +85,8 @@
     "tailwindcss-animate": "^1.0.7",
     "tslib": "^2.3.0",
     "typeorm": "^0.3.17",
+    "utf-8-validate": "^5.0.10",
+    "ws": "^8.16.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

@@ -1,3 +1,4 @@
+import { AlpacaBar } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import { PublishableEventInterface } from '@modules/redis-pub-sub/event/emitter/contract/publishable-event.interface';
 import {
   EVENT_SUBSCRIBER_TOKEN,
@@ -7,19 +8,21 @@ import { Inject } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
-  OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { Observable, from, map } from 'rxjs';
 import { type Socket } from 'socket.io';
-import { NewTrade } from './event/new-trade.event';
+import { NewTrade } from './events/new-trade.event';
 import { StocksService } from './stocks.service';
+import { NewBar } from './events/new-bar.event';
 
 export enum WebsocketEventSubscribeList {
   FETCH_STOCK_TRADES = 'fetch-stock-trades',
   STOCK_TRADES_STREAM = 'stock-trades-stream',
+  FETCH_STOCK_BARS = 'fetch-stock-bars',
+  STOCK_BARS_STREAM = 'stock-bars-stream',
 }
 
 @WebSocketGateway({
@@ -29,23 +32,19 @@ export enum WebsocketEventSubscribeList {
     origin: '*',
   },
 })
-export class StocksGateway implements OnGatewayInit, OnGatewayDisconnect {
+export class StocksGateway implements OnGatewayInit {
   constructor(
     @Inject(EVENT_SUBSCRIBER_TOKEN)
     private eventSubscriber: EventSubscriberInterface,
     private readonly stocksService: StocksService,
   ) {}
 
-  handleDisconnect() {
-    this.stocksService.disconnect();
-  }
-
   afterInit() {
     this.stocksService.connect();
   }
 
   @SubscribeMessage(WebsocketEventSubscribeList.FETCH_STOCK_TRADES)
-  async streamMessagesData(
+  async streamTrades(
     @ConnectedSocket() client: Socket,
     @MessageBody() stocks: string[],
   ) {
@@ -55,20 +54,45 @@ export class StocksGateway implements OnGatewayInit, OnGatewayDisconnect {
       this.eventSubscriber,
       NewTrade.publishableEventName,
     );
+
     const event = WebsocketEventSubscribeList.STOCK_TRADES_STREAM;
-    return from(stream$).pipe(map((data) => ({ event, data })));
+    return from(stream$).pipe(
+      map((data) => ({
+        event,
+        data,
+      })),
+    );
   }
 
-  private createWebsocketStreamFromEventFactory(
+  @SubscribeMessage(WebsocketEventSubscribeList.FETCH_STOCK_BARS)
+  async streamBars(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() stocks: string[],
+  ) {
+    this.stocksService.subsribeForBars(stocks);
+    const stream$ = this.createWebsocketStreamFromEventFactory<AlpacaBar>(
+      client,
+      this.eventSubscriber,
+      NewBar.publishableEventName,
+    );
+    const event = WebsocketEventSubscribeList.STOCK_BARS_STREAM;
+    return from(stream$).pipe(
+      map((data: AlpacaBar) => ({
+        event,
+        data,
+      })),
+    );
+  }
+
+  private createWebsocketStreamFromEventFactory<T>(
     client: Socket,
     eventSubscriber: EventSubscriberInterface,
     eventName: string,
-  ): Observable<unknown> {
+  ): Observable<T> {
     return new Observable((observer) => {
       const dynamicListener = (message: PublishableEventInterface) => {
-        observer.next(message);
+        observer.next(message as T);
       };
-
       eventSubscriber.on(eventName, dynamicListener);
 
       client.on('disconnect', () => {

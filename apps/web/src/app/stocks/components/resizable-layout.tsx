@@ -10,6 +10,7 @@ import { Newspaper } from 'lucide-react';
 import * as React from 'react';
 import { Nav } from './nav';
 import { StockChart } from './stock-chart';
+import { io } from 'socket.io-client';
 
 interface ResizableLayoutProps {
   trades: unknown;
@@ -27,6 +28,26 @@ export default function ResizableLayout({
   children,
 }: ResizableLayoutProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
+  const [percentageChange, setPercentageChange] = React.useState(null);
+  const [trade, setTrade] = React.useState(null);
+
+  React.useEffect(() => {
+    const socket = io('http://localhost:3000');
+
+    socket.on('connect', () => {
+      socket.emit('fetch-stock-trades', ['TSLA']);
+    });
+    socket.on('stock-trades-stream', (data) => {
+      setTrade(data.trade);
+      setPercentageChange(
+        (((data.trade.Price - trade?.Price) / trade?.Price) * 100).toFixed(2),
+      );
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <div className="rounded-[0.5rem] border bg-background shadow-md md:shadow-xl">
@@ -45,10 +66,18 @@ export default function ResizableLayout({
           <div className="p-10">
             <div>
               <span className="text-sm font-medium text-muted-foreground">
-                TSLA
+                {trade?.Symbol}
               </span>
-              <h1 className="text-2xl font-bold">$45,231.89</h1>
-              <p className="text-xs font-bold text-green">+20.1% (7d)</p>
+              <h1 className="text-2xl font-bold">${trade?.Price}</h1>
+              <p
+                className={cn(
+                  `text-xs font-bold ${
+                    percentageChange < 0 ? 'text-red' : 'text-green'
+                  }`,
+                )}
+              >
+                {percentageChange}%
+              </p>
             </div>
             <StockChart chartData={trades} />
           </div>
