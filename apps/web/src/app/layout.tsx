@@ -7,6 +7,12 @@ import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
 import { ThemeProvider } from '@/lib/providers/theme-provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import TradesPreviewCarousel from '@/components/trades-preview-carousel';
+import api from '@/lib/api';
+import {
+  AlpacaNews,
+  type AlpacaTrade,
+} from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 
 export const metadata: Metadata = {
   title: {
@@ -29,7 +35,21 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+const initialSymbols = ['TSLA', 'AAPL', 'NVDA', 'GOOG', 'NFLX', 'GOOGL'];
+
+async function getLatestTrades() {
+  return await api
+    .get<Map<string, AlpacaTrade>>('/api/v1/stocks/latest-trades', {
+      params: {
+        symbols: initialSymbols.join(','),
+      },
+    })
+    .then((response) => response.data);
+}
+
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const latestTrades = await getLatestTrades();
+
   return (
     <>
       <html lang="en" suppressHydrationWarning>
@@ -45,7 +65,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <Toaster />
               <div className="relative flex flex-col min-h-screen bg-background">
                 <Header />
-                <main className="container">{children}</main>
+                <main className="container px-20">
+                  <TradesPreviewCarousel latestTrades={latestTrades} />
+                  {children}
+                </main>
               </div>
             </TooltipProvider>
           </ThemeProvider>

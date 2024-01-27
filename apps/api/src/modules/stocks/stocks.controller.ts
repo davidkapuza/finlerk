@@ -1,9 +1,9 @@
-import { AlpacaNews } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import {
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  ParseArrayPipe,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -25,11 +25,14 @@ export class StocksController {
   @HttpCode(HttpStatus.OK)
   @ApiQuery({
     name: 'symbols',
-    isArray: true,
-    required: true,
+    type: 'string',
+    example: 'TSLA,AAPL',
   })
-  getNews(@Query('symbols') symbols: string): Promise<AlpacaNews[]> {
-    return this.stocksService.getNews(symbols.split(','));
+  getNews(
+    @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
+    symbols: string[],
+  ) {
+    return this.stocksService.getNews(symbols);
   }
 
   @Get('historical-bars')
@@ -47,10 +50,27 @@ export class StocksController {
   @HttpCode(HttpStatus.OK)
   @ApiQuery({
     name: 'symbols',
-    isArray: true,
-    required: true,
+    type: 'string',
+    example: 'TSLA,AAPL',
   })
-  getLatestTrades(@Query('symbols') symbols: string) {
-    return this.stocksService.getLatestTrades(symbols.split(','));
+  getLatestTrades(
+    @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
+    symbols: string[],
+  ) {
+    return this.stocksService.getLatestTrades(symbols);
+  }
+
+  @Get('trades')
+  @HttpCode(HttpStatus.OK)
+  @ApiQuery({
+    name: 'symbol',
+    type: 'string',
+    example: 'TSLA',
+  })
+  getTrades(
+    @Query('symbol')
+    symbol: string,
+  ) {
+    return this.stocksService.getTrades(symbol);
   }
 }

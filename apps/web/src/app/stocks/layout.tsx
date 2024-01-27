@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import ResizableLayout from './components/resizable-layout';
-import { StocksPreviewCarousel } from './components/stocks-preview-carousel';
 import api from '@/lib/api';
+import TradesPreviewCarousel from '@/components/trades-preview-carousel';
 
 export const metadata: Metadata = {
   title: 'Examples',
@@ -40,7 +40,7 @@ export default async function StocksLayout({ children }: StocksLayoutProps) {
   return (
     <div className="flex flex-col gap-5">
       <h2 className="text-3xl font-bold tracking-tight pt-7">Stocks</h2>
-      <StocksPreviewCarousel latestTrades={latestTrades} />
+      <TradesPreviewCarousel latestTrades={latestTrades} />
       <ResizableLayout
         trades={historicalBars}
         defaultLayout={defaultLayout}

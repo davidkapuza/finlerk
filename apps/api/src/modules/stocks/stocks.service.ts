@@ -1,5 +1,8 @@
 import Alpaca from '@alpacahq/alpaca-trade-api';
-import { AlpacaBar } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
+import {
+  AlpacaBar,
+  AlpacaTrade,
+} from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import { EventEmitterInterface } from '@modules/redis-pub-sub/event/emitter/contract/event-emitter.interface';
 import { EVENT_EMITTER_TOKEN } from '@modules/redis-pub-sub/event/emitter/redis.event-emitter';
 import { Inject, Injectable } from '@nestjs/common';
@@ -27,11 +30,9 @@ export class StocksService {
       this.websocket.connect();
     });
     this.websocket.onStockTrade((trade) => {
-      console.log('trade > ', trade);
       this.eventEmitter.emit(NewTrade.name, new NewTrade(trade));
     });
     this.websocket.onStockBar((bar) => {
-      console.log('bar > ', bar);
       this.eventEmitter.emit(
         NewBar.name,
         new NewBar({
@@ -72,6 +73,20 @@ export class StocksService {
 
   getLatestTrades(symbols: string[]) {
     return this.alpaca.getLatestTrades(symbols);
+  }
+
+  async getTrades(symbol: string) {
+    const tradeData: AlpacaTrade[] = [];
+    const trades = this.alpaca.getTradesV2(symbol, {
+      start: '2024-01-03T00:00:00Z',
+      end: new Date().toISOString(),
+    });
+
+    for await (const t of trades) {
+      tradeData.push(t);
+    }
+
+    return tradeData;
   }
 
   async getHistoricalBars(symbol: string) {
