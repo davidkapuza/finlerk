@@ -39,7 +39,6 @@ export class StocksController {
   @HttpCode(HttpStatus.OK)
   @ApiQuery({
     name: 'symbol',
-    isArray: false,
     required: true,
   })
   getHistoricalBars(@Query('symbol') symbol: string) {
@@ -58,6 +57,20 @@ export class StocksController {
     symbols: string[],
   ) {
     return this.stocksService.getLatestTrades(symbols);
+  }
+
+  @Get('latest-quotes')
+  @HttpCode(HttpStatus.OK)
+  @ApiQuery({
+    name: 'symbols',
+    type: 'string',
+    example: 'TSLA,AAPL',
+  })
+  getLatestQuotes(
+    @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
+    symbols: string[],
+  ) {
+    return this.stocksService.getLatestQuotes(symbols);
   }
 
   @Get('trades')

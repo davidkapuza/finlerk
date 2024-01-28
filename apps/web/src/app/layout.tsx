@@ -9,10 +9,7 @@ import { ThemeProvider } from '@/lib/providers/theme-provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import TradesPreviewCarousel from '@/components/trades-preview-carousel';
 import api from '@/lib/api';
-import {
-  AlpacaNews,
-  type AlpacaTrade,
-} from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
+import { type AlpacaTrade } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 
 export const metadata: Metadata = {
   title: {

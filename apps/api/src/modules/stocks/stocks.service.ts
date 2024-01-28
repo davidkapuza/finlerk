@@ -75,6 +75,10 @@ export class StocksService {
     return this.alpaca.getLatestTrades(symbols);
   }
 
+  getLatestQuotes(symbols: string[]) {
+    return this.alpaca.getLatestQuotes(symbols);
+  }
+
   async getTrades(symbol: string) {
     const tradeData: AlpacaTrade[] = [];
     const trades = this.alpaca.getTradesV2(symbol, {
