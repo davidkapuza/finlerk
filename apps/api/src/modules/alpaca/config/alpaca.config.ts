@@ -5,6 +5,9 @@ import validateConfig from '@utils/validate-config';
 
 class EnvironmentVariablesValidator {
   @IsString()
+  ALPACA_API_URL: string;
+
+  @IsString()
   ALPACA_API_KEY: string;
 
   @IsString()
@@ -15,6 +18,7 @@ export default registerAs<AlpacaConfig>('alpaca', () => {
   validateConfig(process.env, EnvironmentVariablesValidator);
 
   return {
+    url: process.env.ALPACA_API_URL,
     token: process.env.ALPACA_API_KEY,
     secret: process.env.ALPACA_API_SECRET,
   };

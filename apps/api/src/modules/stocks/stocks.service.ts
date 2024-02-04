@@ -5,16 +5,24 @@ import {
 } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import { EventEmitterInterface } from '@modules/redis-pub-sub/event/emitter/contract/event-emitter.interface';
 import { EVENT_EMITTER_TOKEN } from '@modules/redis-pub-sub/event/emitter/redis.event-emitter';
-import { Inject, Injectable } from '@nestjs/common';
-import { NewTrade } from './events/new-trade.event';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { NewBar } from './events/new-bar.event';
+import { NewTrade } from './events/new-trade.event';
+import { catchError, firstValueFrom } from 'rxjs';
+import { AxiosError } from 'axios';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class StocksService {
+  private readonly logger = new Logger(StocksService.name);
   constructor(
     @Inject('ALPACA_SDK') private readonly alpaca: Alpaca,
     @Inject(EVENT_EMITTER_TOKEN)
     private readonly eventEmitter: EventEmitterInterface,
+    private readonly httpService: HttpService,
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
   ) {
     this.websocket.onConnect(() => {
       this.isConnected = true;
@@ -65,18 +73,52 @@ export class StocksService {
     if (this.isConnected) this.websocket.subscribeForBars(stocks);
   }
 
-  getNews(symbols) {
+  async getNews(symbols: string[]) {
+    if (!symbols.length) {
+      const { most_actives } = await this.mostActive();
+      symbols = most_actives.map((s) => s.symbol);
+    }
     return this.alpaca.getNews({
       symbols,
     });
   }
 
-  getLatestTrades(symbols: string[]) {
+  async getLatestTrades(symbols: string[]) {
+    if (!symbols.length) {
+      const { most_actives } = await this.mostActive();
+      symbols = most_actives.map((s) => s.symbol);
+    }
     return this.alpaca.getLatestTrades(symbols);
+  }
+
+  getLatestBars(symbols: string[]) {
+    return this.alpaca.getLatestBars(symbols);
   }
 
   getLatestQuotes(symbols: string[]) {
     return this.alpaca.getLatestQuotes(symbols);
+  }
+
+  async mostActive() {
+    const cached = await this.cacheService.get(
+      '/v1beta1/screener/stocks/most-actives',
+    );
+
+    if (cached) {
+      return cached;
+    }
+
+    const { data } = await firstValueFrom(
+      this.httpService.get('/v1beta1/screener/stocks/most-actives').pipe(
+        catchError((error: AxiosError) => {
+          this.logger.error(error.response.data);
+          throw error;
+        }),
+      ),
+    );
+
+    await this.cacheService.set('/v1beta1/screener/stocks/most-actives', data);
+    return data;
   }
 
   async getTrades(symbol: string) {

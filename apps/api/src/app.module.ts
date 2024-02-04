@@ -18,6 +18,8 @@ import { ConfigType } from '@shared/config/config.type';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AlpacaModule } from './modules/alpaca/alpaca.module';
 import alpacaConfig from '@modules/alpaca/config/alpaca.config';
+import { CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,6 +38,20 @@ import alpacaConfig from '@modules/alpaca/config/alpaca.config';
       useClass: TypeOrmConfigService,
       dataSourceFactory: async (options: DataSourceOptions) =>
         new DataSource(options).initialize(),
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService<ConfigType>) => ({
+        host: configService.get('redis.host', {
+          infer: true,
+        }),
+        port: configService.get('redis.port', {
+          infer: true,
+        }),
+        store: redisStore,
+      }),
+      inject: [ConfigService],
     }),
     RedisPubSubModule.registerAsync({
       isGlobal: true,

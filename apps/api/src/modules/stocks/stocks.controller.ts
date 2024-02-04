@@ -6,10 +6,12 @@ import {
   ParseArrayPipe,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { StocksService } from './stocks.service';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @ApiCookieAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -21,16 +23,22 @@ import { StocksService } from './stocks.service';
 export class StocksController {
   constructor(private readonly stocksService: StocksService) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(3000)
   @Get('news')
   @HttpCode(HttpStatus.OK)
   @ApiQuery({
     name: 'symbols',
     type: 'string',
+    required: false,
     example: 'TSLA,AAPL',
   })
   getNews(
-    @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
-    symbols: string[],
+    @Query(
+      'symbols',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    symbols: string[] = [],
   ) {
     return this.stocksService.getNews(symbols);
   }
@@ -51,12 +59,30 @@ export class StocksController {
     name: 'symbols',
     type: 'string',
     example: 'TSLA,AAPL',
+    required: false,
   })
   getLatestTrades(
+    @Query(
+      'symbols',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    symbols: string[] = [],
+  ) {
+    return this.stocksService.getLatestTrades(symbols);
+  }
+
+  @Get('latest-bars')
+  @HttpCode(HttpStatus.OK)
+  @ApiQuery({
+    name: 'symbols',
+    type: 'string',
+    example: 'TSLA,AAPL',
+  })
+  getLatestBars(
     @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
     symbols: string[],
   ) {
-    return this.stocksService.getLatestTrades(symbols);
+    return this.stocksService.getLatestBars(symbols);
   }
 
   @Get('latest-quotes')
@@ -85,5 +111,11 @@ export class StocksController {
     symbol: string,
   ) {
     return this.stocksService.getTrades(symbol);
+  }
+
+  @Get('most-active')
+  @HttpCode(HttpStatus.OK)
+  mostActive() {
+    return this.stocksService.mostActive();
   }
 }

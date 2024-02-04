@@ -32,15 +32,9 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-const initialSymbols = ['TSLA', 'AAPL', 'NVDA', 'GOOG', 'NFLX', 'GOOGL'];
-
 async function getLatestTrades() {
   return await api
-    .get<Map<string, AlpacaTrade>>('/api/v1/stocks/latest-trades', {
-      params: {
-        symbols: initialSymbols.join(','),
-      },
-    })
+    .get<Map<string, AlpacaTrade>>('/api/v1/stocks/latest-trades')
     .then((response) => response.data);
 }
 

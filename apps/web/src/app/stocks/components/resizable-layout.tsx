@@ -18,7 +18,7 @@ interface ResizableLayoutProps {
 }
 
 export default function ResizableLayout({
-  defaultLayout = [640, 440, 265],
+  defaultLayout = [96, 4],
   defaultCollapsed = false,
   navCollapsedSize,
   children,
@@ -36,12 +36,12 @@ export default function ResizableLayout({
         }}
         className="h-full max-h-[800px] items-stretch"
       >
-        <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
+        <ResizablePanel defaultSize={defaultLayout[0]}>
           {children}
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel
-          defaultSize={defaultLayout[2]}
+          defaultSize={defaultLayout[1]}
           collapsedSize={navCollapsedSize}
           collapsible={true}
           minSize={15}

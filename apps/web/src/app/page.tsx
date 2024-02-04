@@ -9,15 +9,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment } from 'react';
 
-const initialSymbols = ['TSLA', 'AAPL', 'NVDA', 'GOOG', 'NFLX', 'GOOGL'];
-
 async function getNews() {
   return await api
-    .get<AlpacaNews[]>('/api/v1/stocks/news', {
-      params: {
-        symbols: initialSymbols.join(','),
-      },
-    })
+    .get<AlpacaNews[]>('/api/v1/stocks/news')
     .then((response) => response.data);
 }
 
@@ -48,7 +42,7 @@ export default async function Index() {
                 }`,
               )}
             >
-              <div className="relative w-full h-full">
+              <div className="relative flex-1">
                 <Image
                   loading="lazy"
                   src={n.Images[0].url}
@@ -59,7 +53,7 @@ export default async function Index() {
                   className="object-cover w-full h-full transition-all rounded aspect-square"
                 />
               </div>
-              <div className="py-3 min-w-[65%]">
+              <div className="py-3 flex-2">
                 <h1 className="font-semibold line-clamp-2">{n.Headline}</h1>
                 <div className="flex flex-row items-center mb-3">
                   <div className="text-xs font-medium">{n.Source}</div>
