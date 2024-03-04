@@ -15,6 +15,7 @@ import {
   HttpCode,
   Request,
   SerializeOptions,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiParam, ApiTags } from '@nestjs/swagger';
@@ -26,6 +27,7 @@ import { infinityPagination } from '@utils/infinity-pagination';
 import { NullableType } from '../../shared/types/nullable.type';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { User } from './domain/user';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @ApiCookieAuth()
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -37,6 +39,8 @@ import { User } from './domain/user';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(6000)
   @SerializeOptions({
     groups: ['me'],
   })

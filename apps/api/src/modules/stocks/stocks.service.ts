@@ -9,33 +9,44 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { NewBar } from './events/new-bar.event';
 import { NewTrade } from './events/new-trade.event';
-import { catchError, firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, timer } from 'rxjs';
 import { AxiosError } from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
 @Injectable()
 export class StocksService {
-  private readonly logger = new Logger(StocksService.name);
   constructor(
-    @Inject('ALPACA_SDK') private readonly alpaca: Alpaca,
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
     @Inject(EVENT_EMITTER_TOKEN)
     private readonly eventEmitter: EventEmitterInterface,
     private readonly httpService: HttpService,
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
+    @Inject('ALPACA_SDK') private readonly alpaca: Alpaca,
   ) {
+    this.connect();
+  }
+  private readonly logger = new Logger(StocksService.name);
+  private websocket = this.alpaca.data_stream_v2;
+  private isConnect = false;
+
+  async connect() {
     this.websocket.onConnect(() => {
-      this.isConnected = true;
-    });
-    this.websocket.onDisconnect(() => {
-      this.isConnected = false;
-    });
-    this.websocket.onStateChange((status) => {
-      console.log('Status:', status);
+      this.isConnect = true;
     });
     this.websocket.onError((err) => {
-      console.log('Error', err);
-      this.websocket.connect();
+      this.logger.error(err);
+      this.isConnect = false;
+      this.websocket.disconnect();
+    });
+
+    this.websocket.onDisconnect(() => {
+      timer(1000).subscribe(() => {
+        this.isConnect = false;
+        this.connect();
+      });
+    });
+    this.websocket.onStateChange((state) => {
+      console.log(state);
     });
     this.websocket.onStockTrade((trade) => {
       this.eventEmitter.emit(NewTrade.name, new NewTrade(trade));
@@ -53,24 +64,15 @@ export class StocksService {
         }),
       );
     });
-  }
-  private websocket = this.alpaca.data_stream_v2;
-  private isConnected = false;
-
-  async connect() {
-    if (!this.isConnected) this.websocket.connect();
-  }
-
-  async disconnect() {
-    if (this.isConnected) this.websocket.disconnect();
+    this.websocket.connect();
   }
 
   async subscribeForTrades(trades: string[]) {
-    if (this.isConnected) this.websocket.subscribeForTrades(trades);
+    if (this.isConnect) this.websocket.subscribeForTrades(trades);
   }
 
   async subsribeForBars(stocks: string[]) {
-    if (this.isConnected) this.websocket.subscribeForBars(stocks);
+    if (this.isConnect) this.websocket.subscribeForBars(stocks);
   }
 
   async getNews(symbols: string[]) {
