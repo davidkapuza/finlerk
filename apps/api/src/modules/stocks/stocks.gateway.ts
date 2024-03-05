@@ -1,4 +1,7 @@
-import { AlpacaBar } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
+import {
+  AlpacaBar,
+  AlpacaTrade,
+} from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import { PublishableEventInterface } from '@modules/redis-pub-sub/event/emitter/contract/publishable-event.interface';
 import {
   EVENT_SUBSCRIBER_TOKEN,
@@ -13,16 +16,10 @@ import {
 } from '@nestjs/websockets';
 import { Observable, from, map } from 'rxjs';
 import { type Socket } from 'socket.io';
+import { SubscribableStreamsEnum } from './enums/subscribable-streams.enum';
+import { NewBar } from './events/new-bar.event';
 import { NewTrade } from './events/new-trade.event';
 import { StocksService } from './stocks.service';
-import { NewBar } from './events/new-bar.event';
-
-export enum WebsocketEventSubscribeList {
-  FETCH_STOCK_TRADES = 'fetch-stock-trades',
-  STOCK_TRADES_STREAM = 'stock-trades-stream',
-  FETCH_STOCK_BARS = 'fetch-stock-bars',
-  STOCK_BARS_STREAM = 'stock-bars-stream',
-}
 
 @WebSocketGateway({
   pingInterval: 30000,
@@ -38,28 +35,27 @@ export class StocksGateway {
     private readonly stocksService: StocksService,
   ) {}
 
-  @SubscribeMessage(WebsocketEventSubscribeList.FETCH_STOCK_TRADES)
+  @SubscribeMessage(SubscribableStreamsEnum.stockTrades)
   async streamTrades(
     @ConnectedSocket() client: Socket,
     @MessageBody() stocks: string[],
   ) {
     this.stocksService.subscribeForTrades(stocks);
-    const stream$ = this.createWebsocketStreamFromEventFactory(
+    const stream$ = this.createWebsocketStreamFromEventFactory<AlpacaTrade>(
       client,
       this.eventSubscriber,
       NewTrade.publishableEventName,
     );
 
-    const event = WebsocketEventSubscribeList.STOCK_TRADES_STREAM;
     return from(stream$).pipe(
       map((data) => ({
-        event,
+        event: NewTrade.publishableEventName,
         data,
       })),
     );
   }
 
-  @SubscribeMessage(WebsocketEventSubscribeList.FETCH_STOCK_BARS)
+  @SubscribeMessage(SubscribableStreamsEnum.stockBars)
   async streamBars(
     @ConnectedSocket() client: Socket,
     @MessageBody() stocks: string[],
@@ -70,10 +66,9 @@ export class StocksGateway {
       this.eventSubscriber,
       NewBar.publishableEventName,
     );
-    const event = WebsocketEventSubscribeList.STOCK_BARS_STREAM;
     return from(stream$).pipe(
       map((data: AlpacaBar) => ({
-        event,
+        event: NewBar.publishableEventName,
         data,
       })),
     );

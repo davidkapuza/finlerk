@@ -20,7 +20,7 @@ interface StockDetailsPageProps {
 export default async function StockDetailsPage({
   params,
 }: StockDetailsPageProps) {
-  const historicalBars = getHistoricalBars(params.symbol);
+  const historicalBars = await getHistoricalBars(params.symbol);
   // TODO Move into client component
   // const [percentageChange, setPercentageChange] = React.useState(null);
   // const [trade, setTrade] = React.useState(null);
@@ -63,7 +63,7 @@ export default async function StockDetailsPage({
             {percentageChange}%
           </p>
         </div> */}
-        <StockChart chartData={historicalBars} />
+        <StockChart chartData={historicalBars} symbol={params.symbol} />
       </div>
     </>
   );

@@ -29,7 +29,7 @@ export class StocksService {
   private websocket = this.alpaca.data_stream_v2;
   private isConnect = false;
 
-  async connect() {
+  connect() {
     this.websocket.onConnect(() => {
       this.isConnect = true;
     });
@@ -40,13 +40,13 @@ export class StocksService {
     });
 
     this.websocket.onDisconnect(() => {
-      timer(1000).subscribe(() => {
+      timer(5000).subscribe(() => {
         this.isConnect = false;
-        this.connect();
+        this.websocket.connect();
       });
     });
     this.websocket.onStateChange((state) => {
-      console.log(state);
+      this.logger.log(state);
     });
     this.websocket.onStockTrade((trade) => {
       this.eventEmitter.emit(NewTrade.name, new NewTrade(trade));

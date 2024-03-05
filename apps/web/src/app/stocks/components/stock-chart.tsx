@@ -52,7 +52,7 @@ function useThemeAwareLayoutOptions(): DeepPartial<LayoutOptions> {
   return layoutOptions;
 }
 
-export const StockChart = ({ chartData }) => {
+export const StockChart = ({ chartData, symbol }) => {
   const ref = React.useRef<HTMLDivElement>(null);
   const [bar, setBar] = React.useState(null);
   const [chart, setChart] = React.useState<IChartApi | null>(null);
@@ -169,12 +169,12 @@ export const StockChart = ({ chartData }) => {
   }, [layout, chart]);
 
   React.useEffect(() => {
-    const socket = io('http://localhost:3000');
+    const socket = io(process.env.NEXT_PUBLIC_API_URL);
 
     socket.on('connect', () => {
-      socket.emit('fetch-stock-bars', ['TSLA']);
+      socket.emit('stock-bars', [symbol]);
     });
-    socket.on('stock-bars-stream', (data) => {
+    socket.on('events:new-bar', (data) => {
       setBar(data.bar);
     });
 
