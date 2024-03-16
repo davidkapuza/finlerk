@@ -8,23 +8,8 @@
     "target": "es2021",
     "baseUrl": "./",
     "paths": {
-      "@shared/*": ["src/shared/*"],
-      "@modules/*": ["src/modules/*"],
-      "@auth/*": ["src/modules/auth/*"],
-      "@redis/*": ["src/modules/auth/*"],
-      "@mail/*": ["src/modules/mail/*"],
-      "@mailer/*": ["src/modules/mailer/*"],
-      "@config/*": ["src/shared/config/*"],
-      "@utils/*": ["src/shared/utils/*"],
-      "@enums/*": ["src/shared/enums/*"],
-      "@entities/*": ["src/shared/entities/*"],
-      "@validators/*": ["src/shared/validators/*"],
-      "@transformers/*": ["src/shared/transformers/*"],
-      "@database/*": ["src/shared/database/*"],
-      "@repositories/*": ["src/shared/repositories/*"],
-      "@types/*": ["src/shared/types/*"],
-      "@decorators/*": ["src/shared/decorators/*"],
-      "@guards/*": ["src/shared/guards/*"]
+      "@/*": ["./src/*"],
+      "@qbick/shared/*": ["../../libs/shared/src/lib/*"]
     }
   },
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],

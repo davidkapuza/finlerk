@@ -1,8 +1,7 @@
-import { RolesEnum } from '@enums/roles.enum';
-import { StatusesEnum } from '@enums/statuses.enum';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '@entities/user.entity';
+import { UserEntity } from '@qbick/shared/entities';
+import { RolesEnum, StatusesEnum } from '@qbick/shared/enums';
 import { Repository } from 'typeorm';
 
 @Injectable()

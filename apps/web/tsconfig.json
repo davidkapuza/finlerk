@@ -19,7 +19,8 @@
     "types": ["jest", "node"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@qbick/shared/*": ["../../libs/shared/src/lib/*"]
     }
   },
   "include": [

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StatusSeedService } from './status-seed.service';
-import { StatusEntity } from '@entities/status.entity';
+import { StatusEntity } from '@qbick/shared/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([StatusEntity])],

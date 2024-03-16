@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserSeedService } from './user-seed.service';
-import { UserEntity } from '@entities/user.entity';
+import { UserEntity } from '@qbick/shared/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity])],

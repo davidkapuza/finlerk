@@ -8,9 +8,9 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
-import validationOptions from './shared/utils/validation-options';
 import { ConfigType } from './shared/config/config.type';
 import cookieParser from 'cookie-parser';
+import validationOptions from '@/shared/utils/validation-options';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

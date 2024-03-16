@@ -18,7 +18,10 @@
     "skipDefaultLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@qbick/shared": ["libs/shared/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"],
   "ts-node": {

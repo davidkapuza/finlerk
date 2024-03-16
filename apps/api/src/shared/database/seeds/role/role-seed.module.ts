@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoleSeedService } from './role-seed.service';
-import { RoleEntity } from '@entities/role.entity';
+import { RoleEntity } from '@qbick/shared/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([RoleEntity])],

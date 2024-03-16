@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "declaration": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "../../apps/api/src/shared/utils/infinity-pagination.ts",
+    "../../apps/api/src/shared/utils/validate-config.ts",
+    "../../apps/api/src/shared/utils/validation-options.ts",
+    "../../apps/api/src/shared/types/pagination-options.ts",
+    "../../apps/api/src/shared/types/infinity-pagination-result.type.ts"
+  ],
+  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"]
+}
