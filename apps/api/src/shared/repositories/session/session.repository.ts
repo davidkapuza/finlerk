@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SessionRepositoryInterface } from './sessiony-repository.interface';
 import { BaseAbstractRepository } from '../base/base.abstract.repository';
-import { Session } from '@qbick/shared/entities';
+import { Session } from '@qbick/shared';
 
 @Injectable()
 export class SessionRepository

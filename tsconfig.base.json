@@ -3,7 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "rootDir": ".",
-    "baseUrl": ".",
+    "baseUrl": "./",
     "sourceMap": true,
     "declaration": true,
     "moduleResolution": "node",
