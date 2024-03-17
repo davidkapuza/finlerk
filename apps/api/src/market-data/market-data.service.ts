@@ -15,7 +15,7 @@ import { EVENT_EMITTER_TOKEN } from '@/redis-pub-sub/event/emitter/redis.event-e
 import { EventEmitterInterface } from '@/redis-pub-sub/event/emitter/contract/event-emitter.interface';
 
 @Injectable()
-export class StocksService {
+export class MarketDataService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     @Inject(EVENT_EMITTER_TOKEN)
@@ -25,7 +25,7 @@ export class StocksService {
   ) {
     this.connect();
   }
-  private readonly logger = new Logger(StocksService.name);
+  private readonly logger = new Logger(MarketDataService.name);
   private websocket = this.alpaca.data_stream_v2;
   private isConnect = false;
 

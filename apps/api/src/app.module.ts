@@ -18,7 +18,7 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from './mailer/mailer.module';
 import { UserModule } from './users/users.module';
-import { StocksModule } from './stocks/stocks.module';
+import { MarketDataModule } from './market-data/market-data.module';
 import { AlpacaModule } from './alpaca/alpaca.module';
 @Module({
   imports: [
@@ -73,7 +73,7 @@ import { AlpacaModule } from './alpaca/alpaca.module';
     MailModule,
     MailerModule,
     UserModule,
-    StocksModule,
+    MarketDataModule,
     AlpacaModule,
   ],
 })

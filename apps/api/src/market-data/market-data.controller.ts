@@ -10,18 +10,18 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { StocksService } from './stocks.service';
+import { MarketDataService } from './market-data.service';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @ApiCookieAuth()
 @UseGuards(AuthGuard('jwt'))
-@ApiTags('Stocks')
+@ApiTags('MarketData')
 @Controller({
-  path: 'stocks',
+  path: 'market-data',
   version: '1',
 })
-export class StocksController {
-  constructor(private readonly stocksService: StocksService) {}
+export class MarketDataController {
+  constructor(private readonly marketDataService: MarketDataService) {}
 
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(3000)
@@ -40,7 +40,7 @@ export class StocksController {
     )
     symbols: string[] = [],
   ) {
-    return this.stocksService.getNews(symbols);
+    return this.marketDataService.getNews(symbols);
   }
 
   @Get('historical-bars')
@@ -50,7 +50,7 @@ export class StocksController {
     required: true,
   })
   getHistoricalBars(@Query('symbol') symbol: string) {
-    return this.stocksService.getHistoricalBars(symbol);
+    return this.marketDataService.getHistoricalBars(symbol);
   }
 
   @Get('latest-trades')
@@ -68,7 +68,7 @@ export class StocksController {
     )
     symbols: string[] = [],
   ) {
-    return this.stocksService.getLatestTrades(symbols);
+    return this.marketDataService.getLatestTrades(symbols);
   }
 
   @Get('latest-bars')
@@ -82,7 +82,7 @@ export class StocksController {
     @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
     symbols: string[],
   ) {
-    return this.stocksService.getLatestBars(symbols);
+    return this.marketDataService.getLatestBars(symbols);
   }
 
   @Get('latest-quotes')
@@ -96,7 +96,7 @@ export class StocksController {
     @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
     symbols: string[],
   ) {
-    return this.stocksService.getLatestQuotes(symbols);
+    return this.marketDataService.getLatestQuotes(symbols);
   }
 
   @Get('trades')
@@ -110,12 +110,12 @@ export class StocksController {
     @Query('symbol')
     symbol: string,
   ) {
-    return this.stocksService.getTrades(symbol);
+    return this.marketDataService.getTrades(symbol);
   }
 
   @Get('most-active')
   @HttpCode(HttpStatus.OK)
   mostActive() {
-    return this.stocksService.mostActive();
+    return this.marketDataService.mostActive();
   }
 }

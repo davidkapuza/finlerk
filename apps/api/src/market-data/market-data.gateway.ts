@@ -19,7 +19,7 @@ import { type Socket } from 'socket.io';
 import { SubscribableStreamsEnum } from './enums/subscribable-streams.enum';
 import { NewBar } from './events/new-bar.event';
 import { NewTrade } from './events/new-trade.event';
-import { StocksService } from './stocks.service';
+import { MarketDataService } from './market-data.service';
 
 @WebSocketGateway({
   pingInterval: 30000,
@@ -28,11 +28,11 @@ import { StocksService } from './stocks.service';
     origin: '*',
   },
 })
-export class StocksGateway {
+export class MarketDataGateway {
   constructor(
     @Inject(EVENT_SUBSCRIBER_TOKEN)
     private eventSubscriber: EventSubscriberInterface,
-    private readonly stocksService: StocksService,
+    private readonly marketDataService: MarketDataService,
   ) {}
 
   @SubscribeMessage(SubscribableStreamsEnum.stockTrades)
@@ -40,7 +40,7 @@ export class StocksGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() stocks: string[],
   ) {
-    this.stocksService.subscribeForTrades(stocks);
+    this.marketDataService.subscribeForTrades(stocks);
     const stream$ = this.createWebsocketStreamFromEventFactory<AlpacaTrade>(
       client,
       this.eventSubscriber,
@@ -60,7 +60,7 @@ export class StocksGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() stocks: string[],
   ) {
-    this.stocksService.subsribeForBars(stocks);
+    this.marketDataService.subsribeForBars(stocks);
     const stream$ = this.createWebsocketStreamFromEventFactory<AlpacaBar>(
       client,
       this.eventSubscriber,

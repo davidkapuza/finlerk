@@ -6,9 +6,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NewBar } from './events/new-bar.event';
 import { NewTrade } from './events/new-trade.event';
-import { StocksController } from './stocks.controller';
-import { StocksGateway } from './stocks.gateway';
-import { StocksService } from './stocks.service';
+import { MarketDataController } from './market-data.controller';
+import { MarketDataGateway } from './market-data.gateway';
+import { MarketDataService } from './market-data.service';
 @Module({
   imports: [
     RedisPubSubModule.registerEvents([
@@ -35,7 +35,7 @@ import { StocksService } from './stocks.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [StocksService, StocksGateway],
-  controllers: [StocksController],
+  providers: [MarketDataService, MarketDataGateway],
+  controllers: [MarketDataController],
 })
-export class StocksModule {}
+export class MarketDataModule {}
