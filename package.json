@@ -3,17 +3,16 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "typeorm": "TS_NODE_PROJECT=apps/api/tsconfig.app.json env-cmd ts-node ./node_modules/typeorm/cli.js",
+    "typeorm": "env-cmd ts-node --project apps/api/tsconfig.app.json ./node_modules/typeorm/cli.js",
     "migration:generate": "npm run typeorm -- --dataSource=apps/api/src/shared/database/data-source.ts migration:generate",
     "migration:create": "npm run typeorm -- migration:create",
     "migration:run": "npm run typeorm -- --dataSource=apps/api/src/shared/database/data-source.ts migration:run",
     "migration:revert": "npm run typeorm -- --dataSource=apps/api/src/shared/database/data-source.ts migration:revert",
     "schema:drop": "npm run typeorm -- --dataSource=apps/api/src/shared/database/data-source.ts schema:drop",
-    "seed:create:relational": "hygen seeds create-relational",
-    "seed:create:document": "hygen seeds create-document",
-    "seed:run:relational": "ts-node -r tsconfig-paths/register ./apps/api/src/shared/database/seeds/relational/run-seed.ts",
-    "seed:run:document": "ts-node -r tsconfig-paths/register ./apps/api/src/shared/database/seeds/document/run-seed.ts",
-    "prepare": "husky install"
+    "seed:run": "ts-node --project apps/api/tsconfig.app.json -r tsconfig-paths/register apps/api/src/shared/database/seeds/run-seed.ts",
+    "prebuild": "rimraf dist",
+    "prepare": "husky install",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "private": true,
   "dependencies": {

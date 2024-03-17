@@ -3,10 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "tslib": "^2.3.0",
-    "typeorm": "^0.3.17",
-    "@nestjs/swagger": "^7.1.16",
     "class-validator": "^0.14.0",
-    "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1"
   },
   "type": "commonjs",
