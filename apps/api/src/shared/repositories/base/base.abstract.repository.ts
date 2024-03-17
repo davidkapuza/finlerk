@@ -34,7 +34,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
     return this.entity.create(data);
   }
 
-  public async findOneById(id: number): Promise<T> {
+  public async findOneById(id: number | string): Promise<T> {
     return await this.entity.findOneBy({ id } as FindOptionsWhere<T>);
   }
 
@@ -57,7 +57,9 @@ export abstract class BaseAbstractRepository<T extends HasId>
     return await this.entity.preload(entityLike);
   }
 
-  public async softDelete(id: number): Promise<UpdateResult> {
-    return await this.entity.softDelete(id);
+  public async softDelete(
+    criteria: FindOptionsWhere<T>,
+  ): Promise<UpdateResult> {
+    return await this.entity.softDelete(criteria);
   }
 }

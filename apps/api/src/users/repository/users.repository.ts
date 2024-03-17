@@ -1,13 +1,13 @@
+import { UserEntity } from '@/shared/entities/user.entity';
+import { BaseAbstractRepository } from '@/shared/repositories/base/base.abstract.repository';
+import { IPaginationOptions } from '@/shared/types/pagination-options';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '@qbick/shared';
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { UsersRepositoryInterface } from './users-repository.interface';
-import { User } from '../domain/user';
-import { UserMapper } from '../mappers/user.mapper';
-import { BaseAbstractRepository } from '@/shared/repositories/base/base.abstract.repository';
+import { UserMapper } from '../../shared/mappers/user.mapper';
 import { FilterUserDto, SortUserDto } from '../dtos/query-user.dto';
-import { IPaginationOptions } from '@/shared/types/pagination-options';
-import { UserEntity } from '@qbick/shared';
+import { UsersRepositoryInterface } from './users-repository.interface';
 
 @Injectable()
 export class UsersRepository
@@ -19,6 +19,14 @@ export class UsersRepository
     private readonly repository: Repository<UserEntity>,
   ) {
     super(repository);
+  }
+
+  async createUser(data: User): Promise<User> {
+    const persistenceModel = UserMapper.toPersistence(data);
+    const newEntity = await this.repository.save(
+      this.repository.create(persistenceModel),
+    );
+    return UserMapper.toDomain(newEntity);
   }
 
   async findManyWithPagination({

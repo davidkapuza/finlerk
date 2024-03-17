@@ -1,21 +1,23 @@
+import { EventEmitterInterface } from '@/redis-pub-sub/event/emitter/contract/event-emitter.interface';
+import { EVENT_EMITTER_TOKEN } from '@/redis-pub-sub/event/emitter/redis.event-emitter';
 import Alpaca from '@alpacahq/alpaca-trade-api';
-import {
-  AlpacaBar,
-  AlpacaTrade,
-} from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
+import { AlpacaTrade } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import { HttpService } from '@nestjs/axios';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { AxiosError } from 'axios';
+import { Cache } from 'cache-manager';
+import { catchError, firstValueFrom, timer } from 'rxjs';
+import { GetBarsDto } from './dtos/get-bars.dto';
 import { NewBar } from './events/new-bar.event';
 import { NewTrade } from './events/new-trade.event';
-import { catchError, firstValueFrom, timer } from 'rxjs';
-import { AxiosError } from 'axios';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { EVENT_EMITTER_TOKEN } from '@/redis-pub-sub/event/emitter/redis.event-emitter';
-import { EventEmitterInterface } from '@/redis-pub-sub/event/emitter/contract/event-emitter.interface';
+import { AlpacaBarsResponseType } from './types/alpaca-bars-response.type';
 
 @Injectable()
 export class MarketDataService {
+  private readonly logger = new Logger(MarketDataService.name);
+  private websocket = this.alpaca.data_stream_v2;
+  private isConnect = false;
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     @Inject(EVENT_EMITTER_TOKEN)
@@ -25,9 +27,6 @@ export class MarketDataService {
   ) {
     this.connect();
   }
-  private readonly logger = new Logger(MarketDataService.name);
-  private websocket = this.alpaca.data_stream_v2;
-  private isConnect = false;
 
   connect() {
     this.websocket.onConnect(() => {
@@ -137,22 +136,19 @@ export class MarketDataService {
     return tradeData;
   }
 
-  async getHistoricalBars(symbol: string) {
-    const bars = this.alpaca.getBarsV2(symbol, {
-      timeframe: '1Min',
-    });
-
-    const barsData: AlpacaBar[] = [];
-    for await (const bar of bars) {
-      barsData.push(bar);
-    }
-    return barsData.map((bar) => ({
-      time: Date.parse(bar.Timestamp) / 1000,
-      open: bar.OpenPrice,
-      high: bar.HighPrice,
-      low: bar.LowPrice,
-      close: bar.ClosePrice,
-      volume: bar.Volume,
-    }));
+  async getStockBars(params: GetBarsDto) {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .get<AlpacaBarsResponseType>('/stocks/bars', {
+          params,
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw 'An error happened!';
+          }),
+        ),
+    );
+    return data;
   }
 }

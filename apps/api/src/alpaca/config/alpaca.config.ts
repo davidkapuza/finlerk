@@ -1,11 +1,14 @@
 import { registerAs } from '@nestjs/config';
 import { AlpacaConfig } from './alpaca-config.type';
-import { IsString } from 'class-validator';
+import { IsString, IsUrl } from 'class-validator';
 import validateConfig from '@/shared/utils/validate-config';
 
 class EnvironmentVariablesValidator {
-  @IsString()
-  ALPACA_API_URL: string;
+  @IsUrl()
+  ALPACA_MARKET_DATA_API: string;
+
+  @IsUrl()
+  ALPACA_TRADING_API: string;
 
   @IsString()
   ALPACA_API_KEY: string;
@@ -18,7 +21,8 @@ export default registerAs<AlpacaConfig>('alpaca', () => {
   validateConfig(process.env, EnvironmentVariablesValidator);
 
   return {
-    url: process.env.ALPACA_API_URL,
+    market_data_api: process.env.ALPACA_MARKET_DATA_API,
+    trading_api: process.env.ALPACA_TRADING_API,
     token: process.env.ALPACA_API_KEY,
     secret: process.env.ALPACA_API_SECRET,
   };

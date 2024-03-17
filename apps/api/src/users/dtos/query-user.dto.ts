@@ -6,8 +6,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
-import { User } from '../domain/user';
 import { RoleDto } from '@/shared/dtos/role.dto';
+import { User } from '@qbick/shared';
 
 export class FilterUserDto {
   @ApiProperty({ type: RoleDto })

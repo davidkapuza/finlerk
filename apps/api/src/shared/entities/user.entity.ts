@@ -1,6 +1,9 @@
+import { Exclude, Expose } from 'class-transformer';
 import {
-  Column,
   AfterLoad,
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
@@ -8,18 +11,18 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  BeforeInsert,
-  BeforeUpdate,
 } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
-import { Exclude, Expose } from 'class-transformer';
 import { RoleEntity } from './role.entity';
 import { StatusEntity } from './status.entity';
-import { EntityHelper } from '../utils';
-import { AuthProvidersEnum } from '../enums';
+import { RelationalEntityHelper } from '../utils/relational-entity-helper';
+import { User } from '@qbick/shared';
+import bcrypt from 'bcryptjs';
+import { AuthProvidersEnum } from '@/auth/enums/auth-providers.enum';
 
-@Entity()
-export class UserEntity extends EntityHelper {
+@Entity({
+  name: 'user',
+})
+export class UserEntity extends RelationalEntityHelper implements User {
   @PrimaryGeneratedColumn()
   id: number;
 

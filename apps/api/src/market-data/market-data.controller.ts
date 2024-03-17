@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MarketDataService } from './market-data.service';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { GetBarsDto } from './dtos/get-bars.dto';
 
 @ApiCookieAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -43,14 +44,10 @@ export class MarketDataController {
     return this.marketDataService.getNews(symbols);
   }
 
-  @Get('historical-bars')
+  @Get('stock-bars')
   @HttpCode(HttpStatus.OK)
-  @ApiQuery({
-    name: 'symbol',
-    required: true,
-  })
-  getHistoricalBars(@Query('symbol') symbol: string) {
-    return this.marketDataService.getHistoricalBars(symbol);
+  getHistoricalBars(@Query() getBarsDto: GetBarsDto) {
+    return this.marketDataService.getStockBars(getBarsDto);
   }
 
   @Get('latest-trades')
@@ -69,20 +66,6 @@ export class MarketDataController {
     symbols: string[] = [],
   ) {
     return this.marketDataService.getLatestTrades(symbols);
-  }
-
-  @Get('latest-bars')
-  @HttpCode(HttpStatus.OK)
-  @ApiQuery({
-    name: 'symbols',
-    type: 'string',
-    example: 'TSLA,AAPL',
-  })
-  getLatestBars(
-    @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
-    symbols: string[],
-  ) {
-    return this.marketDataService.getLatestBars(symbols);
   }
 
   @Get('latest-quotes')

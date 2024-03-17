@@ -1,17 +1,15 @@
+import { AuthProvidersEnum } from '@/auth/enums/auth-providers.enum';
+import { RolesEnum } from '@/shared/enums/roles.enum';
+import { StatusesEnum } from '@/shared/enums/statuses.enum';
+import { IPaginationOptions } from '@/shared/types/pagination-options';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { DeepPartial, NullableType, User } from '@qbick/shared';
 import bcrypt from 'bcryptjs';
-import { User } from './domain/user';
+import { FindOneOptions } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dtos/query-user.dto';
 import { UsersRepositoryInterface } from './repository/users-repository.interface';
-import {
-  AuthProvidersEnum,
-  RolesEnum,
-  StatusesEnum,
-  DeepPartial,
-  NullableType,
-} from '@qbick/shared';
-import { IPaginationOptions } from '@/shared/types/pagination-options';
+import { UserEntity } from '@/shared/entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -20,16 +18,11 @@ export class UsersService {
     private readonly userRepository: UsersRepositoryInterface,
   ) {}
 
-  async create(createProfileDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const clonedPayload = {
       provider: AuthProvidersEnum.email,
-      ...createProfileDto,
+      ...createUserDto,
     };
-
-    if (clonedPayload.password) {
-      const salt = await bcrypt.genSalt();
-      clonedPayload.password = await bcrypt.hash(clonedPayload.password, salt);
-    }
 
     if (clonedPayload.email) {
       const userObject = await this.userRepository.findByCondition({
@@ -84,7 +77,15 @@ export class UsersService {
       }
     }
 
-    return this.userRepository.create(clonedPayload);
+    return this.userRepository.createUser(clonedPayload);
+  }
+
+  findOne(fields: FindOneOptions<UserEntity>): Promise<NullableType<User>> {
+    return this.userRepository.findByCondition(fields);
+  }
+
+  findById(id: User['id']): Promise<NullableType<User>> {
+    return this.userRepository.findOneById(id);
   }
 
   findManyWithPagination({
@@ -103,7 +104,7 @@ export class UsersService {
     });
   }
 
-  findOneById(id: number): Promise<NullableType<User>> {
+  findOneById(id: number | string): Promise<NullableType<User>> {
     return this.userRepository.findOneById(id);
   }
 

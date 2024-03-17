@@ -1,9 +1,9 @@
-import { Role } from '@/shared/dtos/role.dto';
-import { Status } from '@/shared/dtos/status.dto';
 import { Exclude, Expose } from 'class-transformer';
+import { Role } from './role';
+import { Status } from './status';
 
 export class User {
-  id: number;
+  id: number | string;
 
   @Expose({ groups: ['me', 'admin'] })
   email: string | null;

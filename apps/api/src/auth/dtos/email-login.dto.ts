@@ -2,14 +2,16 @@ import { lowerCaseTransformer } from '@/shared/transformers/lower-case.transform
 import { DoesExist } from '@/shared/validators/does-exist.validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, Validate } from 'class-validator';
+import { IsEmail, IsNotEmpty, Validate } from 'class-validator';
 
-export class LoginDto {
+export class EmailLoginDto {
   @ApiProperty({ example: 'test1@example.com' })
   @Transform(lowerCaseTransformer)
   @Validate(DoesExist, ['UserEntity'], {
     message: 'emailDoesNotExists',
   })
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @ApiProperty()

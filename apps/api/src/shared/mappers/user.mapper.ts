@@ -1,5 +1,7 @@
-import { RoleEntity, StatusEntity, UserEntity } from '@qbick/shared';
-import { User } from '../domain/user';
+import { User } from '@qbick/shared';
+import { UserEntity } from '../entities/user.entity';
+import { RoleEntity } from '../entities/role.entity';
+import { StatusEntity } from '../entities/status.entity';
 
 export class UserMapper {
   static toDomain(raw: UserEntity): User {

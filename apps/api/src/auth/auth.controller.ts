@@ -3,7 +3,6 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Inject,
   Post,
   Request,
   Res,
@@ -12,13 +11,13 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { User } from '@qbick/shared';
 import { CookieOptions, Response } from 'express';
 import ms from 'ms';
+import { AuthService } from './auth.service';
 import { ConfirmEmailDto } from './dtos/confirm-email.dto';
-import { LoginDto } from './dtos/login.dto';
+import { EmailLoginDto } from './dtos/email-login.dto';
 import { RegisterDto } from './dtos/register.dto';
-import { AuthServiceInterface } from './interface/auth-service.interface';
-import { UserEntity } from '@qbick/shared';
 
 const accessTokenCookieOptions: CookieOptions = {
   expires: new Date(ms(process.env.AUTH_JWT_TOKEN_EXPIRES_IN)),
@@ -38,15 +37,12 @@ const refreshTokenCookieOptions: CookieOptions = {
   version: '1',
 })
 export class AuthController {
-  constructor(
-    @Inject('AuthServiceInterface')
-    private readonly authService: AuthServiceInterface,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async register(@Body() createUserDto: RegisterDto): Promise<void> {
-    return this.authService.register(createUserDto);
+  async register(@Body() registerDto: RegisterDto): Promise<void> {
+    return this.authService.register(registerDto);
   }
 
   @Post('confirm-email')
@@ -61,9 +57,9 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   public async login(
-    @Body() loginDto: LoginDto,
+    @Body() loginDto: EmailLoginDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<UserEntity> {
+  ): Promise<User> {
     const { accessToken, refreshToken, tokenExpires, user } =
       await this.authService.login(loginDto);
     res
@@ -90,6 +86,7 @@ export class AuthController {
     const { accessToken, refreshToken, tokenExpires } =
       await this.authService.refreshToken({
         sessionId: request.user.sessionId,
+        hash: request.user.hash,
       });
     res
       .cookie('accessToken', accessToken, accessTokenCookieOptions)

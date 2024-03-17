@@ -1,6 +1,6 @@
-import { Session, UserEntity } from '@qbick/shared';
+import { Session, User } from '@qbick/shared';
 
-export type JwtPayloadType = Pick<UserEntity, 'id' | 'role'> & {
+export type JwtPayloadType = Pick<User, 'id' | 'role'> & {
   sessionId: Session['id'];
   iat: number;
   exp: number;

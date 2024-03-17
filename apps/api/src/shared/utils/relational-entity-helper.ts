@@ -1,7 +1,7 @@
 import { instanceToPlain } from 'class-transformer';
 import { AfterLoad, BaseEntity } from 'typeorm';
 
-export class EntityHelper extends BaseEntity {
+export class RelationalEntityHelper extends BaseEntity {
   __entity?: string;
 
   @AfterLoad()

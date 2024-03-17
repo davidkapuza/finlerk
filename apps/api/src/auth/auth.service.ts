@@ -1,58 +1,48 @@
 import { MailService } from '@/mail/mail.service';
-import { SessionRepositoryInterface } from '@/shared/repositories/session/sessiony-repository.interface';
-import { UsersRepositoryInterface } from '@/users/repository/users-repository.interface';
 import {
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import {
-  RoleEntity,
-  Session,
-  StatusEntity,
-  UserEntity,
-  AuthProvidersEnum,
-  RolesEnum,
-  StatusesEnum,
-  LoginResponseType,
-} from '@qbick/shared';
-import * as bcrypt from 'bcryptjs';
-import { plainToClass } from 'class-transformer';
+
+import { SessionService } from '@/session/session.service';
+import { RolesEnum } from '@/shared/enums/roles.enum';
+import { StatusesEnum } from '@/shared/enums/statuses.enum';
+import { UsersService } from '@/users/users.service';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
+import { LoginResponseType, Session, User } from '@qbick/shared';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import ms from 'ms';
-import { LoginDto } from './dtos/login.dto';
+import { EmailLoginDto } from './dtos/email-login.dto';
 import { RegisterDto } from './dtos/register.dto';
-import { AuthServiceInterface } from './interface/auth-service.interface';
+import { AuthProvidersEnum } from './enums/auth-providers.enum';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
 
 @Injectable()
-export class AuthService implements AuthServiceInterface {
+export class AuthService {
   constructor(
-    @Inject('UsersRepositoryInterface')
-    private readonly userRepository: UsersRepositoryInterface,
-    @Inject('SessionRepositoryInterface')
-    private readonly sessionRepository: SessionRepositoryInterface,
+    private userService: UsersService,
+    private sessionService: SessionService,
     private readonly jwtService: JwtService,
     private configService: ConfigService,
     private mailService: MailService,
   ) {}
 
   async register(dto: RegisterDto): Promise<void> {
-    const user = await this.userRepository.save(
-      this.userRepository.create({
-        ...dto,
-        email: dto.email,
-        role: {
-          id: RolesEnum.user,
-        } as RoleEntity,
-        status: {
-          id: StatusesEnum.inactive,
-        } as StatusEntity,
-      }),
-    );
+    const user = await this.userService.create({
+      ...dto,
+      email: dto.email,
+      role: {
+        id: RolesEnum.user,
+      },
+      status: {
+        id: StatusesEnum.inactive,
+      },
+    });
 
     const hash = await this.jwtService.signAsync(
       {
@@ -76,11 +66,11 @@ export class AuthService implements AuthServiceInterface {
   }
 
   async confirmEmail(hash: string): Promise<void> {
-    let userId: UserEntity['id'];
+    let userId: User['id'];
 
     try {
       const jwtData = await this.jwtService.verifyAsync<{
-        confirmEmailUserId: UserEntity['id'];
+        confirmEmailUserId: User['id'];
       }>(hash, {
         secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
           infer: true,
@@ -99,7 +89,7 @@ export class AuthService implements AuthServiceInterface {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    const user = await this.userRepository.findOneById(userId);
+    const user = await this.userService.findById(userId);
 
     if (!user || user?.status?.id !== StatusesEnum.inactive) {
       throw new HttpException(
@@ -111,31 +101,31 @@ export class AuthService implements AuthServiceInterface {
       );
     }
 
-    user.status = plainToClass(StatusEntity, {
+    user.status = {
       id: StatusesEnum.active,
-    });
+    };
 
-    await user.save();
+    await this.userService.update(user.id, user);
   }
 
-  async login(loginDto: LoginDto): Promise<LoginResponseType> {
-    const user = await this.userRepository.findByCondition({
+  async login(loginDto: EmailLoginDto): Promise<LoginResponseType> {
+    const user = await this.userService.findOne({
       where: {
         email: loginDto.email,
       },
     });
 
-    if (!user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            email: 'notFound',
-          },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
+    // if (!user) {
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.UNPROCESSABLE_ENTITY,
+    //       errors: {
+    //         email: 'notFound',
+    //       },
+    //     },
+    //     HttpStatus.UNPROCESSABLE_ENTITY,
+    //   );
+    // }
 
     if (user.provider !== AuthProvidersEnum.email) {
       throw new HttpException(
@@ -166,15 +156,23 @@ export class AuthService implements AuthServiceInterface {
       );
     }
 
-    const session = await this.sessionRepository.save(
-      this.sessionRepository.create({ user }),
-    );
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
 
-    const { accessToken, refreshToken, tokenExpires } = await this.getTokens({
-      id: user.id,
-      role: user.role,
-      sessionId: session.id,
+    const session = await this.sessionService.createSession({
+      user,
+      hash,
     });
+
+    const { accessToken, refreshToken, tokenExpires } =
+      await this.getTokensData({
+        id: session.user.id,
+        role: session.user.role,
+        sessionId: session.id,
+        hash,
+      });
 
     return {
       refreshToken,
@@ -185,11 +183,11 @@ export class AuthService implements AuthServiceInterface {
   }
 
   async refreshToken(
-    data: Pick<JwtRefreshPayloadType, 'sessionId'>,
+    data: Pick<JwtRefreshPayloadType, 'sessionId' | 'hash'>,
   ): Promise<Omit<LoginResponseType, 'user'>> {
-    const session = await this.sessionRepository.findByCondition({
+    const session = await this.sessionService.findOne({
       where: {
-        id: data.sessionId,
+        id: Number(data.sessionId),
       },
     });
 
@@ -197,11 +195,26 @@ export class AuthService implements AuthServiceInterface {
       throw new UnauthorizedException();
     }
 
-    const { accessToken, refreshToken, tokenExpires } = await this.getTokens({
-      id: session.user.id,
-      role: session.user.role,
-      sessionId: session.id,
+    if (session.hash !== data.hash) {
+      throw new UnauthorizedException();
+    }
+
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    await this.sessionService.update(session.id, {
+      hash,
     });
+
+    const { accessToken, refreshToken, tokenExpires } =
+      await this.getTokensData({
+        id: session.user.id,
+        role: session.user.role,
+        sessionId: session.id,
+        hash,
+      });
 
     return {
       refreshToken,
@@ -211,13 +224,16 @@ export class AuthService implements AuthServiceInterface {
   }
 
   async logout(data: Pick<JwtRefreshPayloadType, 'sessionId'>) {
-    return this.sessionRepository.softDelete(data.sessionId);
+    return this.sessionService.softDelete({
+      id: data.sessionId,
+    });
   }
 
-  private async getTokens(data: {
-    id: UserEntity['id'];
-    role: UserEntity['role'];
+  private async getTokensData(data: {
+    id: User['id'];
+    role: User['role'];
     sessionId: Session['id'];
+    hash: Session['hash'];
   }) {
     const tokenExpiresIn = this.configService.getOrThrow<string>(
       'auth.expires',
@@ -243,6 +259,7 @@ export class AuthService implements AuthServiceInterface {
       await this.jwtService.signAsync(
         {
           sessionId: data.sessionId,
+          hash: data.hash,
         },
         {
           secret: this.configService.getOrThrow('auth.refreshSecret', {

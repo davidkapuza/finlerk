@@ -19,7 +19,7 @@ import { MarketDataService } from './market-data.service';
     HttpModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService<ConfigType>) => ({
-        baseURL: configService.getOrThrow('alpaca.url', {
+        baseURL: configService.getOrThrow('alpaca.market_data_api', {
           infer: true,
         }),
         headers: {
