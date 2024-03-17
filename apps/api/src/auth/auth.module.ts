@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.stategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { Session, UserEntity } from '@qbick/shared/entities';
+import { Session, UserEntity } from '@qbick/shared';
 import { MailModule } from '@/mail/mail.module';
 import { DoesNotExist } from '@/shared/validators/does-not-exist.validator';
 import { DoesExist } from '@/shared/validators/does-exist.validator';

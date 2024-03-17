@@ -1,5 +1,5 @@
 import { BaseInterfaceRepository } from '@/shared/repositories/base/base.interface.repository';
-import { UserEntity } from '@qbick/shared/entities';
+import { UserEntity } from '@qbick/shared';
 import { DeepPartial } from 'typeorm';
 import { User } from '../domain/user';
 import { FilterUserDto, SortUserDto } from '../dtos/query-user.dto';

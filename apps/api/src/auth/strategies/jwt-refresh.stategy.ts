@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { JwtRefreshPayloadType } from './types/jwt-refresh-payload.type';
 import { ConfigType } from '@/shared/config/config.type';
-import { OrNeverType } from '@qbick/shared/types';
+import { OrNeverType } from '@qbick/shared';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(

@@ -1,4 +1,4 @@
-import { RoleEntity, StatusEntity, UserEntity } from '@qbick/shared/entities';
+import { RoleEntity, StatusEntity, UserEntity } from '@qbick/shared';
 import { User } from '../domain/user';
 
 export class UserMapper {

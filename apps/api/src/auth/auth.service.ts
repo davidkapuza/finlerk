@@ -15,13 +15,11 @@ import {
   Session,
   StatusEntity,
   UserEntity,
-} from '@qbick/shared/entities';
-import {
   AuthProvidersEnum,
   RolesEnum,
   StatusesEnum,
-} from '@qbick/shared/enums';
-import { LoginResponseType } from '@qbick/shared/types';
+  LoginResponseType,
+} from '@qbick/shared';
 import * as bcrypt from 'bcryptjs';
 import { plainToClass } from 'class-transformer';
 import ms from 'ms';

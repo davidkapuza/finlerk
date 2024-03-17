@@ -18,7 +18,7 @@ import { ConfirmEmailDto } from './dtos/confirm-email.dto';
 import { LoginDto } from './dtos/login.dto';
 import { RegisterDto } from './dtos/register.dto';
 import { AuthServiceInterface } from './interface/auth-service.interface';
-import { UserEntity } from '@qbick/shared/entities';
+import { UserEntity } from '@qbick/shared';
 
 const accessTokenCookieOptions: CookieOptions = {
   expires: new Date(ms(process.env.AUTH_JWT_TOKEN_EXPIRES_IN)),

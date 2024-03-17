@@ -8,8 +8,9 @@ import {
   AuthProvidersEnum,
   RolesEnum,
   StatusesEnum,
-} from '@qbick/shared/enums';
-import { DeepPartial, NullableType } from '@qbick/shared/types';
+  DeepPartial,
+  NullableType,
+} from '@qbick/shared';
 import { IPaginationOptions } from '@/shared/types/pagination-options';
 
 @Injectable()

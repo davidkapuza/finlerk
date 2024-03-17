@@ -1,4 +1,4 @@
-import { MaybeType } from '@qbick/shared/types';
+import { MaybeType } from '@qbick/shared';
 import { TransformFnParams } from 'class-transformer/types/interfaces';
 
 export const lowerCaseTransformer = (

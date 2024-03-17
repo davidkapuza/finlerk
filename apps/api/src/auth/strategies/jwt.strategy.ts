@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { JwtPayloadType } from './types/jwt-payload.type';
 import { ConfigType } from '@/shared/config/config.type';
-import { OrNeverType } from '@qbick/shared/types';
+import { OrNeverType } from '@qbick/shared';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {

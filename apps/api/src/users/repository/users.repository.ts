@@ -5,9 +5,9 @@ import { UsersRepositoryInterface } from './users-repository.interface';
 import { User } from '../domain/user';
 import { UserMapper } from '../mappers/user.mapper';
 import { BaseAbstractRepository } from '@/shared/repositories/base/base.abstract.repository';
-import { UserEntity } from '@qbick/shared/entities';
 import { FilterUserDto, SortUserDto } from '../dtos/query-user.dto';
 import { IPaginationOptions } from '@/shared/types/pagination-options';
+import { UserEntity } from '@qbick/shared';
 
 @Injectable()
 export class UsersRepository

@@ -6,10 +6,10 @@
     "types": ["node"],
     "emitDecoratorMetadata": true,
     "target": "es2021",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@qbick/shared/*": ["../../libs/shared/src/lib/*"]
+      "@qbick/shared": ["../../libs/shared/src/index.ts"]
     }
   },
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],

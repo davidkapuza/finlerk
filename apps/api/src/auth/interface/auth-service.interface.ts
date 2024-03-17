@@ -1,7 +1,7 @@
 import { UpdateResult } from 'typeorm';
 import { RegisterDto } from '../dtos/register.dto';
 import { LoginDto } from '../dtos/login.dto';
-import { LoginResponseType } from '@qbick/shared/types';
+import { LoginResponseType } from '@qbick/shared';
 import { JwtRefreshPayloadType } from '../strategies/types/jwt-refresh-payload.type';
 
 export interface AuthServiceInterface {

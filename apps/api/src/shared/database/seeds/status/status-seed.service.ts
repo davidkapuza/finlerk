@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { StatusEntity } from '@qbick/shared/entities';
-import { StatusesEnum } from '@qbick/shared/enums';
+import { StatusEntity, StatusesEnum } from '@qbick/shared';
 import { Repository } from 'typeorm';
 
 @Injectable()
