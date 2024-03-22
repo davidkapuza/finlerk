@@ -18,26 +18,54 @@ import { AuthService } from './auth.service';
 import { ConfirmEmailDto } from './dtos/confirm-email.dto';
 import { EmailLoginDto } from './dtos/email-login.dto';
 import { RegisterDto } from './dtos/register.dto';
+import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@/shared/config/config.type';
 
-const accessTokenCookieOptions: CookieOptions = {
-  expires: new Date(ms(process.env.AUTH_JWT_TOKEN_EXPIRES_IN)),
-  maxAge: ms(process.env.AUTH_JWT_TOKEN_EXPIRES_IN),
-  httpOnly: true,
-  sameSite: 'lax',
-};
-const refreshTokenCookieOptions: CookieOptions = {
-  expires: new Date(ms(process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN)),
-  maxAge: ms(process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN),
-  httpOnly: true,
-  sameSite: 'lax',
-};
 @ApiTags('Auth')
 @Controller({
   path: 'auth',
   version: '1',
 })
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  accessTokenCookieOptions: CookieOptions;
+  refreshTokenCookieOptions: CookieOptions;
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService<ConfigType>,
+  ) {
+    this.accessTokenCookieOptions = {
+      expires: new Date(
+        ms(
+          this.configService.getOrThrow('auth.accessExpires', {
+            infer: true,
+          }),
+        ),
+      ),
+      maxAge: ms(
+        this.configService.getOrThrow<string>('auth.accessExpires', {
+          infer: true,
+        }),
+      ),
+      httpOnly: true,
+      sameSite: 'lax',
+    };
+    this.accessTokenCookieOptions = {
+      expires: new Date(
+        ms(
+          this.configService.getOrThrow('auth.refreshExpires', {
+            infer: true,
+          }),
+        ),
+      ),
+      maxAge: ms(
+        this.configService.getOrThrow<string>('auth.refreshExpires', {
+          infer: true,
+        }),
+      ),
+      httpOnly: true,
+      sameSite: 'lax',
+    };
+  }
 
   @Post('register')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -60,15 +88,12 @@ export class AuthController {
     @Body() loginDto: EmailLoginDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<User> {
-    const { accessToken, refreshToken, tokenExpires, user } =
-      await this.authService.login(loginDto);
+    const { accessToken, refreshToken, user } = await this.authService.login(
+      loginDto,
+    );
     res
-      .cookie('accessToken', accessToken, accessTokenCookieOptions)
-      .cookie('refreshToken', refreshToken, refreshTokenCookieOptions)
-      .cookie('tokenExpires', tokenExpires, {
-        ...accessTokenCookieOptions,
-        httpOnly: false,
-      });
+      .cookie('access_token', accessToken, this.accessTokenCookieOptions)
+      .cookie('refresh_token', refreshToken, this.refreshTokenCookieOptions);
     return user;
   }
 
@@ -83,18 +108,13 @@ export class AuthController {
     @Request() request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
-    const { accessToken, refreshToken, tokenExpires } =
-      await this.authService.refreshToken({
-        sessionId: request.user.sessionId,
-        hash: request.user.hash,
-      });
+    const { accessToken, refreshToken } = await this.authService.refreshToken({
+      sessionId: request.user.sessionId,
+      hash: request.user.hash,
+    });
     res
-      .cookie('accessToken', accessToken, accessTokenCookieOptions)
-      .cookie('refreshToken', refreshToken, refreshTokenCookieOptions)
-      .cookie('tokenExpires', tokenExpires, {
-        ...accessTokenCookieOptions,
-        httpOnly: false,
-      });
+      .cookie('access_token', accessToken, this.accessTokenCookieOptions)
+      .cookie('refresh_token', refreshToken, this.refreshTokenCookieOptions);
   }
 
   @ApiCookieAuth()
@@ -108,9 +128,6 @@ export class AuthController {
     await this.authService.logout({
       sessionId: request.user.sessionId,
     });
-    res
-      .clearCookie('accessToken')
-      .clearCookie('refreshToken')
-      .clearCookie('tokenExpires');
+    res.clearCookie('access_token').clearCookie('refresh_token');
   }
 }

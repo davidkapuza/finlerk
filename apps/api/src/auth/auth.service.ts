@@ -16,11 +16,11 @@ import { randomStringGenerator } from '@nestjs/common/utils/random-string-genera
 import { LoginResponseType, Session, User } from '@qbick/shared';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import ms from 'ms';
 import { EmailLoginDto } from './dtos/email-login.dto';
 import { RegisterDto } from './dtos/register.dto';
 import { AuthProvidersEnum } from './enums/auth-providers.enum';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
+import { ConfigType } from '@/shared/config/config.type';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +28,7 @@ export class AuthService {
     private userService: UsersService,
     private sessionService: SessionService,
     private readonly jwtService: JwtService,
-    private configService: ConfigService,
+    private configService: ConfigService<ConfigType>,
     private mailService: MailService,
   ) {}
 
@@ -154,18 +154,16 @@ export class AuthService {
       hash,
     });
 
-    const { accessToken, refreshToken, tokenExpires } =
-      await this.getTokensData({
-        id: session.user.id,
-        role: session.user.role,
-        sessionId: session.id,
-        hash,
-      });
+    const { accessToken, refreshToken } = await this.getTokensData({
+      id: session.user.id,
+      role: session.user.role,
+      sessionId: session.id,
+      hash,
+    });
 
     return {
       refreshToken,
       accessToken,
-      tokenExpires,
       user,
     };
   }
@@ -196,18 +194,16 @@ export class AuthService {
       hash,
     });
 
-    const { accessToken, refreshToken, tokenExpires } =
-      await this.getTokensData({
-        id: session.user.id,
-        role: session.user.role,
-        sessionId: session.id,
-        hash,
-      });
+    const { accessToken, refreshToken } = await this.getTokensData({
+      id: session.user.id,
+      role: session.user.role,
+      sessionId: session.id,
+      hash,
+    });
 
     return {
       refreshToken,
       accessToken,
-      tokenExpires,
     };
   }
 
@@ -223,14 +219,9 @@ export class AuthService {
     sessionId: Session['id'];
     hash: Session['hash'];
   }) {
-    const tokenExpiresIn = this.configService.getOrThrow<string>(
-      'auth.expires',
-      {
-        infer: true,
-      },
-    );
-
-    const tokenExpires = Date.now() + ms(tokenExpiresIn);
+    const tokenExpiresIn = this.configService.getOrThrow('auth.accessExpires', {
+      infer: true,
+    });
 
     const [accessToken, refreshToken] = await Promise.all([
       await this.jwtService.signAsync(
@@ -240,7 +231,9 @@ export class AuthService {
           sessionId: data.sessionId,
         },
         {
-          secret: this.configService.getOrThrow('auth.secret', { infer: true }),
+          secret: this.configService.getOrThrow('auth.accessSecret', {
+            infer: true,
+          }),
           expiresIn: tokenExpiresIn,
         },
       ),
@@ -263,7 +256,6 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      tokenExpires,
     };
   }
 }
