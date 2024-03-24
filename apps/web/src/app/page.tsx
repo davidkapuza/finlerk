@@ -1,13 +1,12 @@
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import api from '@/lib/api';
-import { cn } from '@/lib/utils';
 import { AlpacaNews } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
+import { Badge, Separator } from '@qbick/shadcn-ui';
+import { cn } from '@qbick/shadcn-ui/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { Dot } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment } from 'react';
+import api from '../lib/api';
 
 async function getNews() {
   return await api

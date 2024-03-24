@@ -1,11 +1,12 @@
 'use client';
+
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from '@/components/ui/resizable';
-import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+  Separator,
+} from '@qbick/shadcn-ui';
+import { cn } from '@qbick/shadcn-ui/lib/utils';
 import { BarChart3 } from 'lucide-react';
 import * as React from 'react';
 import { Nav } from './nav';

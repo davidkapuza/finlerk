@@ -1,6 +1,6 @@
+import { Separator } from '@qbick/shadcn-ui';
+import api from '../../lib/api';
 import { ProfileForm } from './components/profile-form';
-import { Separator } from '@/components/ui/separator';
-import api from '@/lib/api';
 
 async function getUser() {
   return await api

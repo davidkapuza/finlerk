@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { Separator } from '@/components/ui/separator';
 import { ProfileSidebar } from './components/profile-sidebar';
+import { Separator } from '@qbick/shadcn-ui';
 
 export const metadata: Metadata = {
   title: 'Forms',

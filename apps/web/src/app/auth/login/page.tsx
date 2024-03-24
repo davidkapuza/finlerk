@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { LoginForm } from './components/login-form';
+import { cn } from '@qbick/shadcn-ui/lib/utils';
+import { buttonVariants } from '@qbick/shadcn-ui';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -31,7 +31,7 @@ export default function LoginPage() {
             </p>
           </div>
           <LoginForm />
-          <p className="px-8 text-center text-sm text-muted-foreground">
+          <p className="px-8 text-sm text-center text-muted-foreground">
             <Link
               href="/terms"
               className="underline underline-offset-4 hover:text-primary"

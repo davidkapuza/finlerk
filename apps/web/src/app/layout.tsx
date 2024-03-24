@@ -1,15 +1,14 @@
-import '@/styles/globals.css';
-import { Metadata } from 'next';
-import { Toaster } from '@/components/ui/toaster';
-import { siteConfig } from '@/config/site';
-import { fontSans } from '@/lib/fonts';
-import { cn } from '@/lib/utils';
-import { Header } from '@/components/header';
-import { ThemeProvider } from '@/lib/providers/theme-provider';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import TradesPreviewCarousel from '@/components/trades-preview-carousel';
-import api from '@/lib/api';
 import { type AlpacaTrade } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
+import { Toaster, TooltipProvider } from '@qbick/shadcn-ui';
+import { cn } from '@qbick/shadcn-ui/lib/utils';
+import { Metadata } from 'next';
+import { siteConfig } from '../config/site';
+import api from '../lib/api';
+import { fontSans } from '../lib/fonts';
+import { ThemeProvider } from '../lib/providers/theme-provider';
+import '../styles/globals.css';
+import { Header } from '../ui/header';
+import TradesPreviewCarousel from '../ui/trades-preview-carousel';
 
 export const metadata: Metadata = {
   title: {

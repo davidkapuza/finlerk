@@ -16,12 +16,7 @@
         "name": "next"
       }
     ],
-    "types": ["jest", "node"],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@qbick/shared": ["../../libs/shared/src/index.ts"]
-    }
+    "types": ["jest", "node"]
   },
   "include": [
     "**/*.ts",
@@ -32,7 +27,7 @@
     "../../dist/apps/web/.next/types/**/*.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts"
-  ],
+, "../../libs/lucide-react-icons/src/lib/index.ts"  ],
   "exclude": [
     "node_modules",
     "jest.config.ts",

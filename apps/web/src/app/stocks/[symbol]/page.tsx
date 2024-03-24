@@ -1,7 +1,7 @@
-import { Separator } from '@/components/ui/separator';
-import api from '@/lib/api';
 import { AlpacaBar } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import { StockChart } from '../components/stock-chart';
+import api from '../../../lib/api';
+import { Separator } from '@qbick/shadcn-ui';
 
 async function getHistoricalBars(symbol: string) {
   return await api

@@ -1,12 +1,10 @@
 'use client';
 import * as React from 'react';
-import { cn } from '@/lib/utils';
-import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import api from '../../../../lib/api';
+import { Button, Input, Label } from '@qbick/shadcn-ui';
+import { Icons } from '@qbick/lucide-react-icons';
+import { cn } from '@qbick/shadcn-ui/lib/utils';
 
 interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -83,7 +81,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           </div>
           <Button disabled={isLoading}>
             {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.spinner className="w-4 h-4 mr-2 animate-spin" />
             )}
             Log in with Email
           </Button>
@@ -94,16 +92,16 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
+          <span className="px-2 bg-background text-muted-foreground">
             Or continue with
           </span>
         </div>
       </div>
       <Button variant="outline" type="button" disabled={isLoading}>
         {isLoading ? (
-          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          <Icons.spinner className="w-4 h-4 mr-2 animate-spin" />
         ) : (
-          <Icons.gitHub className="mr-2 h-4 w-4" />
+          <Icons.gitHub className="w-4 h-4 mr-2" />
         )}{' '}
         Github
       </Button>

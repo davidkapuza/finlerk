@@ -1,9 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { RegistrationForm } from './components/registration-form';
+import { buttonVariants } from '@qbick/shadcn-ui';
+import { cn } from '@qbick/shadcn-ui/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -34,7 +33,7 @@ export default function RegisterPage() {
             </p>
           </div>
           <RegistrationForm />
-          <p className="px-8 text-center text-sm text-muted-foreground">
+          <p className="px-8 text-sm text-center text-muted-foreground">
             By clicking continue, you agree to our{' '}
             <Link
               href="/terms"

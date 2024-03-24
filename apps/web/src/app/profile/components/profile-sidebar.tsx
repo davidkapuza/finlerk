@@ -1,10 +1,9 @@
 'use client';
 
+import { buttonVariants } from '@qbick/shadcn-ui';
+import { cn } from '@qbick/shadcn-ui/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
 
 interface ProfileSidebarProps extends React.HTMLAttributes<HTMLElement> {
   items: {

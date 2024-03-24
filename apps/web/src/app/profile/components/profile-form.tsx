@@ -1,21 +1,19 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as React from 'react';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-
-import { Button } from '@/components/ui/button';
 import {
-  Form,
+  Input,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import api from '@/lib/api';
+} from '@qbick/shadcn-ui';
 import { ReloadIcon } from '@radix-ui/react-icons';
+import * as React from 'react';
+import { Button } from 'react-day-picker';
+import { Form, useForm } from 'react-hook-form';
+import * as z from 'zod';
+import api from '../../../lib/api';
 
 const profileFormSchema = z.object({
   firstName: z

@@ -10,11 +10,11 @@ import {
   type Range,
 } from 'lightweight-charts';
 import { useTheme } from 'next-themes';
-import resolveConfig from 'tailwindcss/resolveConfig';
-import tailwindConfig from '../../../../tailwind.config';
+// import resolveConfig from 'tailwindcss/resolveConfig';
 import { io } from 'socket.io-client';
+// import tailwindConfig from '../../../../tailwind.config';
 
-const { theme } = resolveConfig(tailwindConfig);
+// const { theme } = resolveConfig(tailwindConfig);
 
 function getVisibleLogicalRange(
   dataLength: number,
@@ -28,11 +28,12 @@ function getLayoutOptionsForTheme(
 ): DeepPartial<LayoutOptions> {
   return isDarkTheme
     ? {
-        textColor: theme.colors.white,
+        // TODO use tailwind config variables
+        textColor: '#fffff',
         background: { color: 'transparent' },
       }
     : {
-        textColor: theme.colors.black,
+        textColor: '#000000',
         background: { color: 'transparent' },
       };
 }
@@ -91,12 +92,13 @@ export const StockChart = ({ chartData, symbol }) => {
       height: 300,
     });
 
+    // TODO use tailwind config variables
     const cS = c.addCandlestickSeries({
-      upColor: theme.colors.green.DEFAULT,
-      downColor: theme.colors.red.DEFAULT,
+      upColor: '#fffff',
+      downColor: '#fffff',
       borderVisible: false,
-      wickUpColor: theme.colors.green.DEFAULT,
-      wickDownColor: theme.colors.red.DEFAULT,
+      wickUpColor: '#fffff',
+      wickDownColor: '#fffff',
     });
     if (!chartData.length) return;
 
@@ -114,7 +116,7 @@ export const StockChart = ({ chartData, symbol }) => {
       c.remove();
       setChart(null);
     };
-  }, []);
+  }, [chartData, layout]);
 
   React.useEffect(() => {
     if (!chart || !ref.current) {
@@ -181,7 +183,7 @@ export const StockChart = ({ chartData, symbol }) => {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [symbol]);
 
   React.useEffect(() => {
     if (!candlestickSeries || !chart) {
