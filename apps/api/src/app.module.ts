@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as redisStore from 'cache-manager-redis-store';
+import redisStore from 'cache-manager-redis-store';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { AlpacaModule } from './alpaca/alpaca.module';
 import alpacaConfig from './alpaca/config/alpaca.config';

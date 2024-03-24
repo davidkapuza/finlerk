@@ -1,18 +1,18 @@
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Controller,
   Get,
   HttpCode,
   HttpStatus,
-  ParseArrayPipe,
   Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { MarketDataService } from './market-data.service';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { GetBarsDto } from './dtos/get-bars.dto';
+import { GetNewsDto } from './dtos/get-news.dto';
+import { MarketDataService } from './market-data.service';
 
 @ApiCookieAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -25,80 +25,25 @@ export class MarketDataController {
   constructor(private readonly marketDataService: MarketDataService) {}
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(3000)
+  @CacheTTL(3600)
   @Get('news')
   @HttpCode(HttpStatus.OK)
-  @ApiQuery({
-    name: 'symbols',
-    type: 'string',
-    required: false,
-    example: 'TSLA,AAPL',
-  })
   getNews(
-    @Query(
-      'symbols',
-      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
-    )
-    symbols: string[] = [],
+    @Query()
+    getNewsDto: GetNewsDto,
   ) {
-    return this.marketDataService.getNews(symbols);
+    return this.marketDataService.getNews(getNewsDto);
   }
 
-  @Get('stock-bars')
+  @Get('stocks-bars')
   @HttpCode(HttpStatus.OK)
-  getHistoricalBars(@Query() getBarsDto: GetBarsDto) {
-    return this.marketDataService.getStockBars(getBarsDto);
-  }
-
-  @Get('latest-trades')
-  @HttpCode(HttpStatus.OK)
-  @ApiQuery({
-    name: 'symbols',
-    type: 'string',
-    example: 'TSLA,AAPL',
-    required: false,
-  })
-  getLatestTrades(
-    @Query(
-      'symbols',
-      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
-    )
-    symbols: string[] = [],
-  ) {
-    return this.marketDataService.getLatestTrades(symbols);
-  }
-
-  @Get('latest-quotes')
-  @HttpCode(HttpStatus.OK)
-  @ApiQuery({
-    name: 'symbols',
-    type: 'string',
-    example: 'TSLA,AAPL',
-  })
-  getLatestQuotes(
-    @Query('symbols', new ParseArrayPipe({ items: String, separator: ',' }))
-    symbols: string[],
-  ) {
-    return this.marketDataService.getLatestQuotes(symbols);
-  }
-
-  @Get('trades')
-  @HttpCode(HttpStatus.OK)
-  @ApiQuery({
-    name: 'symbol',
-    type: 'string',
-    example: 'TSLA',
-  })
-  getTrades(
-    @Query('symbol')
-    symbol: string,
-  ) {
-    return this.marketDataService.getTrades(symbol);
+  getStockBars(@Query() getBarsDto: GetBarsDto) {
+    return this.marketDataService.getStocksBars(getBarsDto);
   }
 
   @Get('most-active')
   @HttpCode(HttpStatus.OK)
   mostActive() {
-    return this.marketDataService.mostActive();
+    return this.marketDataService.mostActives();
   }
 }
