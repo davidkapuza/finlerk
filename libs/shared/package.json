@@ -4,7 +4,8 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "class-validator": "^0.14.0",
-    "class-transformer": "^0.5.1"
+    "class-transformer": "^0.5.1",
+    "@nestjs/swagger": "^7.1.16"
   },
   "type": "commonjs",
   "main": "./src/index.js",
