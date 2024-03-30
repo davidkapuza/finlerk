@@ -1,15 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, MinLength, Validate } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { lowerCaseTransformer } from '@/shared/transformers/lower-case.transformer';
-import { DoesNotExist } from '@/shared/validators/does-not-exist.validator';
+import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { RegisterRequestType } from '../../types';
+import { lowerCaseTransformer } from '../../transformers/shared/lower-case.transformer';
 
-export class RegisterDto {
+export class RegisterDto implements RegisterRequestType {
   @ApiProperty({ example: 'test1@example.com' })
   @Transform(lowerCaseTransformer)
-  @Validate(DoesNotExist, ['UserEntity'], {
-    message: 'emailAlreadyExists',
-  })
   @IsEmail()
   email: string;
 

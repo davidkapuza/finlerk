@@ -13,16 +13,15 @@ import {
   DropdownMenuTrigger,
 } from '@qbick/shadcn-ui';
 import Link from 'next/link';
-import api from '../lib/api';
 
-async function getUser() {
-  return await api
-    .get('/api/v1/users/my-profile')
-    .then((response) => response.data);
-}
+// async function getUser() {
+//   return await api
+//     .get('/api/v1/users/my-profile')
+//     .then((response) => response.data);
+// }
 
 export async function UserNav() {
-  const user = await getUser();
+  // const user = await getUser();
 
   return (
     <DropdownMenu>
@@ -31,7 +30,7 @@ export async function UserNav() {
           <Avatar className="w-8 h-8">
             <AvatarImage src="/avatars/01.png" alt="@shadcn" />
             <AvatarFallback>
-              {`${user.firstName[0]}${user.lastName[0]}`.toUpperCase()}
+              {/* {`${user.firstName[0]}${user.lastName[0]}`.toUpperCase()} */}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -39,9 +38,9 @@ export async function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.firstName}</p>
+            {/* <p className="text-sm font-medium leading-none">{user.firstName}</p> */}
             <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
+              {/* {user.email} */}
             </p>
           </div>
         </DropdownMenuLabel>

@@ -1,15 +1,15 @@
 import { Separator } from '@qbick/shadcn-ui';
-import api from '../../lib/api';
-import { ProfileForm } from './components/profile-form';
+// import api from '../../lib/api';
 
-async function getUser() {
-  return await api
-    .get('/api/v1/users/my-profile')
-    .then((response) => response.data);
-}
+// async function getUser() {
+//   return await api
+//     .get('/api/v1/users/my-profile')
+//     .then((response) => response.data);
+// }
 
 export default async function SettingsProfilePage() {
-  const user = await getUser();
+  // TODO getting user profile
+
   return (
     <div className="space-y-6">
       <div>
@@ -19,7 +19,7 @@ export default async function SettingsProfilePage() {
         </p>
       </div>
       <Separator />
-      <ProfileForm user={user} />
+      {/* <ProfileForm user={user} /> */}
     </div>
   );
 }

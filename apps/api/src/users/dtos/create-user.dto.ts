@@ -1,7 +1,7 @@
 import { RoleDto } from '@/shared/dtos/role.dto';
 import { StatusDto } from '@/shared/dtos/status.dto';
-import { lowerCaseTransformer } from '@/shared/transformers/lower-case.transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { lowerCaseTransformer } from '@qbick/shared';
 import { Transform, Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
 

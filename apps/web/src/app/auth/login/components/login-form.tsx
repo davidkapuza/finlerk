@@ -1,110 +1,126 @@
 'use client';
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import api from '../../../../lib/api';
-import { Button, Input, Label } from '@qbick/shadcn-ui';
+import { Api } from '@/lib/api';
+import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { Icons } from '@qbick/lucide-react-icons';
-import { cn } from '@qbick/shadcn-ui/lib/utils';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@qbick/shadcn-ui';
+import { EmailLoginDto, LoginRequestType } from '@qbick/shared';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { authApi } from '../../lib/api/auth.api';
 
-interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+const resolver = classValidatorResolver(EmailLoginDto);
 
-interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-export function LoginForm({ className, ...props }: LoginFormProps) {
+export function LoginForm() {
   const router = useRouter();
-  const [formData, setFormData] = React.useState<LoginFormData>({
-    email: '',
-    password: '',
-  });
+
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const onFormChange = (e) => {
-    setFormData((current) => ({
-      ...current,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  const form = useForm<LoginRequestType>({
+    resolver,
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
+  const { setError } = form;
+
+  function onSubmit(values: LoginRequestType) {
     setIsLoading(true);
-    api
-      .post('/api/v1/auth/login', formData)
-      .then(() => {
-        router.push('/profile');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    authApi
+      .login(values)
+      .then(() => router.push('/'))
+      .catch((error) => Api.error(error, setError))
+      .finally(() => setIsLoading(false));
   }
 
   return (
-    <div className={cn('grid gap-6', className)} {...props}>
-      <form onSubmit={onSubmit}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={onFormChange}
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-            />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="example@gmail.com"
+                  autoComplete="username"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="password"
+                  autoComplete="current-password"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Password must be at least 8 characters long
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Link
+          href="#"
+          className="inline-block w-full text-sm underline text-end underline-offset-4 hover:text-primary"
+        >
+          Forgot password?
+        </Link>
+        <Button className="w-full" type="submit">
+          {isLoading ? (
+            <Icons.spinner className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            'Login'
+          )}
+        </Button>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
           </div>
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="password">
-              Password
-            </Label>
-            <Input
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={onFormChange}
-              placeholder="password"
-              type="password"
-              autoCapitalize="none"
-              autoComplete="password"
-              autoCorrect="off"
-              disabled={isLoading}
-            />
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="px-2 bg-background text-muted-foreground">
+              Or continue with
+            </span>
           </div>
-          <Button disabled={isLoading}>
-            {isLoading && (
-              <Icons.spinner className="w-4 h-4 mr-2 animate-spin" />
-            )}
-            Log in with Email
-          </Button>
         </div>
+        <Button
+          variant="outline"
+          type="button"
+          className="w-full"
+          disabled={isLoading}
+        >
+          <Icons.google className="w-4 h-4 mr-2" />
+          Google
+        </Button>
       </form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="px-2 bg-background text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
-        {isLoading ? (
-          <Icons.spinner className="w-4 h-4 mr-2 animate-spin" />
-        ) : (
-          <Icons.gitHub className="w-4 h-4 mr-2" />
-        )}{' '}
-        Github
-      </Button>
-    </div>
+    </Form>
   );
 }

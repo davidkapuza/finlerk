@@ -1,17 +1,16 @@
-import { AlpacaBar } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import { StockChart } from '../components/stock-chart';
-import api from '../../../lib/api';
+// import api from '../../../lib/api';
 import { Separator } from '@qbick/shadcn-ui';
 
-async function getHistoricalBars(symbol: string) {
-  return await api
-    .get<AlpacaBar[]>('/api/v1/stocks/historical-bars', {
-      params: {
-        symbol,
-      },
-    })
-    .then((response) => response.data);
-}
+// async function getHistoricalBars(symbol: string) {
+//   return await api
+//     .get<AlpacaBar[]>('/api/v1/stocks/historical-bars', {
+//       params: {
+//         symbol,
+//       },
+//     })
+//     .then((response) => response.data);
+// }
 
 interface StockDetailsPageProps {
   params: { symbol: string };
@@ -20,7 +19,8 @@ interface StockDetailsPageProps {
 export default async function StockDetailsPage({
   params,
 }: StockDetailsPageProps) {
-  const historicalBars = await getHistoricalBars(params.symbol);
+  // TODO getting bars
+  const historicalBars = [];
   // TODO Move into client component
   // const [percentageChange, setPercentageChange] = React.useState(null);
   // const [trade, setTrade] = React.useState(null);

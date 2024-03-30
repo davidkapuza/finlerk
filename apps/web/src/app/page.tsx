@@ -1,4 +1,3 @@
-import { AlpacaNews } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import { Badge, Separator } from '@qbick/shadcn-ui';
 import { cn } from '@qbick/shadcn-ui/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -6,30 +5,30 @@ import { Dot } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment } from 'react';
-import api from '../lib/api';
 
-async function getNews() {
-  return await api
-    .get<AlpacaNews[]>('/api/v1/stocks/news')
-    .then((response) => response.data);
-}
+// TODO getting market data news about most popular symbols
+// async function getNews() {
+//   return await api
+//     .get<AlpacaNews[]>('/api/v1/stocks/news')
+//     .then((response) => response.data);
+// }
 
 export default async function Index() {
-  const news = await getNews();
-  const { withImages, withoutImages } = news.reduce(
-    (acc, n) => {
-      if (n.Images.length > 0) {
-        acc.withImages.push(n);
-      } else acc.withoutImages.push(n);
-      return acc;
-    },
-    { withImages: [], withoutImages: [] },
-  );
+  // const news = await getNews();
+  // const { withImages, withoutImages } = news.reduce(
+  //   (acc, n) => {
+  //     if (n.Images.length > 0) {
+  //       acc.withImages.push(n);
+  //     } else acc.withoutImages.push(n);
+  //     return acc;
+  //   },
+  //   { withImages: [], withoutImages: [] },
+  // );
 
   return (
     <div className="pb-10">
       <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2">
-        {withImages.map((n, idx) => {
+        {[].map((n, idx) => {
           return (
             <Link
               key={n.ID}
@@ -83,7 +82,7 @@ export default async function Index() {
           );
         })}
       </div>
-      {withoutImages.map((n, idx) => {
+      {[].map((n, idx) => {
         return (
           <Fragment key={n.ID}>
             <Separator />

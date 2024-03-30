@@ -11,13 +11,15 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import { User } from '@qbick/shared';
+import {
+  ConfirmEmailDto,
+  EmailLoginDto,
+  RegisterDto,
+  User,
+} from '@qbick/shared';
 import { CookieOptions, Response } from 'express';
 import ms from 'ms';
 import { AuthService } from './auth.service';
-import { ConfirmEmailDto } from './dtos/confirm-email.dto';
-import { EmailLoginDto } from './dtos/email-login.dto';
-import { RegisterDto } from './dtos/register.dto';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '@/shared/config/config.type';
 

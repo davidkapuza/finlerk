@@ -13,7 +13,6 @@ import * as React from 'react';
 import { Button } from 'react-day-picker';
 import { Form, useForm } from 'react-hook-form';
 import * as z from 'zod';
-import api from '../../../lib/api';
 
 const profileFormSchema = z.object({
   firstName: z
@@ -58,21 +57,22 @@ export function ProfileForm({ user }) {
 
   function onSubmit(data: ProfileFormValues) {
     setIsLoading(true);
-    api
-      .patch('/api/v1/users/my-profile', {
-        ...data,
-      })
-      .then((response) => {
-        const { firstName, lastName, email } = response.data;
-        form.reset({
-          firstName,
-          lastName,
-          email,
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    // TODO implement profile update
+    // api
+    //   .patch('/api/v1/users/my-profile', {
+    //     ...data,
+    //   })
+    //   .then((response) => {
+    //     const { firstName, lastName, email } = response.data;
+    //     form.reset({
+    //       firstName,
+    //       lastName,
+    //       email,
+    //     });
+    //   })
+    //   .finally(() => {
+    //     setIsLoading(false);
+    //   });
   }
 
   return (

@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -13,11 +14,15 @@ import { RolesEnum } from '@/shared/enums/roles.enum';
 import { StatusesEnum } from '@/shared/enums/statuses.enum';
 import { UsersService } from '@/users/users.service';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import { LoginResponseType, Session, User } from '@qbick/shared';
+import {
+  EmailLoginDto,
+  LoginResponseType,
+  RegisterDto,
+  Session,
+  User,
+} from '@qbick/shared';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { EmailLoginDto } from './dtos/email-login.dto';
-import { RegisterDto } from './dtos/register.dto';
 import { AuthProvidersEnum } from './enums/auth-providers.enum';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
 import { ConfigType } from '@/shared/config/config.type';
@@ -115,16 +120,22 @@ export class AuthService {
       },
     });
 
-    if (user.provider !== AuthProvidersEnum.email) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            email: `needLoginViaProvider:${user.provider}`,
-          },
+    if (!user) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          email: 'notFound',
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      });
+    }
+
+    if (user.provider !== AuthProvidersEnum.email) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          email: `needLoginViaProvider:${user.provider}`,
+        },
+      });
     }
 
     const isValidPassword = await bcrypt.compare(
@@ -133,15 +144,12 @@ export class AuthService {
     );
 
     if (!isValidPassword) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            password: 'incorrectPassword',
-          },
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          password: 'incorrectPassword',
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      });
     }
 
     const hash = crypto
