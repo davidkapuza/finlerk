@@ -1,8 +1,5 @@
-import { toast } from '@qbick/shadcn-ui';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ErrorOption } from 'react-hook-form';
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Axios } from './axios';
-import { ApiErrorType } from './types/api-error.type';
 
 /**
  * @class Api Class is a fancy es6 wrapper class for axios.
@@ -230,38 +227,13 @@ export class Api extends Axios {
     return response.data;
   }
   /**
-   * Handles errors returned from the API request and optionally sets form field errors using setError function.
    *
-   * @param {ApiErrorType<T>} error - The error object returned from the API.
-   * @param {function} [setError] - Optional function to set form field errors.
-   * @param {keyof T | `root.${string}` | 'root'} name - The name of the form field where the error occurred.
-   * @param {ErrorOption} error - The error message or options.
-   * @param {Object} [options] - Additional options.
-   * @param {boolean} [options.shouldFocus] - Indicates whether the form field should be focused.
-   * @returns {void}
+   *
+   * @template T type.
+   * @param {AxiosError<T>} error
+   * @memberof Api
    */
-  public static error<T>(
-    error: ApiErrorType<T>,
-    setError?: (
-      name: keyof T | `root.${string}` | 'root',
-      error: ErrorOption,
-      options?: {
-        shouldFocus: boolean;
-      },
-    ) => void,
-  ): void {
-    const fieldsErrors = error.response.data.errors;
-    if (fieldsErrors)
-      Object.entries(fieldsErrors).map(([field, message]) =>
-        setError(field as keyof T, {
-          message,
-        }),
-      );
-    else
-      toast({
-        variant: 'destructive',
-        title: error.message,
-        description: error.response.data.message,
-      });
+  public error<T>(error: AxiosError<T>): void {
+    throw error;
   }
 }

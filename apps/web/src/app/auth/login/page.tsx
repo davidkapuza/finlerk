@@ -9,20 +9,25 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col h-full justify-center m-auto sm:w-[350px]">
-      <div className="flex flex-col mb-10 space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+    <div className="flex flex-col m-auto p-4 sm:w-[350px]">
+      <div className="flex flex-col mb-8 space-y-3 text-start">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Login to qbick
+        </h1>
         <p className="text-sm text-muted-foreground">
-          <Link
-            href="/auth/registration"
-            className="underline underline-offset-4 text-primary"
-          >
-            Create account
-          </Link>{' '}
-          or login to get started.
+          Seize opportunities and navigate market fluctuations effortlessly.
         </p>
       </div>
       <LoginForm />
+      <Link href="#" className="mt-6 mb-4 text-sm">
+        Forgot password?
+      </Link>
+      <p className="text-sm text-muted-foreground">
+        Don&apos;t have account?{' '}
+        <Link href="/auth/registration" className="text-primary">
+          Sign up
+        </Link>
+      </p>
     </div>
   );
 }

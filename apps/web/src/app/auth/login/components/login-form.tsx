@@ -1,5 +1,5 @@
 'use client';
-import { Api } from '@/lib/api';
+import { handleApiError } from '@/utils/handle-api-error';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { Icons } from '@qbick/lucide-react-icons';
 import {
@@ -14,7 +14,6 @@ import {
   Input,
 } from '@qbick/shadcn-ui';
 import { EmailLoginDto, LoginRequestType } from '@qbick/shared';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -42,13 +41,13 @@ export function LoginForm() {
     authApi
       .login(values)
       .then(() => router.push('/'))
-      .catch((error) => Api.error(error, setError))
+      .catch((error) => handleApiError(error, setError))
       .finally(() => setIsLoading(false));
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormField
           control={form.control}
           name="email"
@@ -88,12 +87,7 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Link
-          href="#"
-          className="inline-block w-full text-sm underline text-end underline-offset-4 hover:text-primary"
-        >
-          Forgot password?
-        </Link>
+
         <Button className="w-full" type="submit">
           {isLoading ? (
             <Icons.spinner className="w-4 h-4 mr-2 animate-spin" />
@@ -105,21 +99,32 @@ export function LoginForm() {
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
+          <div className="relative flex justify-center text-xs">
             <span className="px-2 bg-background text-muted-foreground">
               Or continue with
             </span>
           </div>
         </div>
-        <Button
-          variant="outline"
-          type="button"
-          className="w-full"
-          disabled={isLoading}
-        >
-          <Icons.google className="w-4 h-4 mr-2" />
-          Google
-        </Button>
+        <div className="flex flex-row gap-4">
+          <Button
+            variant="outline"
+            type="button"
+            className="flex-1"
+            disabled={isLoading}
+          >
+            <Icons.google className="w-4 h-4 mr-2" />
+            Google
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            className="flex-1"
+            disabled={isLoading}
+          >
+            <Icons.gitHub className="w-4 h-4 mr-2" />
+            Github
+          </Button>
+        </div>
       </form>
     </Form>
   );

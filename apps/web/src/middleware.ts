@@ -2,19 +2,19 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  const tokenExpires = request.cookies.get('tokenExpires');
-  const refreshToken = request.cookies.get('refreshToken');
-  const isAuth = +tokenExpires?.value > Date.now();
+  const accessToken = request.cookies.get('access_token');
+  const refreshToken = request.cookies.get('refresh_token');
+
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
   if (isAuthPage) {
-    if (isAuth) {
-      return NextResponse.redirect(new URL('/profile', request.url));
+    if (accessToken) {
+      return NextResponse.redirect(new URL('/', request.url));
     }
 
     return null;
   }
 
-  if (!isAuth) {
+  if (!accessToken) {
     if (refreshToken) {
       const response = await fetch(
         `${process.env.BACKEND_DOMAIN}/api/v1/auth/refresh`,
@@ -25,9 +25,7 @@ export async function middleware(request: NextRequest) {
         },
       );
 
-      if (response.status === 204) {
-        return response.clone();
-      }
+      if (response.ok) return response.clone();
     }
     let from = request.nextUrl.pathname;
     if (request.nextUrl.search) {

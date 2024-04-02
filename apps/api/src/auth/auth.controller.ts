@@ -35,35 +35,26 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService<ConfigType>,
   ) {
+    const accessExpires = ms(
+      this.configService.getOrThrow<string>('auth.accessExpires', {
+        infer: true,
+      }),
+    );
+    const refreshExpires = ms(
+      this.configService.getOrThrow<string>('auth.refreshExpires', {
+        infer: true,
+      }),
+    );
+
     this.accessTokenCookieOptions = {
-      expires: new Date(
-        ms(
-          this.configService.getOrThrow('auth.accessExpires', {
-            infer: true,
-          }),
-        ),
-      ),
-      maxAge: ms(
-        this.configService.getOrThrow<string>('auth.accessExpires', {
-          infer: true,
-        }),
-      ),
+      expires: new Date(Date.now() + accessExpires),
+      maxAge: accessExpires,
       httpOnly: true,
       sameSite: 'lax',
     };
-    this.accessTokenCookieOptions = {
-      expires: new Date(
-        ms(
-          this.configService.getOrThrow('auth.refreshExpires', {
-            infer: true,
-          }),
-        ),
-      ),
-      maxAge: ms(
-        this.configService.getOrThrow<string>('auth.refreshExpires', {
-          infer: true,
-        }),
-      ),
+    this.refreshTokenCookieOptions = {
+      expires: new Date(Date.now() + refreshExpires),
+      maxAge: refreshExpires,
       httpOnly: true,
       sameSite: 'lax',
     };
@@ -114,6 +105,7 @@ export class AuthController {
       sessionId: request.user.sessionId,
       hash: request.user.hash,
     });
+
     res
       .cookie('access_token', accessToken, this.accessTokenCookieOptions)
       .cookie('refresh_token', refreshToken, this.refreshTokenCookieOptions);

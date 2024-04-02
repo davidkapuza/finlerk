@@ -51,7 +51,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <div className="flex flex-col h-screen bg-background">
                 <Header />
                 {/* <TradesPreviewCarousel latestTrades={latestTrades} /> */}
-                <main className="h-full pt-16">{children}</main>
+                {children}
               </div>
             </TooltipProvider>
           </ThemeProvider>
