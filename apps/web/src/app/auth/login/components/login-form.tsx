@@ -58,7 +58,7 @@ export function LoginForm() {
                 <Input
                   type="email"
                   placeholder="example@gmail.com"
-                  autoComplete="username"
+                  autoComplete="email"
                   {...field}
                 />
               </FormControl>
@@ -81,7 +81,7 @@ export function LoginForm() {
                 />
               </FormControl>
               <FormDescription>
-                Password must be at least 8 characters long
+                Password must be at least 6 characters long
               </FormDescription>
               <FormMessage />
             </FormItem>

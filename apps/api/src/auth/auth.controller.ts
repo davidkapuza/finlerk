@@ -68,8 +68,16 @@ export class AuthController {
 
   @Post('confirm-email')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async confirmEmail(@Body() confirmEmailDto: ConfirmEmailDto): Promise<void> {
-    return this.authService.confirmEmail(confirmEmailDto.hash);
+  async confirmEmail(
+    @Body() confirmEmailDto: ConfirmEmailDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    const { accessToken, refreshToken } = await this.authService.confirmEmail(
+      confirmEmailDto.hash,
+    );
+    res
+      .cookie('access_token', accessToken, this.accessTokenCookieOptions)
+      .cookie('refresh_token', refreshToken, this.refreshTokenCookieOptions);
   }
 
   @SerializeOptions({

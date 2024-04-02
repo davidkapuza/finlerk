@@ -34,7 +34,7 @@ class EnvironmentVariablesValidator {
 
   @IsUrl({ require_tld: false })
   @IsOptional()
-  BACKEND_DOMAIN: string;
+  NEXT_PUBLIC_BACKEND_DOMAIN: string;
 
   @IsString()
   @IsOptional()
@@ -57,7 +57,7 @@ export default registerAs<AppConfig>('app', () => {
     name: process.env.APP_NAME || 'app',
     workingDirectory: process.env.PWD || process.cwd(),
     frontendDomain: process.env.FRONTEND_DOMAIN,
-    backendDomain: process.env.BACKEND_DOMAIN ?? 'http://localhost',
+    backendDomain: process.env.NEXT_PUBLIC_BACKEND_DOMAIN ?? 'http://localhost',
     port: parseInt(process.env.PORT, 10) || 3000,
     apiPrefix: process.env.API_PREFIX || 'api',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',

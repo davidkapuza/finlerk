@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '../mailer/mailer.service';
 import { MailData } from './interfaces/mail-data.interface';
-import * as path from 'node:path';
+import path from 'node:path';
 import { ConfigType } from '@/shared/config/config.type';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class MailService {
     const url = new URL(
       this.configService.getOrThrow('app.frontendDomain', {
         infer: true,
-      }) + '/confirm-email',
+      }) + '/auth/confirm-email',
     );
     url.searchParams.set('hash', mailData.data.hash);
 
@@ -28,6 +28,8 @@ export class MailService {
         this.configService.getOrThrow('app.workingDirectory', {
           infer: true,
         }),
+        'apps',
+        'api',
         'src',
         'mail',
         'templates',
@@ -40,8 +42,7 @@ export class MailService {
         app_name: this.configService.get('app.name', { infer: true }),
         text1: 'Hello!',
         text2: 'You almost there',
-        text3:
-          'Simply click the big green button below to verify your email address.',
+        text3: 'Simply click the button below to verify your email address.',
       },
     });
   }

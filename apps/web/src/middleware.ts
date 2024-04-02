@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
   if (!accessToken) {
     if (refreshToken) {
       const response = await fetch(
-        `${process.env.BACKEND_DOMAIN}/api/v1/auth/refresh`,
+        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/v1/auth/refresh`,
         {
           method: 'POST',
           credentials: 'include',

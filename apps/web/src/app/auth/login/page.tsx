@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { LoginForm } from './components/login-form';
 
 export const metadata: Metadata = {
-  title: 'Authentication',
-  description: '...',
+  title: 'Login',
+  description: 'Login to your account',
 };
 
 export default function LoginPage() {

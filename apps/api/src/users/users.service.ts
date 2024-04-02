@@ -1,15 +1,20 @@
 import { AuthProvidersEnum } from '@/auth/enums/auth-providers.enum';
+import { UserEntity } from '@/shared/entities/user.entity';
 import { RolesEnum } from '@/shared/enums/roles.enum';
 import { StatusesEnum } from '@/shared/enums/statuses.enum';
 import { IPaginationOptions } from '@/shared/types/pagination-options';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { DeepPartial, NullableType, User } from '@qbick/shared';
 import bcrypt from 'bcryptjs';
 import { FindOneOptions } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FilterUserDto, SortUserDto } from './dtos/query-user.dto';
 import { UsersRepositoryInterface } from './repository/users-repository.interface';
-import { UserEntity } from '@/shared/entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -31,15 +36,12 @@ export class UsersService {
         },
       });
       if (userObject) {
-        throw new HttpException(
-          {
-            status: HttpStatus.UNPROCESSABLE_ENTITY,
-            errors: {
-              email: 'emailAlreadyExists',
-            },
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            email: 'emailAlreadyExists',
           },
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
+        });
       }
     }
 
@@ -48,15 +50,12 @@ export class UsersService {
         clonedPayload.role.id,
       );
       if (!roleObject) {
-        throw new HttpException(
-          {
-            status: HttpStatus.UNPROCESSABLE_ENTITY,
-            errors: {
-              role: 'roleNotExists',
-            },
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            role: 'roleNotExists',
           },
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
+        });
       }
     }
 
@@ -65,15 +64,12 @@ export class UsersService {
         clonedPayload.status.id,
       );
       if (!statusObject) {
-        throw new HttpException(
-          {
-            status: HttpStatus.UNPROCESSABLE_ENTITY,
-            errors: {
-              status: 'statusNotExists',
-            },
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            status: 'statusNotExists',
           },
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
+        });
       }
     }
 
@@ -130,15 +126,12 @@ export class UsersService {
       });
 
       if (userObject?.id !== id) {
-        throw new HttpException(
-          {
-            status: HttpStatus.UNPROCESSABLE_ENTITY,
-            errors: {
-              email: 'emailAlreadyExists',
-            },
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            email: 'emailAlreadyExists',
           },
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
+        });
       }
     }
 
@@ -147,15 +140,12 @@ export class UsersService {
         clonedPayload.role.id,
       );
       if (!roleObject) {
-        throw new HttpException(
-          {
-            status: HttpStatus.UNPROCESSABLE_ENTITY,
-            errors: {
-              role: 'roleNotExists',
-            },
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            role: 'roleNotExists',
           },
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
+        });
       }
     }
 
@@ -164,15 +154,12 @@ export class UsersService {
         clonedPayload.status.id,
       );
       if (!statusObject) {
-        throw new HttpException(
-          {
-            status: HttpStatus.UNPROCESSABLE_ENTITY,
-            errors: {
-              status: 'statusNotExists',
-            },
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            status: 'statusNotExists',
           },
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
+        });
       }
     }
 

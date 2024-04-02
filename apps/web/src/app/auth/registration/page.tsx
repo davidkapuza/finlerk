@@ -1,57 +1,24 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
 import { RegistrationForm } from './components/registration-form';
-import { buttonVariants } from '@qbick/shadcn-ui';
-import { cn } from '@qbick/shadcn-ui/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'Authentication',
-  description: '...',
+  title: 'Create an account',
+  description: 'Create an account to get started.',
 };
 
-export default function RegisterPage() {
+export default function RegistrationPage() {
   return (
-    <>
-      <Link
-        href="/auth/login"
-        className={cn(
-          buttonVariants({ variant: 'ghost' }),
-          'absolute right-4 top-4 md:right-8 md:top-8',
-        )}
-      >
-        Login
-      </Link>
-
-      <div className="lg:p-8">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-          <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Create an account
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email below to create your account
-            </p>
-          </div>
-          <RegistrationForm />
-          <p className="px-8 text-sm text-center text-muted-foreground">
-            By clicking continue, you agree to our{' '}
-            <Link
-              href="/terms"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link
-              href="/privacy"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Privacy Policy
-            </Link>
-            .
-          </p>
-        </div>
+    <div className="flex flex-col m-auto p-4 sm:w-[350px]">
+      <div className="flex flex-col mb-8 space-y-3 text-start">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Get started with qbick
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Unlock the power of informed investing and stay ahead of market
+          trends.
+        </p>
+        <RegistrationForm />
       </div>
-    </>
+    </div>
   );
 }

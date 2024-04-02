@@ -171,7 +171,7 @@ export const StockChart = ({ chartData, symbol }) => {
   }, [layout, chart]);
 
   React.useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_API_URL);
+    const socket = io(process.env.NEXT_PUBLIC_BACKEND_DOMAIN);
 
     socket.on('connect', () => {
       socket.emit('stock-bars', [symbol]);

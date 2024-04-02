@@ -1,8 +1,8 @@
 import { MailService } from '@/mail/mail.service';
 import {
-  HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { SessionService } from '@/session/session.service';
+import { ConfigType } from '@/shared/config/config.type';
 import { RolesEnum } from '@/shared/enums/roles.enum';
 import { StatusesEnum } from '@/shared/enums/statuses.enum';
 import { UsersService } from '@/users/users.service';
@@ -25,7 +26,6 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { AuthProvidersEnum } from './enums/auth-providers.enum';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
-import { ConfigType } from '@/shared/config/config.type';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +70,7 @@ export class AuthService {
     });
   }
 
-  async confirmEmail(hash: string): Promise<void> {
+  async confirmEmail(hash: string) {
     let userId: User['id'];
 
     try {
@@ -84,26 +84,20 @@ export class AuthService {
 
       userId = jwtData.confirmEmailUserId;
     } catch {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            hash: `invalidHash`,
-          },
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          hash: `invalidHash`,
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      });
     }
     const user = await this.userService.findById(userId);
 
     if (!user || user?.status?.id !== StatusesEnum.inactive) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: `notFound`,
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        error: `notFound`,
+      });
     }
 
     user.status = {
@@ -111,6 +105,28 @@ export class AuthService {
     };
 
     await this.userService.update(user.id, user);
+
+    const sessionHash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    const session = await this.sessionService.createSession({
+      user,
+      hash: sessionHash,
+    });
+
+    const { accessToken, refreshToken } = await this.getTokensData({
+      id: session.user.id,
+      role: session.user.role,
+      sessionId: session.id,
+      hash,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   async login(loginDto: EmailLoginDto): Promise<LoginResponseType> {

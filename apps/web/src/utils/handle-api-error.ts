@@ -13,7 +13,7 @@ export const handleApiError = <T>(
   ) => void,
 ): void => {
   const fieldsErrors = error.response.data.errors;
-  if (fieldsErrors)
+  if (fieldsErrors && setError)
     Object.entries(fieldsErrors).map(([field, message]) =>
       setError(field as keyof T, {
         message,
