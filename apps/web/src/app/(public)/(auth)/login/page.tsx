@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col m-auto p-4 sm:w-[350px]">
+    <div className="flex flex-col justify-center m-auto p-4 sm:w-[350px] h-screen">
       <div className="flex flex-col mb-8 space-y-3 text-start">
         <h1 className="text-2xl font-semibold tracking-tight">
           Login to qbick
@@ -19,12 +19,15 @@ export default function LoginPage() {
         </p>
       </div>
       <LoginForm />
-      <Link href="#" className="mt-6 mb-4 text-sm">
+      <Link href="#" className="mt-6 mb-4 text-sm underline underline-offset-4">
         Forgot password?
       </Link>
       <p className="text-sm text-muted-foreground">
         Don&apos;t have account?{' '}
-        <Link href="/auth/registration" className="text-primary">
+        <Link
+          href="/register"
+          className="underline underline-offset-4 text-primary"
+        >
           Sign up
         </Link>
       </p>

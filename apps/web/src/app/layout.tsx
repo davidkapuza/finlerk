@@ -5,7 +5,6 @@ import { siteConfig } from '../config/site';
 import { fontSans } from '../lib/fonts';
 import { ThemeProvider } from '../lib/providers/theme-provider';
 import '../styles/globals.css';
-import { Header } from '../ui/header';
 
 export const metadata: Metadata = {
   title: {
@@ -48,11 +47,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <TooltipProvider delayDuration={0}>
               <Toaster />
-              <div className="flex flex-col h-screen bg-background">
-                <Header />
-                {/* <TradesPreviewCarousel latestTrades={latestTrades} /> */}
-                {children}
-              </div>
+              {children}
             </TooltipProvider>
           </ThemeProvider>
         </body>

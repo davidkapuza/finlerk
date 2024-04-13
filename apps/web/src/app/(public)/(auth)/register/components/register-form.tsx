@@ -22,7 +22,7 @@ import { authApi } from '../../lib/api/auth.api';
 
 const resolver = classValidatorResolver(RegisterDto);
 
-export function RegistrationForm() {
+export function RegisterForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const form = useForm<RegisterRequestType>({

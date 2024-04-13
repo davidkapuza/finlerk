@@ -36,7 +36,7 @@ export default function Confirmation() {
   }, [searchParams, router]);
 
   return (
-    <div className="flex flex-col m-auto p-4 sm:w-[350px]">
+    <div className="flex flex-col m-auto p-4 sm:w-[350px] h-screen justify-center">
       <h1>Email confirmation</h1>
       {isLoading && (
         <p className="flex flex-row items-center text-gray-400">

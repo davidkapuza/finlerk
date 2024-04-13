@@ -5,7 +5,8 @@ export async function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('access_token');
   const refreshToken = request.cookies.get('refresh_token');
 
-  const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
+  const isAuthPage = ['/login', '/register'].includes(request.nextUrl.pathname);
+
   if (isAuthPage) {
     if (accessToken) {
       return NextResponse.redirect(new URL('/', request.url));
@@ -33,11 +34,11 @@ export async function middleware(request: NextRequest) {
     }
 
     return NextResponse.redirect(
-      new URL(`/auth/login?from=${encodeURIComponent(from)}`, request.url),
+      new URL(`/login?from=${encodeURIComponent(from)}`, request.url),
     );
   }
 }
 
 export const config = {
-  matcher: ['/profile/:path*', '/auth/:path*', '/'],
+  matcher: ['/login', '/register', '/'],
 };

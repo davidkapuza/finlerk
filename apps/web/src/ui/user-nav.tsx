@@ -1,3 +1,4 @@
+// import { userApi } from '@/lib/api/user.api';
 import {
   Avatar,
   AvatarFallback,
@@ -9,20 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@qbick/shadcn-ui';
 import Link from 'next/link';
 
-// async function getUser() {
-//   return await api
-//     .get('/api/v1/users/my-profile')
-//     .then((response) => response.data);
-// }
-
 export async function UserNav() {
-  // const user = await getUser();
-
+  // const user = await userApi.getProfile();
+  // console.log(user)
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -47,17 +41,11 @@ export async function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href="/profile">
-            <DropdownMenuItem>
-              Profile
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
+            <DropdownMenuItem>Profile</DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          Log out
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-        </DropdownMenuItem>
+        <DropdownMenuItem>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
