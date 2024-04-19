@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import Confirmation from './components/confirmation';
+import Confirmation from './ui/confirmation';
 
 export const metadata: Metadata = {
   title: 'Confirm email',

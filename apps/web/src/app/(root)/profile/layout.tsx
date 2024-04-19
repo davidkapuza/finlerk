@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { ProfileSidebar } from './components/profile-sidebar';
+import { ProfileSidebar } from './ui/profile-sidebar';
 import { Separator } from '@qbick/shadcn-ui';
 
 export const metadata: Metadata = {

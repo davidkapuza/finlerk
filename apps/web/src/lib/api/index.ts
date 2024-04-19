@@ -1,5 +1,6 @@
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Axios } from './axios';
+import { apiConfig } from '../config/api.config';
 
 /**
  * @class Api Class is a fancy es6 wrapper class for axios.
@@ -9,12 +10,11 @@ import { Axios } from './axios';
  */
 export class Api extends Axios {
   private isServer: boolean;
-
   /**
    * Creates an instance of api.
    * @param {import("axios").AxiosRequestConfig} conf
    */
-  public constructor(conf: AxiosRequestConfig) {
+  public constructor(conf: AxiosRequestConfig = apiConfig) {
     super(conf);
 
     this.isServer = typeof window === 'undefined';
@@ -40,18 +40,22 @@ export class Api extends Axios {
           !error.config._isRetry
         ) {
           originalRequest._isRetry = true;
-          await this.post(`/api/v1/auth/refresh`)
-            .then(() => {
-              return this.request(originalRequest);
-            })
-            .catch(() => {
-              console.log('Unauthorized');
-            });
+          try {
+            if (this.isServer) {
+              const { cookies } = await import('next/headers');
+              conf.headers.Cookie = cookies().toString();
+            }
+            await axios.post(`/api/v1/auth/refresh`, null, conf);
+            return axios.request(originalRequest);
+          } catch (error) {
+            console.error('Unauthorized');
+          }
         }
         throw error;
       },
     );
   }
+
   /**
    * Get Uri
    *

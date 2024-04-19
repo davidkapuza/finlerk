@@ -1,5 +1,4 @@
 import { Api } from '@/lib/api';
-import { apiConfig } from '@/lib/config/api.config';
 import { User } from '@qbick/shared';
 import { cache } from 'react';
 
@@ -9,9 +8,11 @@ export class UserApi extends Api {
    *
    * @returns {Promise<User>} user - user information,
    */
-  public getProfile = cache((): Promise<User> => {
-    return this.get<User>('/api/v1/users/my-profile').then(this.success);
+  public getProfile = cache(() => {
+    return this.get<User>('/api/v1/users/my-profile').then(
+      (response) => response.data,
+    );
   });
 }
 
-export const userApi = new UserApi(apiConfig);
+export const userApi = new UserApi();

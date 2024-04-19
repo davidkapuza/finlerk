@@ -1,4 +1,4 @@
-// import { userApi } from '@/lib/api/user.api';
+import { userApi } from '@/lib/api/user.api';
 import {
   Avatar,
   AvatarFallback,
@@ -14,9 +14,9 @@ import {
 } from '@qbick/shadcn-ui';
 import Link from 'next/link';
 
-export async function UserNav() {
-  // const user = await userApi.getProfile();
-  // console.log(user)
+export async function NavMenu() {
+  const user = await userApi.getProfile();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -24,7 +24,7 @@ export async function UserNav() {
           <Avatar className="w-8 h-8">
             <AvatarImage src="/avatars/01.png" alt="@shadcn" />
             <AvatarFallback>
-              {/* {`${user.firstName[0]}${user.lastName[0]}`.toUpperCase()} */}
+              {`${user.firstName[0]}${user.lastName[0]}`.toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -32,9 +32,11 @@ export async function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            {/* <p className="text-sm font-medium leading-none">{user.firstName}</p> */}
+            <p className="text-sm font-medium leading-none">
+              {user.firstName} {user.lastName}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {/* {user.email} */}
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>

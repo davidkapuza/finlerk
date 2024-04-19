@@ -148,6 +148,7 @@ export function RegisterForm() {
                   {...field}
                 />
               </FormControl>
+              <FormDescription>Make sure passwords match</FormDescription>
               <FormMessage />
             </FormItem>
           )}

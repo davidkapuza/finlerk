@@ -1,11 +1,10 @@
+import { Api } from '@/lib/api';
 import {
   ConfirmEmailType,
   LoginRequestType,
   RegisterRequestType,
   User,
 } from '@qbick/shared';
-import { Api } from '@/lib/api';
-import { apiConfig } from '@/lib/config/api.config';
 
 export class AuthApi extends Api {
   /**
@@ -57,4 +56,4 @@ export class AuthApi extends Api {
   };
 }
 
-export const authApi = new AuthApi(apiConfig);
+export const authApi = new AuthApi();

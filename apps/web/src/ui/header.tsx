@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { siteConfig } from '../config/site';
 import Navbar from './navbar';
 import { ThemeToggle } from './theme-toggle';
-import { UserNav } from './user-nav';
+import { NavMenu } from './nav-menu';
 
 export function Header() {
   return (
@@ -24,7 +24,7 @@ export function Header() {
             </div>
           </Link>
           <ThemeToggle />
-          <UserNav />
+          <NavMenu />
         </nav>
       </div>
     </header>
