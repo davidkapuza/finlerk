@@ -40,7 +40,7 @@ export function LoginForm() {
     setIsLoading(true);
     authApi
       .login(values)
-      .then(() => router.push('/'))
+      .then(() => router.push('/news'))
       .catch((error) => handleApiError(error, setError))
       .finally(() => setIsLoading(false));
   }

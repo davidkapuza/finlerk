@@ -26,32 +26,24 @@ export const metadata: Metadata = {
 interface RootLayoutProps {
   children: React.ReactNode;
 }
-// TODO Trade getting most popular stocks preview
-// async function getLatestTrades() {
-//   return await api
-//     .get<Map<string, AlpacaTrade>>('/api/v1/stocks/latest-trades')
-//     .then((response) => response.data);
-// }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
   return (
-    <>
-      <html lang="en" suppressHydrationWarning>
-        <head />
-        <body
-          className={cn(
-            'min-h-screen bg-background font-sans antialiased',
-            fontSans.variable,
-          )}
-        >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <TooltipProvider delayDuration={0}>
-              <Toaster />
-              {children}
-            </TooltipProvider>
-          </ThemeProvider>
-        </body>
-      </html>
-    </>
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body
+        className={cn(
+          'min-h-screen bg-background font-sans antialiased',
+          fontSans.variable,
+        )}
+      >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <TooltipProvider delayDuration={0}>
+            <Toaster />
+            {children}
+          </TooltipProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

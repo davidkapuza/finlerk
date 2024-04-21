@@ -9,9 +9,7 @@ export class UserApi extends Api {
    * @returns {Promise<User>} user - user information,
    */
   public getProfile = cache(() => {
-    return this.get<User>('/api/v1/users/my-profile').then(
-      (response) => response.data,
-    );
+    return this.get<User>('/api/v1/users/my-profile').then(this.success);
   });
 }
 

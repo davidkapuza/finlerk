@@ -1,4 +1,4 @@
-import { StockChart } from '../components/stock-chart';
+import { StockChart } from '../ui/stock-chart';
 // import api from '../../../lib/api';
 import { Separator } from '@qbick/shadcn-ui';
 

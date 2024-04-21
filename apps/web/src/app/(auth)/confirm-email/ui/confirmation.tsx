@@ -21,7 +21,7 @@ export default function Confirmation() {
         title: 'The required data is missing',
         description: 'Missing hash',
       });
-      router.push('/');
+      router.push('/news');
     }
     if (hash) {
       setIsLoading(true);

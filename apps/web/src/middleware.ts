@@ -1,15 +1,17 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+const publicRoutes = ['/login', '/register', '/'];
+
 export async function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('access_token');
   // const refreshToken = request.cookies.get('refresh_token');
 
-  const isAuthPage = ['/login', '/register'].includes(request.nextUrl.pathname);
+  const isPublicPage = publicRoutes.includes(request.nextUrl.pathname);
 
-  if (isAuthPage) {
+  if (isPublicPage) {
     if (accessToken) {
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(new URL('/news', request.url));
     }
 
     return null;

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { ProfileSidebar } from './ui/profile-sidebar';
 import { Separator } from '@qbick/shadcn-ui';
+import { Header } from '@/ui/header';
 
 export const metadata: Metadata = {
   title: 'Forms',
@@ -21,6 +22,7 @@ interface SettingsLayoutProps {
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
   return (
     <main>
+      <Header />
       <div className="p-10 pb-16 space-y-6">
         <div className="space-y-0.5">
           <h2 className="text-2xl font-bold tracking-tight">Settings</h2>

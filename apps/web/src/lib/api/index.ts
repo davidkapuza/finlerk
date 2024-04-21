@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Axios } from './axios';
 import { apiConfig } from '../config/api.config';
-
+import { redirect } from 'next/navigation';
 /**
  * @class Api Class is a fancy es6 wrapper class for axios.
  *
@@ -48,7 +48,7 @@ export class Api extends Axios {
             await axios.post(`/api/v1/auth/refresh`, null, conf);
             return axios.request(originalRequest);
           } catch (error) {
-            console.error('Unauthorized');
+            redirect('/login');
           }
         }
         throw error;
@@ -227,9 +227,9 @@ export class Api extends Axios {
    * @returns {T} - expected object.
    * @memberof Api
    */
-  public success<T>(response: AxiosResponse<T>): T {
+  public success = <T>(response: AxiosResponse<T>): T => {
     return response.data;
-  }
+  };
   /**
    *
    *

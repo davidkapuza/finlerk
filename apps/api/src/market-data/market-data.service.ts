@@ -13,7 +13,7 @@ import { NewBar } from './events/new-bar.event';
 import { NewTrade } from './events/new-trade.event';
 import { AlpacaBarsResponseType } from './types/alpaca-bars-response.type';
 import { stockBarsResponseTransformer } from './transformers/stock-bars-response.transformer';
-import { StockBarsResponseType } from '@qbick/shared';
+import { NewsResponseType, StockBarsResponseType } from '@qbick/shared';
 
 @Injectable()
 export class MarketDataService {
@@ -76,7 +76,7 @@ export class MarketDataService {
     if (this.isConnect) this.websocket.subscribeForBars(stocks);
   }
 
-  async getNews(getNewsDto: GetNewsDto) {
+  async getNews(getNewsDto: GetNewsDto): Promise<NewsResponseType> {
     if (!getNewsDto.symbols) {
       const { most_actives } = await this.mostActives();
       getNewsDto.symbols = most_actives.map((s) => s.symbol).join(',');
