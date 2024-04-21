@@ -10,7 +10,6 @@ import {
 import { Inject } from '@nestjs/common';
 import {
   ConnectedSocket,
-  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
@@ -19,7 +18,6 @@ import { type Socket } from 'socket.io';
 import { SubscribableStreamsEnum } from './enums/subscribable-streams.enum';
 import { NewBar } from './events/new-bar.event';
 import { NewTrade } from './events/new-trade.event';
-import { MarketDataService } from './market-data.service';
 
 @WebSocketGateway({
   pingInterval: 30000,
@@ -31,16 +29,15 @@ import { MarketDataService } from './market-data.service';
 export class MarketDataGateway {
   constructor(
     @Inject(EVENT_SUBSCRIBER_TOKEN)
-    private eventSubscriber: EventSubscriberInterface,
-    private readonly marketDataService: MarketDataService,
+    private eventSubscriber: EventSubscriberInterface, // private readonly marketDataService: MarketDataService,
   ) {}
 
   @SubscribeMessage(SubscribableStreamsEnum.stockTrades)
   async streamTrades(
     @ConnectedSocket() client: Socket,
-    @MessageBody() stocks: string[],
+    // @MessageBody() stocks: string[],
   ) {
-    this.marketDataService.subscribeForTrades(stocks);
+    // this.marketDataService.subscribeForTrades(stocks);
     const stream$ = this.createWebsocketStreamFromEventFactory<AlpacaTrade>(
       client,
       this.eventSubscriber,
@@ -58,9 +55,9 @@ export class MarketDataGateway {
   @SubscribeMessage(SubscribableStreamsEnum.stockBars)
   async streamBars(
     @ConnectedSocket() client: Socket,
-    @MessageBody() stocks: string[],
+    // @MessageBody() stocks: string[],
   ) {
-    this.marketDataService.subsribeForBars(stocks);
+    // this.marketDataService.subsribeForBars(stocks);
     const stream$ = this.createWebsocketStreamFromEventFactory<AlpacaBar>(
       client,
       this.eventSubscriber,

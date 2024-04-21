@@ -13,10 +13,11 @@ import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { GetBarsDto } from './dtos/get-bars.dto';
 import { GetNewsDto } from './dtos/get-news.dto';
 import { MarketDataService } from './market-data.service';
+import { GetAssetsDto } from './dtos/get-assets.dto';
 
 @ApiCookieAuth()
 @UseGuards(AuthGuard('jwt'))
-@ApiTags('MarketData')
+@ApiTags('Market data')
 @Controller({
   path: 'market-data',
   version: '1',
@@ -33,6 +34,12 @@ export class MarketDataController {
     getNewsDto: GetNewsDto,
   ) {
     return this.marketDataService.getNews(getNewsDto);
+  }
+
+  @Get('assets')
+  @HttpCode(HttpStatus.OK)
+  getAssets(@Query() getAssetsDto: GetAssetsDto) {
+    return this.marketDataService.getAssets(getAssetsDto);
   }
 
   @Get('stocks-bars')

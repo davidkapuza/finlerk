@@ -1,21 +1,19 @@
-import { AlpacaModule } from '@/alpaca/alpaca.module';
-import { RedisPubSubModule } from '@/redis-pub-sub/redis-pub-sub.module';
 import { ConfigType } from '@/shared/config/config.type';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { NewBar } from './events/new-bar.event';
-import { NewTrade } from './events/new-trade.event';
 import { MarketDataController } from './market-data.controller';
 import { MarketDataGateway } from './market-data.gateway';
 import { MarketDataService } from './market-data.service';
+import { RedisPubSubModule } from '@/redis-pub-sub/redis-pub-sub.module';
+import { NewTrade } from './events/new-trade.event';
+import { NewBar } from './events/new-bar.event';
 @Module({
   imports: [
     RedisPubSubModule.registerEvents([
       NewTrade.publishableEventName,
       NewBar.publishableEventName,
     ]),
-    AlpacaModule,
     HttpModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService<ConfigType>) => ({
@@ -37,5 +35,6 @@ import { MarketDataService } from './market-data.service';
   ],
   providers: [MarketDataService, MarketDataGateway],
   controllers: [MarketDataController],
+  exports: [MarketDataService],
 })
 export class MarketDataModule {}

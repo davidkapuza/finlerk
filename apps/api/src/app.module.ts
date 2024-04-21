@@ -19,8 +19,10 @@ import appConfig from './shared/config/app.config';
 import { ConfigType } from './shared/config/config.type';
 import databaseConfig from './shared/database/config/database.config';
 import { TypeOrmConfigService } from './shared/database/typeorm-config.service';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [

@@ -1,80 +1,30 @@
-import { EventEmitterInterface } from '@/redis-pub-sub/event/emitter/contract/event-emitter.interface';
-import { EVENT_EMITTER_TOKEN } from '@/redis-pub-sub/event/emitter/redis.event-emitter';
-import Alpaca from '@alpacahq/alpaca-trade-api';
+import { ConfigType } from '@/shared/config/config.type';
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NewsResponseType, StockBarsResponseType } from '@qbick/shared';
 import { AxiosError } from 'axios';
 import { Cache } from 'cache-manager';
-import { catchError, firstValueFrom, map, timer } from 'rxjs';
+import { catchError, firstValueFrom, map } from 'rxjs';
+import { GetAssetsDto } from './dtos/get-assets.dto';
 import { GetBarsDto } from './dtos/get-bars.dto';
 import { GetNewsDto } from './dtos/get-news.dto';
-import { NewBar } from './events/new-bar.event';
-import { NewTrade } from './events/new-trade.event';
-import { AlpacaBarsResponseType } from './types/alpaca-bars-response.type';
 import { stockBarsResponseTransformer } from './transformers/stock-bars-response.transformer';
-import { NewsResponseType, StockBarsResponseType } from '@qbick/shared';
+import { AlpacaBarsResponseType } from './types/alpaca-bars-response.type';
+import { AssetsResponseType } from './types/assets-response.type';
 
 @Injectable()
 export class MarketDataService {
   private readonly logger = new Logger(MarketDataService.name);
-  private websocket = this.alpaca.data_stream_v2;
-  private isConnect = false;
+  // private isConnect = false;
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
-    @Inject(EVENT_EMITTER_TOKEN)
-    private readonly eventEmitter: EventEmitterInterface,
+    // @Inject(EVENT_EMITTER_TOKEN)
+    // private readonly eventEmitter: EventEmitterInterface,
     private readonly httpService: HttpService,
-    @Inject('ALPACA_SDK') private readonly alpaca: Alpaca,
-  ) {
-    this.connect();
-  }
-
-  connect() {
-    this.websocket.onConnect(() => {
-      this.isConnect = true;
-    });
-    this.websocket.onError((err) => {
-      this.logger.error(err);
-      this.isConnect = false;
-      this.websocket.disconnect();
-    });
-
-    this.websocket.onDisconnect(() => {
-      timer(5000).subscribe(() => {
-        this.isConnect = false;
-        this.websocket.connect();
-      });
-    });
-    this.websocket.onStateChange((state) => {
-      this.logger.log(state);
-    });
-    this.websocket.onStockTrade((trade) => {
-      this.eventEmitter.emit(NewTrade.name, new NewTrade(trade));
-    });
-    this.websocket.onStockBar((bar) => {
-      this.eventEmitter.emit(
-        NewBar.name,
-        new NewBar({
-          time: Date.parse(bar.Timestamp) / 1000,
-          open: bar.OpenPrice,
-          high: bar.HighPrice,
-          low: bar.LowPrice,
-          close: bar.ClosePrice,
-          volume: bar.Volume,
-        }),
-      );
-    });
-    this.websocket.connect();
-  }
-
-  async subscribeForTrades(trades: string[]) {
-    if (this.isConnect) this.websocket.subscribeForTrades(trades);
-  }
-
-  async subsribeForBars(stocks: string[]) {
-    if (this.isConnect) this.websocket.subscribeForBars(stocks);
-  }
+    private readonly configService: ConfigService<ConfigType>,
+  ) {}
 
   async getNews(getNewsDto: GetNewsDto): Promise<NewsResponseType> {
     if (!getNewsDto.symbols) {
@@ -85,6 +35,28 @@ export class MarketDataService {
       this.httpService
         .get('/v1beta1/news', {
           params: getNewsDto,
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response.data);
+            throw error;
+          }),
+        ),
+    );
+    return data;
+  }
+
+  async getAssets(getAssetsDto?: GetAssetsDto): Promise<AssetsResponseType> {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .get<AssetsResponseType>('/v2/assets', {
+          params: {
+            ...getAssetsDto,
+            attributes: getAssetsDto?.attributes?.join(','),
+          },
+          baseURL: this.configService.getOrThrow('alpaca.trading_api', {
+            infer: true,
+          }),
         })
         .pipe(
           catchError((error: AxiosError) => {
