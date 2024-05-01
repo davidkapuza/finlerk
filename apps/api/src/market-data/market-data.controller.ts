@@ -10,10 +10,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { Asset } from '@qbick/shared';
 import { GetBarsDto } from './dtos/get-bars.dto';
 import { GetNewsDto } from './dtos/get-news.dto';
+import { QueryAssetsDto } from './dtos/query-assets.dto';
 import { MarketDataService } from './market-data.service';
-import { GetAssetsDto } from './dtos/get-assets.dto';
 
 @ApiCookieAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -38,8 +39,18 @@ export class MarketDataController {
 
   @Get('assets')
   @HttpCode(HttpStatus.OK)
-  getAssets(@Query() getAssetsDto: GetAssetsDto) {
-    return this.marketDataService.getAssets(getAssetsDto);
+  async findAll(@Query() query: QueryAssetsDto): Promise<Array<Asset>> {
+    const page = query?.page ?? 1;
+    let limit = query?.limit ?? 10;
+    if (limit > 50) {
+      limit = 50;
+    }
+    return await this.marketDataService.findManyWithPagination({
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
   }
 
   @Get('stocks-bars')

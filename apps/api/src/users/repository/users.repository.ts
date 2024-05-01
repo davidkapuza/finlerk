@@ -1,9 +1,8 @@
 import { UserEntity } from '@/shared/entities/user.entity';
 import { BaseAbstractRepository } from '@/shared/repositories/base/base.abstract.repository';
-import { IPaginationOptions } from '@/shared/types/pagination-options';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '@qbick/shared';
+import { IPaginationOptions, User } from '@qbick/shared';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { UserMapper } from '../../shared/mappers/user.mapper';
 import { FilterUserDto, SortUserDto } from '../dtos/query-user.dto';

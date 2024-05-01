@@ -1,5 +1,7 @@
-import { InfinityPaginationResultType } from '../types/infinity-pagination-result.type';
-import { IPaginationOptions } from '../types/pagination-options';
+import {
+  IPaginationOptions,
+  InfinityPaginationResultType,
+} from '@qbick/shared';
 
 export const infinityPagination = <T>(
   data: T[],

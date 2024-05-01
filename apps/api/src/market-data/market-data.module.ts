@@ -8,8 +8,12 @@ import { MarketDataService } from './market-data.service';
 import { RedisPubSubModule } from '@/redis-pub-sub/redis-pub-sub.module';
 import { NewTrade } from './events/new-trade.event';
 import { NewBar } from './events/new-bar.event';
+import { MarketDataRepository } from './repository/market-data.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AssetEntity } from '@/shared/entities/asset.entity';
 @Module({
   imports: [
+    TypeOrmModule.forFeature([AssetEntity]),
     RedisPubSubModule.registerEvents([
       NewTrade.publishableEventName,
       NewBar.publishableEventName,
@@ -33,8 +37,21 @@ import { NewBar } from './events/new-bar.event';
       inject: [ConfigService],
     }),
   ],
-  providers: [MarketDataService, MarketDataGateway],
+  providers: [
+    MarketDataService,
+    MarketDataGateway,
+    {
+      provide: 'MarketDataRepositoryInterface',
+      useClass: MarketDataRepository,
+    },
+  ],
   controllers: [MarketDataController],
-  exports: [MarketDataService],
+  exports: [
+    MarketDataService,
+    {
+      provide: 'MarketDataRepositoryInterface',
+      useClass: MarketDataRepository,
+    },
+  ],
 })
 export class MarketDataModule {}

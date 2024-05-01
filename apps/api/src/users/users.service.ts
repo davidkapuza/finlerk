@@ -2,14 +2,13 @@ import { AuthProvidersEnum } from '@/auth/enums/auth-providers.enum';
 import { UserEntity } from '@/shared/entities/user.entity';
 import { RolesEnum } from '@/shared/enums/roles.enum';
 import { StatusesEnum } from '@/shared/enums/statuses.enum';
-import { IPaginationOptions } from '@/shared/types/pagination-options';
 import {
   HttpStatus,
   Inject,
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { DeepPartial, NullableType, User } from '@qbick/shared';
+import { DeepPartial, IPaginationOptions, NullableType, User } from '@qbick/shared';
 import bcrypt from 'bcryptjs';
 import { FindOneOptions } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';

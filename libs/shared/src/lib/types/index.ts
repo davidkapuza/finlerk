@@ -4,6 +4,8 @@ export * from './shared/maybe.type';
 export * from './shared/nullable.type';
 export * from './shared/or-never.type';
 export * from './shared/writeable.type';
+export * from './shared/pagination-options';
+export * from './shared/infinity-pagination-result.type';
 
 export * from './auth/login-response.type';
 export * from './auth/login-request.type';

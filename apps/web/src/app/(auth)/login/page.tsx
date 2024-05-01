@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col justify-center m-auto p-4 sm:w-[350px] h-screen">
+    <div className="flex flex-col m-auto p-4 sm:w-[350px] h-screen justify-center">
       <div className="flex flex-col mb-8 space-y-3 text-start">
         <h1 className="text-2xl font-semibold tracking-tight">
           Login to qbick

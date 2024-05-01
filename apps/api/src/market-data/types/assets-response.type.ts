@@ -1,6 +1,8 @@
-import { AssetClassesEnum } from '../enums/asset-classes.enum';
-import { AssetExchangesEnum } from '../enums/asset-exchanges.enum';
-import { AssetStatusEnum } from '../enums/asset-status.enum';
+import {
+  AssetClassesEnum,
+  AssetExchangesEnum,
+  AssetStatusEnum,
+} from '@qbick/shared';
 
 export type AssetResponseType = {
   id: string;

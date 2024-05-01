@@ -20,12 +20,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiParam, ApiTags } from '@nestjs/swagger';
-import { NullableType, User } from '@qbick/shared';
+import { InfinityPaginationResultType, NullableType, User } from '@qbick/shared';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { QueryUserDto } from './dtos/query-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
-import { InfinityPaginationResultType } from '@/shared/types/infinity-pagination-result.type';
 import { RolesEnum } from '@/shared/enums/roles.enum';
 
 @ApiCookieAuth()

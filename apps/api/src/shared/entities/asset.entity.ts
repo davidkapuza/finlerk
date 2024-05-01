@@ -1,6 +1,3 @@
-import { Asset } from '@/market-data/domains/asset';
-import { AssetClassesEnum } from '@/market-data/enums/asset-classes.enum';
-import { AssetExchangesEnum } from '@/market-data/enums/asset-exchanges.enum';
 import {
   Column,
   CreateDateColumn,
@@ -11,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { RelationalEntityHelper } from '../utils/relational-entity-helper';
+import { Asset, AssetClassesEnum, AssetExchangesEnum } from '@qbick/shared';
 
 @Entity({
   name: 'asset',

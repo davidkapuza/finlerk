@@ -3,7 +3,12 @@ import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NewsResponseType, StockBarsResponseType } from '@qbick/shared';
+import {
+  Asset,
+  IPaginationOptions,
+  NewsResponseType,
+  StockBarsResponseType,
+} from '@qbick/shared';
 import { AxiosError } from 'axios';
 import { Cache } from 'cache-manager';
 import { catchError, firstValueFrom, map } from 'rxjs';
@@ -13,6 +18,7 @@ import { GetNewsDto } from './dtos/get-news.dto';
 import { stockBarsResponseTransformer } from './transformers/stock-bars-response.transformer';
 import { AlpacaBarsResponseType } from './types/alpaca-bars-response.type';
 import { AssetsResponseType } from './types/assets-response.type';
+import { MarketDataRepositoryInterface } from './repository/market-data-repository.interface';
 
 @Injectable()
 export class MarketDataService {
@@ -22,6 +28,8 @@ export class MarketDataService {
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     // @Inject(EVENT_EMITTER_TOKEN)
     // private readonly eventEmitter: EventEmitterInterface,
+    @Inject('MarketDataRepositoryInterface')
+    private readonly marketDataRepository: MarketDataRepositoryInterface,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService<ConfigType>,
   ) {}
@@ -44,6 +52,16 @@ export class MarketDataService {
         ),
     );
     return data;
+  }
+
+  async findManyWithPagination({
+    paginationOptions,
+  }: {
+    paginationOptions: IPaginationOptions;
+  }): Promise<Asset[]> {
+    return this.marketDataRepository.findManyWithPagination({
+      paginationOptions,
+    });
   }
 
   async getAssets(getAssetsDto?: GetAssetsDto): Promise<AssetsResponseType> {

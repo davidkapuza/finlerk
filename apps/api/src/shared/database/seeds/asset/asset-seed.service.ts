@@ -1,9 +1,9 @@
-import { AssetStatusEnum } from '@/market-data/enums/asset-status.enum';
 import { AssetMapper } from '@/market-data/mappers/asset.mapper';
 import { MarketDataService } from '@/market-data/market-data.service';
 import { AssetEntity } from '@/shared/entities/asset.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AssetStatusEnum } from '@qbick/shared';
 import { Repository } from 'typeorm';
 
 @Injectable()

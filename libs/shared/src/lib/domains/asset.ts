@@ -1,5 +1,5 @@
-import { AssetClassesEnum } from '../enums/asset-classes.enum';
-import { AssetExchangesEnum } from '../enums/asset-exchanges.enum';
+import { AssetClassesEnum } from '../enums/market-data/asset-classes.enum';
+import { AssetExchangesEnum } from '../enums/market-data/asset-exchanges.enum';
 
 export class Asset {
   id: string;

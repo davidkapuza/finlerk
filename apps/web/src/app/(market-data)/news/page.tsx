@@ -3,6 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Dot } from 'lucide-react';
 import Image from 'next/image';
 import { marketDataApi } from '../api/market-data.api';
+import React from 'react';
 
 export default async function NewsPage() {
   const newsData = await marketDataApi.getNews();
@@ -11,7 +12,7 @@ export default async function NewsPage() {
     <div className="container min-h-screen p-3 m-auto">
       <h1 className="py-6 text-3xl font-bold">News</h1>
       <div className="grid gap-4 mb-4 md:grid-cols-2">
-        {newsData.news.map((n, idx) => (
+        {newsData.news.map((n) => (
           <a
             key={n.id}
             href={n.url}
@@ -37,20 +38,22 @@ export default async function NewsPage() {
                   }}
                 />
                 <div className="flex flex-wrap items-center gap-2 mt-3">
-                  {n.symbols.map((symbol) => (
+                  {n.symbols.slice(0, 10).map((symbol) => (
                     <Badge key={symbol} variant="outline">
                       {symbol}
                     </Badge>
                   ))}
                 </div>
               </div>
-              <Image
-                src={n.images[0].url}
-                alt={n.headline}
-                width={200}
-                height={200}
-                className="object-cover transition-all rounded max-h-24 aspect-square"
-              />
+              {n.images[0]?.url ? (
+                <Image
+                  src={n.images[0]?.url}
+                  alt={n.headline}
+                  width={100}
+                  height={100}
+                  className="object-cover transition-all rounded max-h-24 aspect-square"
+                />
+              ) : null}
             </div>
           </a>
         ))}

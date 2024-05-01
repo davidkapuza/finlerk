@@ -5,7 +5,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import redisStore from 'cache-manager-redis-store';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { AlpacaModule } from './alpaca/alpaca.module';
 import alpacaConfig from './alpaca/config/alpaca.config';
 import { AuthModule } from './auth/auth.module';
 import authConfig from './auth/config/auth.config';
@@ -74,7 +73,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     MailModule,
     MailerModule,
     MarketDataModule,
-    AlpacaModule,
   ],
 })
 export class AppModule {}
