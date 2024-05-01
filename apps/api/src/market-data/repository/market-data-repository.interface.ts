@@ -6,7 +6,9 @@ export interface MarketDataRepositoryInterface
   extends BaseInterfaceRepository<AssetEntity> {
   findManyWithPagination({
     paginationOptions,
+    globalFilter,
   }: {
     paginationOptions: IPaginationOptions;
+    globalFilter?: string;
   }): Promise<AssetEntity[]>;
 }

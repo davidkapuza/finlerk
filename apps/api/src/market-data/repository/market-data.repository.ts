@@ -3,7 +3,7 @@ import { BaseAbstractRepository } from '@/shared/repositories/base/base.abstract
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IPaginationOptions } from '@qbick/shared';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { MarketDataRepositoryInterface } from './market-data-repository.interface';
 
 @Injectable()
@@ -20,10 +20,23 @@ export class MarketDataRepository
 
   async findManyWithPagination({
     paginationOptions,
+    globalFilter,
   }: {
     paginationOptions: IPaginationOptions;
+    globalFilter?: string;
   }): Promise<AssetEntity[]> {
+    const whereConditions:
+      | FindOptionsWhere<AssetEntity>
+      | FindOptionsWhere<AssetEntity>[] = [];
+    console.log(globalFilter);
+    if (globalFilter) {
+      whereConditions.push(
+        { name: ILike(`%${globalFilter}%`) },
+        { symbol: ILike(`%${globalFilter}%`) },
+      );
+    }
     return await this.repository.find({
+      where: whereConditions.length > 0 ? whereConditions : undefined,
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
     });

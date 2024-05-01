@@ -88,7 +88,7 @@ export function LoginForm() {
           )}
         />
 
-        <Button className="w-full" type="submit">
+        <Button className="w-full" type="submit" disabled={isLoading}>
           {isLoading ? (
             <Icons.spinner className="w-4 h-4 mr-2 animate-spin" />
           ) : (

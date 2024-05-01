@@ -1,6 +1,8 @@
 'use client';
 import { Icons } from '@qbick/lucide-react-icons';
 import {
+  Button,
+  Input,
   Skeleton,
   Table,
   TableBody,
@@ -19,6 +21,7 @@ import {
 import React from 'react';
 import useSWRInfinite from 'swr/infinite';
 import { marketDataApi } from '../../api/market-data.api';
+import Link from 'next/link';
 
 const PAGE_SIZE = 30;
 
@@ -26,6 +29,14 @@ const columns: ColumnDef<Asset>[] = [
   {
     accessorKey: 'symbol',
     header: 'Symbol',
+    cell: ({ row }) => {
+      const symbol: string = row.getValue('symbol');
+      return (
+        <Button asChild size="sm" variant="secondary">
+          <Link href={`/stocks/${symbol}`}>{symbol}</Link>
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'name',
@@ -37,11 +48,47 @@ const columns: ColumnDef<Asset>[] = [
   },
 ];
 
+function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 500,
+  ...props
+}: {
+  value: string | number;
+  onChange: (value: string | number) => void;
+  debounce?: number;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
+  const [value, setValue] = React.useState(initialValue);
+
+  React.useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value);
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [value, onChange, debounce]);
+
+  return (
+    <Input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}
+
 export default function AssetsTable() {
   const bottom = React.useRef(null);
+  const [globalFilter, setGlobalFilter] = React.useState('');
   const { data, size, setSize, isLoading } = useSWRInfinite(
     (index) =>
-      `/api/v1/market-data/assets?page=${index + 1}&limit=${PAGE_SIZE}`,
+      `/api/v1/market-data/assets?page=${
+        index + 1
+      }&limit=${PAGE_SIZE}&globalFilter=${globalFilter}`,
     marketDataApi.assetsFetcher,
     {
       revalidateOnFocus: false,
@@ -87,13 +134,28 @@ export default function AssetsTable() {
   const table = useReactTable({
     data: assets,
     columns: tableColumns,
+    state: {
+      globalFilter: globalFilter,
+    },
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
+    manualFiltering: true,
+    enableGlobalFilter: true,
     rowCount: assets.length,
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   return (
     <>
+      <div className="flex items-center py-4">
+        <DebouncedInput
+          type="text"
+          value={globalFilter}
+          placeholder="Search..."
+          onChange={table.setGlobalFilter}
+          className="max-w-sm"
+        />
+      </div>
       <div className="border rounded-md">
         <Table>
           <TableHeader>
@@ -150,7 +212,7 @@ export default function AssetsTable() {
           <span>Loading...</span>
         </div>
       ) : null}
-      <div ref={bottom} />
+      <div ref={bottom} className="mb-12" />
     </>
   );
 }

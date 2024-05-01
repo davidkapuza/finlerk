@@ -40,6 +40,7 @@ export class MarketDataController {
   @Get('assets')
   @HttpCode(HttpStatus.OK)
   async findAll(@Query() query: QueryAssetsDto): Promise<Array<Asset>> {
+    const globalFilter = query.globalFilter;
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
@@ -50,6 +51,7 @@ export class MarketDataController {
         page,
         limit,
       },
+      globalFilter,
     });
   }
 

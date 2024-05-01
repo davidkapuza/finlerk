@@ -3,7 +3,6 @@ import { formatDistanceToNow } from 'date-fns';
 import { Dot } from 'lucide-react';
 import Image from 'next/image';
 import { marketDataApi } from '../api/market-data.api';
-import React from 'react';
 
 export default async function NewsPage() {
   const newsData = await marketDataApi.getNews();

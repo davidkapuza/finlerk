@@ -56,11 +56,14 @@ export class MarketDataService {
 
   async findManyWithPagination({
     paginationOptions,
+    globalFilter,
   }: {
     paginationOptions: IPaginationOptions;
+    globalFilter?: string;
   }): Promise<Asset[]> {
     return this.marketDataRepository.findManyWithPagination({
       paginationOptions,
+      globalFilter,
     });
   }
 
