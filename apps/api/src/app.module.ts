@@ -19,6 +19,8 @@ import { ConfigType } from './shared/config/config.type';
 import databaseConfig from './shared/database/config/database.config';
 import { TypeOrmConfigService } from './shared/database/typeorm-config.service';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AuthGoogleModule } from './auth-google/auth-google.module';
+import googleConfig from './auth-google/config/google.config';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -31,6 +33,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         mailConfig,
         redisConfig,
         alpacaConfig,
+        googleConfig,
       ],
       envFilePath: ['.env'],
     }),
@@ -73,6 +76,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MailModule,
     MailerModule,
     MarketDataModule,
+    AuthGoogleModule,
   ],
 })
 export class AppModule {}

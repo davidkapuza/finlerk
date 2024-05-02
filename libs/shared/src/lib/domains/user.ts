@@ -3,7 +3,7 @@ import { Role } from './role';
 import { Status } from './status';
 
 export class User {
-  id: number | string;
+  id: number;
 
   @Expose({ groups: ['me', 'admin'] })
   email: string | null;

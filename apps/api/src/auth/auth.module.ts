@@ -25,6 +25,7 @@ import { SessionModule } from '@/session/session.module';
     UserModule,
     SessionModule,
   ],
+  exports: [AuthService],
   providers: [
     DoesNotExist,
     DoesExist,

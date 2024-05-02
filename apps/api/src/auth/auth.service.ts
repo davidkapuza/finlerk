@@ -18,6 +18,7 @@ import { randomStringGenerator } from '@nestjs/common/utils/random-string-genera
 import {
   EmailLoginDto,
   LoginResponseType,
+  NullableType,
   RegisterDto,
   Session,
   User,
@@ -26,6 +27,8 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { AuthProvidersEnum } from './enums/auth-providers.enum';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
+import { SocialInterface } from '@/shared/interfaces/social.interface';
+import { LoginResponseDto } from '@/shared/dtos/login-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -188,6 +191,94 @@ export class AuthService {
     return {
       refreshToken,
       accessToken,
+      user,
+    };
+  }
+
+  async validateSocialLogin(
+    authProvider: string,
+    socialData: SocialInterface,
+  ): Promise<LoginResponseDto> {
+    let user: NullableType<User> = null;
+    const socialEmail = socialData.email?.toLowerCase();
+    let userByEmail: NullableType<User> = null;
+
+    if (socialEmail) {
+      userByEmail = await this.userService.findOne({
+        where: {
+          email: socialEmail,
+        },
+      });
+    }
+
+    if (socialData.id) {
+      user = await this.userService.findOne({
+        where: {
+          socialId: socialData.id,
+          provider: authProvider,
+        },
+      });
+    }
+
+    if (user) {
+      if (socialEmail && !userByEmail) {
+        user.email = socialEmail;
+      }
+      await this.userService.update(user.id, user);
+    } else if (userByEmail) {
+      user = userByEmail;
+    } else if (socialData.id) {
+      const role = {
+        id: RolesEnum.user,
+      };
+      const status = {
+        id: StatusesEnum.active,
+      };
+
+      user = await this.userService.create({
+        email: socialEmail ?? null,
+        firstName: socialData.firstName ?? null,
+        lastName: socialData.lastName ?? null,
+        socialId: socialData.id,
+        provider: authProvider,
+        role,
+        status,
+      });
+
+      user = await this.userService.findOne({
+        where: { id: user?.id },
+      });
+    }
+
+    if (!user) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          user: 'userNotFound',
+        },
+      });
+    }
+
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    const session = await this.sessionService.createSession({
+      user,
+      hash,
+    });
+
+    const { accessToken, refreshToken } = await this.getTokensData({
+      id: user.id,
+      role: user.role,
+      sessionId: session.id,
+      hash,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
       user,
     };
   }

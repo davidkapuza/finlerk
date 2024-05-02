@@ -18,11 +18,14 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { authApi } from '../../lib/api/auth.api';
+import { useSearchParams } from 'next/navigation';
 
 const resolver = classValidatorResolver(EmailLoginDto);
 
-export function LoginForm() {
+export function LoginForm({ googleLoginUrl }: { googleLoginUrl: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const code = searchParams.get('code');
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -44,6 +47,21 @@ export function LoginForm() {
       .catch((error) => handleApiError(error, setError))
       .finally(() => setIsLoading(false));
   }
+
+  function onGoogleLogin() {
+    setIsLoading(true);
+    window.location.replace(googleLoginUrl);
+  }
+
+  React.useEffect(() => {
+    if (code) {
+      setIsLoading(true);
+      authApi
+        .googleLogin({ code })
+        .then(() => router.push('/news'))
+        .finally(() => setIsLoading(false));
+    }
+  }, [code, router]);
 
   return (
     <Form {...form}>
@@ -111,6 +129,7 @@ export function LoginForm() {
             type="button"
             className="flex-1"
             disabled={isLoading}
+            onClick={onGoogleLogin}
           >
             <Icons.google className="w-4 h-4 mr-2" />
             Google

@@ -1,5 +1,6 @@
 import { Api } from '@/lib/api';
 import {
+  AuthGoogleLoginDto,
   ConfirmEmailType,
   LoginRequestType,
   RegisterRequestType,
@@ -18,6 +19,27 @@ export class AuthApi extends Api {
   public login = (payload: LoginRequestType): Promise<User> => {
     return this.post<User, LoginRequestType>(
       '/api/v1/auth/login',
+      payload,
+    ).then(this.success);
+  };
+
+  /**
+   * Get google login url.
+   *.
+   * @returns {Promise<string>} string - login url,
+   */
+  public getGoogleLoginUrl = (): Promise<string> => {
+    return this.get<string>('/api/v1/auth/google/login-url').then(this.success);
+  };
+
+  /**
+   * Get google login url.
+   *.
+   * @returns {Promise<string>} string - login url,
+   */
+  public googleLogin = (payload: AuthGoogleLoginDto): Promise<User> => {
+    return this.post<User, AuthGoogleLoginDto>(
+      '/api/v1/auth/google/login',
       payload,
     ).then(this.success);
   };

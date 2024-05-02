@@ -19,10 +19,14 @@ import { RegisterDto, RegisterRequestType } from '@qbick/shared';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { authApi } from '../../lib/api/auth.api';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const resolver = classValidatorResolver(RegisterDto);
 
-export function RegisterForm() {
+export function RegisterForm({ googleLoginUrl }: { googleLoginUrl: string }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const code = searchParams.get('code');
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const form = useForm<RegisterRequestType>({
@@ -52,6 +56,21 @@ export function RegisterForm() {
       .catch((error) => handleApiError(error, setError))
       .finally(() => setIsLoading(false));
   }
+
+  function onGoogleLogin() {
+    setIsLoading(true);
+    window.location.replace(googleLoginUrl);
+  }
+
+  React.useEffect(() => {
+    if (code) {
+      setIsLoading(true);
+      authApi
+        .googleLogin({ code })
+        .then(() => router.push('/news'))
+        .finally(() => setIsLoading(false));
+    }
+  }, [code, router]);
 
   return (
     <Form {...form}>
@@ -177,6 +196,7 @@ export function RegisterForm() {
             type="button"
             className="flex-1"
             disabled={isLoading}
+            onClick={onGoogleLogin}
           >
             <Icons.google className="w-4 h-4 mr-2" />
             Google

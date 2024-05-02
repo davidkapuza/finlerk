@@ -4,6 +4,7 @@ import { DatabaseConfig } from '../database/config/database-config.type';
 import { MailConfig } from '@/mail/config/mail-config.type';
 import { RedisConfig } from '@/redis-pub-sub/config/redis-config.type';
 import { AlpacaConfig } from '@/alpaca/config/alpaca-config.type';
+import { GoogleConfig } from '@/auth-google/config/google-config.type';
 
 export type ConfigType = {
   app: AppConfig;
@@ -12,4 +13,5 @@ export type ConfigType = {
   mail: MailConfig;
   redis: RedisConfig;
   alpaca: AlpacaConfig;
+  google: GoogleConfig;
 };
