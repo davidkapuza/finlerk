@@ -18,7 +18,7 @@ export default async function NewsPage() {
             target="_blank"
             className="overflow-hidden cursor-pointer rounded-xl"
           >
-            <div className="flex flex-row items-center gap-5 px-4 hover:scale-105">
+            <div className="flex flex-row items-center justify-between gap-5 px-4 hover:scale-105">
               <div className="py-3">
                 <h2 className="font-semibold line-clamp-2">{n.headline}</h2>
                 <div className="flex flex-row items-center mb-3">
