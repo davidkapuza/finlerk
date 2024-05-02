@@ -7,7 +7,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@qbick/shadcn-ui';
+} from '@finlerk/shadcn-ui';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import * as React from 'react';
 import { Button } from 'react-day-picker';

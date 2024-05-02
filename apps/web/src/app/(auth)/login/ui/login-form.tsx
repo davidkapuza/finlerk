@@ -1,7 +1,7 @@
 'use client';
 import { handleApiError } from '@/utils/handle-api-error';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { Icons } from '@qbick/lucide-react-icons';
+import { Icons } from '@finlerk/lucide-react-icons';
 import {
   Button,
   Form,
@@ -12,8 +12,8 @@ import {
   FormLabel,
   FormMessage,
   Input,
-} from '@qbick/shadcn-ui';
-import { EmailLoginDto, LoginRequestType } from '@qbick/shared';
+} from '@finlerk/shadcn-ui';
+import { EmailLoginDto, LoginRequestType } from '@finlerk/shared';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -133,15 +133,6 @@ export function LoginForm({ googleLoginUrl }: { googleLoginUrl: string }) {
           >
             <Icons.google className="w-4 h-4 mr-2" />
             Google
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            className="flex-1"
-            disabled={isLoading}
-          >
-            <Icons.gitHub className="w-4 h-4 mr-2" />
-            Github
           </Button>
         </div>
       </form>

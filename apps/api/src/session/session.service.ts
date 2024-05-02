@@ -3,7 +3,7 @@ import { UserEntity } from '@/shared/entities/user.entity';
 import { SessionMapper } from '@/shared/mappers/session.mapper';
 import { SessionRepositoryInterface } from '@/shared/repositories/session/sessiony-repository.interface';
 import { Inject, Injectable } from '@nestjs/common';
-import { NullableType, Session, User } from '@qbick/shared';
+import { NullableType, Session, User } from '@finlerk/shared';
 import { FindOneOptions, Not } from 'typeorm';
 
 @Injectable()

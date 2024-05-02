@@ -1,7 +1,7 @@
 import {
   IPaginationOptions,
   InfinityPaginationResultType,
-} from '@qbick/shared';
+} from '@finlerk/shared';
 
 export const infinityPagination = <T>(
   data: T[],

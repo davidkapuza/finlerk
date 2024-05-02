@@ -5,8 +5,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
   Separator,
-} from '@qbick/shadcn-ui';
-import { cn } from '@qbick/shadcn-ui/lib/utils';
+} from '@finlerk/shadcn-ui';
+import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import { BarChart3 } from 'lucide-react';
 import * as React from 'react';
 import { Nav } from './nav';

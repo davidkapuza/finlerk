@@ -20,7 +20,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiParam, ApiTags } from '@nestjs/swagger';
-import { InfinityPaginationResultType, NullableType, User } from '@qbick/shared';
+import {
+  InfinityPaginationResultType,
+  NullableType,
+  User,
+} from '@finlerk/shared';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { QueryUserDto } from './dtos/query-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';

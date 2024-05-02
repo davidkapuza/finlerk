@@ -7,7 +7,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@qbick/shadcn-ui';
+} from '@finlerk/shadcn-ui';
 import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
 

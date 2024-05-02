@@ -5,8 +5,8 @@ import {
   TooltipContent,
   TooltipTrigger,
   buttonVariants,
-} from '@qbick/shadcn-ui';
-import { cn } from '@qbick/shadcn-ui/lib/utils';
+} from '@finlerk/shadcn-ui';
+import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 

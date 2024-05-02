@@ -1,10 +1,10 @@
 'use client';
 
-import { Icons } from '@qbick/lucide-react-icons';
+import { Icons } from '@finlerk/lucide-react-icons';
 import Link from 'next/link';
 import { siteConfig } from '../config/site';
 import { NavItem } from '../types/nav';
-import { cn } from '@qbick/shadcn-ui/lib/utils';
+import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import { useSelectedLayoutSegment } from 'next/navigation';
 
 interface MainNavProps {

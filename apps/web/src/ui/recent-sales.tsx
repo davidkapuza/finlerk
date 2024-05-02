@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@qbick/shadcn-ui';
+import { Avatar, AvatarFallback, AvatarImage } from '@finlerk/shadcn-ui';
 
 export function RecentSales() {
   return (

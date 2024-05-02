@@ -8,7 +8,7 @@ import {
   IPaginationOptions,
   NewsResponseType,
   StockBarsResponseType,
-} from '@qbick/shared';
+} from '@finlerk/shared';
 import { AxiosError } from 'axios';
 import { Cache } from 'cache-manager';
 import { catchError, firstValueFrom, map } from 'rxjs';

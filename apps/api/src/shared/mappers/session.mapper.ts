@@ -1,4 +1,4 @@
-import { Session } from '@qbick/shared';
+import { Session } from '@finlerk/shared';
 import { SessionEntity } from '../entities/session.entity';
 import { UserMapper } from './user.mapper';
 import { UserEntity } from '../entities/user.entity';

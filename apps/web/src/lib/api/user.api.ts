@@ -1,5 +1,5 @@
 import { Api } from '@/lib/api';
-import { User } from '@qbick/shared';
+import { User } from '@finlerk/shared';
 import { cache } from 'react';
 
 export class UserApi extends Api {

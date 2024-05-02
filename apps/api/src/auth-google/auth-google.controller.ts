@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGoogleLoginDto, User } from '@qbick/shared';
+import { AuthGoogleLoginDto, User } from '@finlerk/shared';
 import { CookieOptions, Response } from 'express';
 import ms from 'ms';
 import { AuthService } from '../auth/auth.service';

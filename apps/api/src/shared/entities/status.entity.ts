@@ -1,4 +1,4 @@
-import { Status } from '@qbick/shared';
+import { Status } from '@finlerk/shared';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { RelationalEntityHelper } from '../utils/relational-entity-helper';
 

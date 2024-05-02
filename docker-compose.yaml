@@ -4,7 +4,7 @@ services:
     ports:
       - ${DATABASE_PORT}:5432
     volumes:
-      - qbick-db:/var/lib/postgresql/data
+      - finlerk-db:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
@@ -41,4 +41,4 @@ services:
 #     - ${APP_PORT}:${APP_PORT}
 
 volumes:
-  qbick-db:
+  finlerk-db:

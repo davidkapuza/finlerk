@@ -22,7 +22,7 @@ import {
   RegisterDto,
   Session,
   User,
-} from '@qbick/shared';
+} from '@finlerk/shared';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { AuthProvidersEnum } from './enums/auth-providers.enum';

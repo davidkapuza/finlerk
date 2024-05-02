@@ -3,7 +3,7 @@ import { MarketDataService } from '@/market-data/market-data.service';
 import { AssetEntity } from '@/shared/entities/asset.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AssetStatusEnum } from '@qbick/shared';
+import { AssetStatusEnum } from '@finlerk/shared';
 import { Repository } from 'typeorm';
 
 @Injectable()

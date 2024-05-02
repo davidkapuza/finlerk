@@ -1,4 +1,4 @@
-import { Badge } from '@qbick/shadcn-ui';
+import { Badge } from '@finlerk/shadcn-ui';
 import { formatDistanceToNow } from 'date-fns';
 import { Dot } from 'lucide-react';
 import Image from 'next/image';

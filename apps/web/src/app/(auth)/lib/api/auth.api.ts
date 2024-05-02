@@ -5,7 +5,7 @@ import {
   LoginRequestType,
   RegisterRequestType,
   User,
-} from '@qbick/shared';
+} from '@finlerk/shared';
 
 export class AuthApi extends Api {
   /**

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { ProfileSidebar } from './ui/profile-sidebar';
-import { Separator } from '@qbick/shadcn-ui';
+import { Separator } from '@finlerk/shadcn-ui';
 import { Header } from '@/ui/header';
 
 export const metadata: Metadata = {

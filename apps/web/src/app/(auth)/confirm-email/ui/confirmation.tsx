@@ -1,12 +1,12 @@
 'use client';
 
-import { Icons } from '@qbick/lucide-react-icons';
+import { Icons } from '@finlerk/lucide-react-icons';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { authApi } from '../../lib/api/auth.api';
 import { useRouter } from 'next/navigation';
 import { handleApiError } from '@/utils/handle-api-error';
-import { toast } from '@qbick/shadcn-ui';
+import { toast } from '@finlerk/shadcn-ui';
 
 export default function Confirmation() {
   const router = useRouter();

@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional, MinLength } from 'class-validator';
 import { RoleDto } from '@/shared/dtos/role.dto';
 import { StatusDto } from '@/shared/dtos/status.dto';
-import { lowerCaseTransformer } from '@qbick/shared';
+import { lowerCaseTransformer } from '@finlerk/shared';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ example: 'test1@example.com' })

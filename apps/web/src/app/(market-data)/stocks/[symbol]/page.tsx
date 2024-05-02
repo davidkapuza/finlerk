@@ -1,6 +1,6 @@
 import { StockChart } from '../ui/stock-chart';
 // import api from '../../../lib/api';
-import { Separator } from '@qbick/shadcn-ui';
+import { Separator } from '@finlerk/shadcn-ui';
 
 // async function getHistoricalBars(symbol: string) {
 //   return await api

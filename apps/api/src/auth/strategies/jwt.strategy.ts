@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayloadType } from './types/jwt-payload.type';
 import { ConfigType } from '@/shared/config/config.type';
-import { OrNeverType } from '@qbick/shared';
+import { OrNeverType } from '@finlerk/shared';
 import { Request } from 'express';
 
 @Injectable()

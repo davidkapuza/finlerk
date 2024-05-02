@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { AssetAttributesEnum, AssetExchangesEnum } from '@qbick/shared';
+import { AssetAttributesEnum, AssetExchangesEnum } from '@finlerk/shared';
 
 export class GetAssetsDto {
   @ApiPropertyOptional({

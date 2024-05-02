@@ -15,7 +15,7 @@ import {
 import { RoleEntity } from './role.entity';
 import { StatusEntity } from './status.entity';
 import { RelationalEntityHelper } from '../utils/relational-entity-helper';
-import { User } from '@qbick/shared';
+import { User } from '@finlerk/shared';
 import bcrypt from 'bcryptjs';
 import { AuthProvidersEnum } from '@/auth/enums/auth-providers.enum';
 

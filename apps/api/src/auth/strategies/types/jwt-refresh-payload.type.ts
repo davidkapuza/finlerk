@@ -1,4 +1,4 @@
-import { Session } from '@qbick/shared';
+import { Session } from '@finlerk/shared';
 
 export type JwtRefreshPayloadType = {
   sessionId: Session['id'];

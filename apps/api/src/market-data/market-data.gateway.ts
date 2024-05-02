@@ -17,7 +17,7 @@ import { Observable, from, map } from 'rxjs';
 import { type Socket } from 'socket.io';
 import { NewBar } from './events/new-bar.event';
 import { NewTrade } from './events/new-trade.event';
-import { SubscribableStreamsEnum } from '@qbick/shared';
+import { SubscribableStreamsEnum } from '@finlerk/shared';
 
 @WebSocketGateway({
   pingInterval: 30000,

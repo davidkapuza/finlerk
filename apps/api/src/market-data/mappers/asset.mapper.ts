@@ -1,5 +1,5 @@
 import { AssetEntity } from '@/shared/entities/asset.entity';
-import { Asset } from '@qbick/shared';
+import { Asset } from '@finlerk/shared';
 
 export class AssetMapper {
   static toDomain(raw: AssetEntity): Asset {

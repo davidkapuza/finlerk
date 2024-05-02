@@ -8,7 +8,12 @@ import {
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { DeepPartial, IPaginationOptions, NullableType, User } from '@qbick/shared';
+import {
+  DeepPartial,
+  IPaginationOptions,
+  NullableType,
+  User,
+} from '@finlerk/shared';
 import bcrypt from 'bcryptjs';
 import { FindOneOptions } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';

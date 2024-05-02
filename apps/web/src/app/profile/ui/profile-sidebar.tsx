@@ -1,7 +1,7 @@
 'use client';
 
-import { buttonVariants } from '@qbick/shadcn-ui';
-import { cn } from '@qbick/shadcn-ui/lib/utils';
+import { buttonVariants } from '@finlerk/shadcn-ui';
+import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 

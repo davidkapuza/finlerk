@@ -1,4 +1,4 @@
-import { Separator } from '@qbick/shadcn-ui';
+import { Separator } from '@finlerk/shadcn-ui';
 // import api from '../../lib/api';
 
 // async function getUser() {

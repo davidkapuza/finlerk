@@ -1,5 +1,5 @@
 import { Api } from '@/lib/api';
-import { Asset, NewsResponseType } from '@qbick/shared';
+import { Asset, NewsResponseType } from '@finlerk/shared';
 
 export class MarketDataApi extends Api {
   /**

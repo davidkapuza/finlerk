@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import { Asset } from '@qbick/shared';
+import { Asset } from '@finlerk/shared';
 import { GetBarsDto } from './dtos/get-bars.dto';
 import { GetNewsDto } from './dtos/get-news.dto';
 import { QueryAssetsDto } from './dtos/query-assets.dto';

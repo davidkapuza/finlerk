@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { ConfigType } from '@/shared/config/config.type';
 import { SocialInterface } from '@/shared/interfaces/social.interface';
-import { AuthGoogleLoginDto } from '@qbick/shared';
+import { AuthGoogleLoginDto } from '@finlerk/shared';
 
 @Injectable()
 export class AuthGoogleService {

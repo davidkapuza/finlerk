@@ -2,7 +2,7 @@ import { AssetEntity } from '@/shared/entities/asset.entity';
 import { BaseAbstractRepository } from '@/shared/repositories/base/base.abstract.repository';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IPaginationOptions } from '@qbick/shared';
+import { IPaginationOptions } from '@finlerk/shared';
 import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { MarketDataRepositoryInterface } from './market-data-repository.interface';
 

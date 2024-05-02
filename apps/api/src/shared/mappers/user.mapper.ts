@@ -1,4 +1,4 @@
-import { User } from '@qbick/shared';
+import { User } from '@finlerk/shared';
 import { UserEntity } from '../entities/user.entity';
 import { RoleEntity } from '../entities/role.entity';
 import { StatusEntity } from '../entities/status.entity';

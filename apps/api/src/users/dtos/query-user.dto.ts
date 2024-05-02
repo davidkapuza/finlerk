@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
 import { RoleDto } from '@/shared/dtos/role.dto';
-import { User } from '@qbick/shared';
+import { User } from '@finlerk/shared';
 
 export class FilterUserDto {
   @ApiProperty({ type: RoleDto })

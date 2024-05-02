@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@qbick/shadcn-ui';
+} from '@finlerk/shadcn-ui';
 import Link from 'next/link';
 
 export async function NavMenu() {

@@ -2,7 +2,7 @@
 
 import { handleApiError } from '@/utils/handle-api-error';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { Icons } from '@qbick/lucide-react-icons';
+import { Icons } from '@finlerk/lucide-react-icons';
 import {
   Button,
   Form,
@@ -14,8 +14,8 @@ import {
   FormMessage,
   Input,
   toast,
-} from '@qbick/shadcn-ui';
-import { RegisterDto, RegisterRequestType } from '@qbick/shared';
+} from '@finlerk/shadcn-ui';
+import { RegisterDto, RegisterRequestType } from '@finlerk/shared';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { authApi } from '../../lib/api/auth.api';
@@ -200,15 +200,6 @@ export function RegisterForm({ googleLoginUrl }: { googleLoginUrl: string }) {
           >
             <Icons.google className="w-4 h-4 mr-2" />
             Google
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            className="flex-1"
-            disabled={isLoading}
-          >
-            <Icons.gitHub className="w-4 h-4 mr-2" />
-            Github
           </Button>
         </div>
       </form>

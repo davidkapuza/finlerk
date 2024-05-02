@@ -1,6 +1,6 @@
 import { SessionEntity } from '@/shared/entities/session.entity';
 import { BaseInterfaceRepository } from '../base/base.interface.repository';
-import { Session } from '@qbick/shared';
+import { Session } from '@finlerk/shared';
 
 export interface SessionRepositoryInterface
   extends BaseInterfaceRepository<SessionEntity> {

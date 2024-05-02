@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { RelationalEntityHelper } from '../utils/relational-entity-helper';
-import { Asset, AssetClassesEnum, AssetExchangesEnum } from '@qbick/shared';
+import { Asset, AssetClassesEnum, AssetExchangesEnum } from '@finlerk/shared';
 
 @Entity({
   name: 'asset',

@@ -1,5 +1,5 @@
-import { Toaster, TooltipProvider } from '@qbick/shadcn-ui';
-import { cn } from '@qbick/shadcn-ui/lib/utils';
+import { Toaster, TooltipProvider } from '@finlerk/shadcn-ui';
+import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import { Metadata } from 'next';
 import { siteConfig } from '../config/site';
 import { fontSans } from '../lib/fonts';

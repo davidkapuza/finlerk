@@ -1,5 +1,5 @@
 import { ApiErrorType } from '@/lib/api/types/api-error.type';
-import { toast } from '@qbick/shadcn-ui';
+import { toast } from '@finlerk/shadcn-ui';
 import { ErrorOption } from 'react-hook-form';
 
 export const handleApiError = <T>(

@@ -1,4 +1,4 @@
-import { StockBarsResponseType } from '@qbick/shared';
+import { StockBarsResponseType } from '@finlerk/shared';
 import { AxiosResponse } from 'axios';
 import { AlpacaBarsResponseType } from '../types/alpaca-bars-response.type';
 

@@ -2,7 +2,7 @@ import { BaseInterfaceRepository } from '@/shared/repositories/base/base.interfa
 import { DeepPartial } from 'typeorm';
 import { FilterUserDto, SortUserDto } from '../dtos/query-user.dto';
 import { UserEntity } from '@/shared/entities/user.entity';
-import { IPaginationOptions, User } from '@qbick/shared';
+import { IPaginationOptions, User } from '@finlerk/shared';
 
 export interface UsersRepositoryInterface
   extends BaseInterfaceRepository<UserEntity> {

@@ -2,7 +2,7 @@ import {
   AssetClassesEnum,
   AssetExchangesEnum,
   AssetStatusEnum,
-} from '@qbick/shared';
+} from '@finlerk/shared';
 
 export type AssetResponseType = {
   id: string;

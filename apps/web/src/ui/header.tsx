@@ -1,5 +1,5 @@
-import { Icons } from '@qbick/lucide-react-icons';
-import { buttonVariants } from '@qbick/shadcn-ui';
+import { Icons } from '@finlerk/lucide-react-icons';
+import { buttonVariants } from '@finlerk/shadcn-ui';
 import Link from 'next/link';
 import { siteConfig } from '../config/site';
 import { Navigation } from './navbar';

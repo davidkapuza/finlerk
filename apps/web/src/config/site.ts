@@ -15,6 +15,6 @@ export const siteConfig = {
     },
   ],
   links: {
-    github: 'https://github.com/davidkapuza/qbick',
+    github: 'https://github.com/davidkapuza/finlerk',
   },
 };

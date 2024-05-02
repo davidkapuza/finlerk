@@ -1,5 +1,5 @@
 'use client';
-import { Icons } from '@qbick/lucide-react-icons';
+import { Icons } from '@finlerk/lucide-react-icons';
 import {
   Button,
   Input,
@@ -10,8 +10,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@qbick/shadcn-ui';
-import { Asset } from '@qbick/shared';
+} from '@finlerk/shadcn-ui';
+import { Asset } from '@finlerk/shared';
 import {
   ColumnDef,
   flexRender,

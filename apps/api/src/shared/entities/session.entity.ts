@@ -1,4 +1,4 @@
-import { Session } from '@qbick/shared';
+import { Session } from '@finlerk/shared';
 import {
   Column,
   CreateDateColumn,

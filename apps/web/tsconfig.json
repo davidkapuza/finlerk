@@ -20,12 +20,12 @@
     ],
     "types": ["jest", "node"],
     "paths": {
-      "@qbick/lucide-react-icons": ["libs/lucide-react-icons/src/index.ts"],
-      "@qbick/lucide-react-icons/*": ["libs/lucide-react-icons/src/*"],
-      "@qbick/shadcn-ui": ["libs/shadcn-ui/src/index.ts"],
-      "@qbick/shadcn-ui/*": ["libs/shadcn-ui/src/*"],
-      "@qbick/shared": ["libs/shared/src/index.ts"],
-      "@qbick/shared/*": ["libs/shared/src/*"],
+      "@finlerk/lucide-react-icons": ["libs/lucide-react-icons/src/index.ts"],
+      "@finlerk/lucide-react-icons/*": ["libs/lucide-react-icons/src/*"],
+      "@finlerk/shadcn-ui": ["libs/shadcn-ui/src/index.ts"],
+      "@finlerk/shadcn-ui/*": ["libs/shadcn-ui/src/*"],
+      "@finlerk/shared": ["libs/shared/src/index.ts"],
+      "@finlerk/shared/*": ["libs/shared/src/*"],
       "@/*": ["apps/web/src/*"]
     }
   },

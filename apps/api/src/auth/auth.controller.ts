@@ -16,7 +16,7 @@ import {
   EmailLoginDto,
   RegisterDto,
   User,
-} from '@qbick/shared';
+} from '@finlerk/shared';
 import { CookieOptions, Response } from 'express';
 import ms from 'ms';
 import { AuthService } from './auth.service';

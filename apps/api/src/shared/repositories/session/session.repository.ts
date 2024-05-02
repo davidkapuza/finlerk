@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { SessionRepositoryInterface } from './sessiony-repository.interface';
 import { BaseAbstractRepository } from '../base/base.abstract.repository';
 import { SessionEntity } from '@/shared/entities/session.entity';
-import { Session } from '@qbick/shared';
+import { Session } from '@finlerk/shared';
 import { SessionMapper } from '@/shared/mappers/session.mapper';
 
 @Injectable()

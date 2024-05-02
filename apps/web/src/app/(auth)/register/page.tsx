@@ -19,7 +19,7 @@ export default async function RegisterPage() {
     <div className="flex flex-col m-auto p-4 sm:w-[350px] h-screen justify-center">
       <div className="flex flex-col text-start">
         <h1 className="text-2xl font-semibold tracking-tight">
-          Get started with qbick
+          Get started with finlerk
         </h1>
         <p className="mt-3 mb-8 text-sm text-muted-foreground">
           Unlock the power of informed investing and stay ahead of market

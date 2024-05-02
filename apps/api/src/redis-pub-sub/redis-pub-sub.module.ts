@@ -13,7 +13,7 @@ import {
   MODULE_OPTIONS_TOKEN,
 } from './redis-pub-sub.module-definition';
 import { RedisConfig } from './config/redis-config.type';
-import { Writeable } from '@qbick/shared';
+import { Writeable } from '@finlerk/shared';
 
 export const REDIS_PUB_CLIENT = 'REDIS_PUB_CLIENT';
 export const REDIS_SUB_CLIENT = 'REDIS_SUB_CLIENT';
