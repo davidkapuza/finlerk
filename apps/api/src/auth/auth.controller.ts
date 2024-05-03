@@ -1,8 +1,16 @@
+import { TokensCookieOptionsInterface } from '@/shared/interfaces/tokens-cookie-options.inerface';
+import {
+  ConfirmEmailDto,
+  EmailLoginDto,
+  RegisterDto,
+  User,
+} from '@finlerk/shared';
 import {
   Body,
   Controller,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Request,
   Res,
@@ -11,17 +19,8 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import {
-  ConfirmEmailDto,
-  EmailLoginDto,
-  RegisterDto,
-  User,
-} from '@finlerk/shared';
-import { CookieOptions, Response } from 'express';
-import ms from 'ms';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { ConfigService } from '@nestjs/config';
-import { ConfigType } from '@/shared/config/config.type';
 
 @ApiTags('Auth')
 @Controller({
@@ -29,36 +28,11 @@ import { ConfigType } from '@/shared/config/config.type';
   version: '1',
 })
 export class AuthController {
-  accessTokenCookieOptions: CookieOptions;
-  refreshTokenCookieOptions: CookieOptions;
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService<ConfigType>,
-  ) {
-    const accessExpires = ms(
-      this.configService.getOrThrow<string>('auth.accessExpires', {
-        infer: true,
-      }),
-    );
-    const refreshExpires = ms(
-      this.configService.getOrThrow<string>('auth.refreshExpires', {
-        infer: true,
-      }),
-    );
-
-    this.accessTokenCookieOptions = {
-      expires: new Date(Date.now() + accessExpires),
-      maxAge: accessExpires,
-      httpOnly: true,
-      sameSite: 'lax',
-    };
-    this.refreshTokenCookieOptions = {
-      expires: new Date(Date.now() + refreshExpires),
-      maxAge: refreshExpires,
-      httpOnly: true,
-      sameSite: 'lax',
-    };
-  }
+    @Inject('TOKENS_COOKIE_OPTIONS')
+    private readonly tokensCookieOptions: TokensCookieOptionsInterface,
+  ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -76,8 +50,16 @@ export class AuthController {
       confirmEmailDto.hash,
     );
     res
-      .cookie('access_token', accessToken, this.accessTokenCookieOptions)
-      .cookie('refresh_token', refreshToken, this.refreshTokenCookieOptions);
+      .cookie(
+        'access_token',
+        accessToken,
+        this.tokensCookieOptions.accessTokenCookieOptions,
+      )
+      .cookie(
+        'refresh_token',
+        refreshToken,
+        this.tokensCookieOptions.refreshTokenCookieOptions,
+      );
   }
 
   @SerializeOptions({
@@ -93,8 +75,16 @@ export class AuthController {
       loginDto,
     );
     res
-      .cookie('access_token', accessToken, this.accessTokenCookieOptions)
-      .cookie('refresh_token', refreshToken, this.refreshTokenCookieOptions);
+      .cookie(
+        'access_token',
+        accessToken,
+        this.tokensCookieOptions.accessTokenCookieOptions,
+      )
+      .cookie(
+        'refresh_token',
+        refreshToken,
+        this.tokensCookieOptions.refreshTokenCookieOptions,
+      );
     return user;
   }
 
@@ -115,8 +105,16 @@ export class AuthController {
     });
 
     res
-      .cookie('access_token', accessToken, this.accessTokenCookieOptions)
-      .cookie('refresh_token', refreshToken, this.refreshTokenCookieOptions);
+      .cookie(
+        'access_token',
+        accessToken,
+        this.tokensCookieOptions.accessTokenCookieOptions,
+      )
+      .cookie(
+        'refresh_token',
+        refreshToken,
+        this.tokensCookieOptions.refreshTokenCookieOptions,
+      );
   }
 
   @ApiCookieAuth()

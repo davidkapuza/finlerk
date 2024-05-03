@@ -17,7 +17,7 @@ export class AuthGoogleService {
     this.google = new OAuth2Client(
       configService.get('google.clientId', { infer: true }),
       configService.get('google.clientSecret', { infer: true }),
-      'http://localhost:4200/login',
+      configService.get('google.redirectUri', { infer: true }),
     );
   }
 

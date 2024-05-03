@@ -15,6 +15,9 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.stategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserModule } from '@/users/users.module';
 import { SessionModule } from '@/session/session.module';
+import { ConfigService } from '@nestjs/config';
+import ms from 'ms';
+import { ConfigType } from '@/shared/config/config.type';
 
 @Module({
   imports: [
@@ -25,8 +28,39 @@ import { SessionModule } from '@/session/session.module';
     UserModule,
     SessionModule,
   ],
-  exports: [AuthService],
+  exports: [AuthService, 'TOKENS_COOKIE_OPTIONS'],
   providers: [
+    {
+      provide: 'TOKENS_COOKIE_OPTIONS',
+      useFactory: (configService: ConfigService<ConfigType>) => {
+        const accessExpires = ms(
+          configService.getOrThrow<string>('auth.accessExpires', {
+            infer: true,
+          }),
+        );
+        const refreshExpires = ms(
+          configService.getOrThrow<string>('auth.refreshExpires', {
+            infer: true,
+          }),
+        );
+
+        return {
+          accessTokenCookieOptions: {
+            expires: new Date(Date.now() + accessExpires),
+            maxAge: accessExpires,
+            httpOnly: true,
+            sameSite: 'lax',
+          },
+          refreshTokenCookieOptions: {
+            xpires: new Date(Date.now() + refreshExpires),
+            maxAge: refreshExpires,
+            httpOnly: true,
+            sameSite: 'lax',
+          },
+        };
+      },
+      inject: [ConfigService],
+    },
     DoesNotExist,
     DoesExist,
     JwtStrategy,

@@ -1,18 +1,18 @@
+import { TokensCookieOptionsInterface } from '@/shared/interfaces/tokens-cookie-options.inerface';
+import { AuthGoogleLoginDto, User } from '@finlerk/shared';
 import {
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Res,
   SerializeOptions,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGoogleLoginDto, User } from '@finlerk/shared';
 import { CookieOptions, Response } from 'express';
-import ms from 'ms';
 import { AuthService } from '../auth/auth.service';
 import { LoginResponseDto } from '../shared/dtos/login-response.dto';
 import { AuthGoogleService } from './auth-google.service';
@@ -28,32 +28,9 @@ export class AuthGoogleController {
   constructor(
     private readonly authService: AuthService,
     private readonly authGoogleService: AuthGoogleService,
-    private readonly configService: ConfigService,
-  ) {
-    const accessExpires = ms(
-      this.configService.getOrThrow<string>('auth.accessExpires', {
-        infer: true,
-      }),
-    );
-    const refreshExpires = ms(
-      this.configService.getOrThrow<string>('auth.refreshExpires', {
-        infer: true,
-      }),
-    );
-
-    this.accessTokenCookieOptions = {
-      expires: new Date(Date.now() + accessExpires),
-      maxAge: accessExpires,
-      httpOnly: true,
-      sameSite: 'lax',
-    };
-    this.refreshTokenCookieOptions = {
-      expires: new Date(Date.now() + refreshExpires),
-      maxAge: refreshExpires,
-      httpOnly: true,
-      sameSite: 'lax',
-    };
-  }
+    @Inject('TOKENS_COOKIE_OPTIONS')
+    private readonly tokensCookieOptions: TokensCookieOptionsInterface,
+  ) {}
 
   @ApiOkResponse({
     type: LoginResponseDto,
@@ -73,8 +50,16 @@ export class AuthGoogleController {
       await this.authService.validateSocialLogin('google', socialData);
 
     res
-      .cookie('access_token', accessToken, this.accessTokenCookieOptions)
-      .cookie('refresh_token', refreshToken, this.refreshTokenCookieOptions);
+      .cookie(
+        'access_token',
+        accessToken,
+        this.tokensCookieOptions.accessTokenCookieOptions,
+      )
+      .cookie(
+        'refresh_token',
+        refreshToken,
+        this.tokensCookieOptions.refreshTokenCookieOptions,
+      );
 
     return user;
   }
