@@ -22,7 +22,11 @@ import { useSearchParams } from 'next/navigation';
 
 const resolver = classValidatorResolver(EmailLoginDto);
 
-export function LoginForm({ googleLoginUrl }: { googleLoginUrl: string }) {
+export function LoginForm({
+  googleLoginUrl,
+}: {
+  googleLoginUrl: { url: string };
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
@@ -50,7 +54,7 @@ export function LoginForm({ googleLoginUrl }: { googleLoginUrl: string }) {
 
   function onGoogleLogin() {
     setIsLoading(true);
-    window.location.replace(googleLoginUrl);
+    window.location.replace(googleLoginUrl.url);
   }
 
   React.useEffect(() => {

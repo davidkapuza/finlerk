@@ -1,6 +1,5 @@
 'use client';
 
-import { type AlpacaTrade } from '@alpacahq/alpaca-trade-api/dist/resources/datav2/entityv2';
 import {
   Carousel,
   CarouselContent,
@@ -11,13 +10,13 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
 
-interface TradesPreviewCarouselProps {
-  latestTrades: Map<string, AlpacaTrade>;
+interface MostActiveStocksCarouselProps {
+  stocks: unknown;
 }
 
-export default function TradesPreviewCarousel({
-  latestTrades,
-}: TradesPreviewCarouselProps) {
+export default function MostActiveStocksCarousel({
+  stocks,
+}: MostActiveStocksCarouselProps) {
   return (
     <Carousel
       opts={{
@@ -32,8 +31,8 @@ export default function TradesPreviewCarousel({
       className="w-full py-8"
     >
       <CarouselContent>
-        {Object.keys(latestTrades).map((stock, index) => {
-          const tradeData: AlpacaTrade = latestTrades[stock];
+        {Object.keys(stocks).map((stock, index) => {
+          const tradeData = stocks[stock];
 
           return (
             <CarouselItem

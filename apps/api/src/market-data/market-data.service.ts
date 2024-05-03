@@ -5,6 +5,9 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   Asset,
+  GetAssetsDto,
+  GetBarsDto,
+  GetNewsDto,
   IPaginationOptions,
   NewsResponseType,
   StockBarsResponseType,
@@ -12,9 +15,6 @@ import {
 import { AxiosError } from 'axios';
 import { Cache } from 'cache-manager';
 import { catchError, firstValueFrom, map } from 'rxjs';
-import { GetAssetsDto } from './dtos/get-assets.dto';
-import { GetBarsDto } from './dtos/get-bars.dto';
-import { GetNewsDto } from './dtos/get-news.dto';
 import { stockBarsResponseTransformer } from './transformers/stock-bars-response.transformer';
 import { AlpacaBarsResponseType } from './types/alpaca-bars-response.type';
 import { AssetsResponseType } from './types/assets-response.type';

@@ -69,7 +69,7 @@ export class AuthGoogleController {
   })
   @Get('login-url')
   @HttpCode(HttpStatus.OK)
-  async getAuthUrl(): Promise<string> {
+  async getAuthUrl(): Promise<{ url: string }> {
     return await this.authGoogleService.getAuthUrl();
   }
 }

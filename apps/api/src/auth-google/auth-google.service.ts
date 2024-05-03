@@ -22,10 +22,13 @@ export class AuthGoogleService {
   }
 
   async getAuthUrl() {
-    return this.google.generateAuthUrl({
+    const url = this.google.generateAuthUrl({
       access_type: 'offline',
       scope: 'https://www.googleapis.com/auth/userinfo.profile',
     });
+    return {
+      url,
+    };
   }
 
   async getProfile(loginDto: AuthGoogleLoginDto): Promise<SocialInterface> {

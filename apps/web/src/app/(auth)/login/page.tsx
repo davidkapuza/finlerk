@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: 'Login to your account',
 };
 
-async function getGoogleLoginUrl(): Promise<string> {
+async function getGoogleLoginUrl(): Promise<{ url: string }> {
   return await authApi.getGoogleLoginUrl();
 }
 

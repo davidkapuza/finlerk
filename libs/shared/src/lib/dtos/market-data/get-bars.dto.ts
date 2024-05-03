@@ -1,6 +1,6 @@
-import { IsBeforeConstraint } from '@/shared/validators/constraints/is-before.contraint';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty, Validate } from 'class-validator';
+import { IsBeforeConstraint } from '../../constraints/is-before.contraint';
 
 export class GetBarsDto {
   @ApiProperty({ example: 'TSLA' })

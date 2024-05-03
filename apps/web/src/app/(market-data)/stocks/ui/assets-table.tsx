@@ -112,13 +112,18 @@ export default function AssetsTable() {
 
   React.useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !isLoadingMore && !isReachingEnd) {
+      if (
+        entries[0].isIntersecting &&
+        !isLoadingMore &&
+        !isReachingEnd &&
+        data
+      ) {
         setSize((prev) => prev + 1);
       }
     });
     observer.observe(bottom.current);
     return () => observer.disconnect();
-  }, [isLoadingMore, setSize, isReachingEnd]);
+  }, [isLoadingMore, setSize, data, isReachingEnd]);
 
   const tableColumns = React.useMemo(
     () =>

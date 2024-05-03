@@ -19,7 +19,7 @@ export class Api extends Axios {
 
     this.isServer = typeof window === 'undefined';
 
-    this.interceptors.request.use(async (config) => {
+    this.instance.interceptors.request.use(async (config) => {
       if (this.isServer) {
         const { cookies } = await import('next/headers');
         config.headers.Cookie = cookies().toString();
@@ -28,7 +28,7 @@ export class Api extends Axios {
     });
 
     // this middleware is been called right before the response is get it by the method that triggers the request
-    this.interceptors.response.use(
+    this.instance.interceptors.response.use(
       (config) => {
         return config;
       },
@@ -64,7 +64,7 @@ export class Api extends Axios {
    * @memberof Api
    */
   public getUri(config?: AxiosRequestConfig): string {
-    return this.getUri(config);
+    return this.instance.getUri(config);
   }
   /**
    * Generic request.
@@ -90,7 +90,7 @@ export class Api extends Axios {
   public request<T, R = AxiosResponse<T>>(
     config: AxiosRequestConfig,
   ): Promise<R> {
-    return this.request(config);
+    return this.instance.request(config);
   }
   /**
    * HTTP GET method, used to fetch data `statusCode`: 200.
@@ -107,7 +107,7 @@ export class Api extends Axios {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.get(url, config);
+    return this.instance.get(url, config);
   }
   /**
    * HTTP OPTIONS method.
@@ -124,7 +124,7 @@ export class Api extends Axios {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.options(url, config);
+    return this.instance.options(url, config);
   }
   /**
    * HTTP DELETE method, `statusCode`: 204 No Content.
@@ -141,7 +141,7 @@ export class Api extends Axios {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.delete(url, config);
+    return this.instance.delete(url, config);
   }
   /**
    * HTTP HEAD method.
@@ -158,7 +158,7 @@ export class Api extends Axios {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.head(url, config);
+    return this.instance.head(url, config);
   }
   /**
    * HTTP POST method `statusCode`: 201 Created.
@@ -178,7 +178,7 @@ export class Api extends Axios {
     data?: B,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.post(url, data, config);
+    return this.instance.post(url, data, config);
   }
   /**
    * HTTP PUT method.
@@ -198,7 +198,7 @@ export class Api extends Axios {
     data?: B,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.put(url, data, config);
+    return this.instance.put(url, data, config);
   }
   /**
    * HTTP PATCH method.
@@ -218,7 +218,7 @@ export class Api extends Axios {
     data?: B,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.patch(url, data, config);
+    return this.instance.patch(url, data, config);
   }
   /**
    *
@@ -227,9 +227,9 @@ export class Api extends Axios {
    * @returns {T} - expected object.
    * @memberof Api
    */
-  public success = <T>(response: AxiosResponse<T>): T => {
+  public success<T>(response: AxiosResponse<T>): T {
     return response.data;
-  };
+  }
   /**
    *
    *

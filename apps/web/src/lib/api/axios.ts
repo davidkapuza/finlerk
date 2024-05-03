@@ -1,10 +1,12 @@
 import axios, {
+  AxiosInstance,
   AxiosInterceptorManager,
   AxiosRequestConfig,
   AxiosResponse,
 } from 'axios';
 
 export class Axios {
+  public instance: AxiosInstance;
   public interceptors: {
     /**
      * The **Request** interceptor will be call rigth before the `http request`
@@ -20,6 +22,6 @@ export class Axios {
     response: AxiosInterceptorManager<AxiosResponse>;
   };
   constructor(config: AxiosRequestConfig) {
-    return axios.create(config);
+    this.instance = axios.create(config);
   }
 }

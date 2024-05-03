@@ -1,4 +1,3 @@
-import { IsBeforeConstraint } from '@/shared/validators/constraints/is-before.contraint';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDateString,
@@ -7,6 +6,7 @@ import {
   IsString,
   Validate,
 } from 'class-validator';
+import { IsBeforeConstraint } from '../../constraints/is-before.contraint';
 
 export class GetNewsDto {
   @ApiPropertyOptional()
