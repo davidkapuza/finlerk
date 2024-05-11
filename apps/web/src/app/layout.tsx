@@ -1,10 +1,10 @@
 import { Toaster, TooltipProvider } from '@finlerk/shadcn-ui';
 import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import { Metadata } from 'next';
-import { siteConfig } from '../config/site';
-import { fontSans } from '../lib/fonts';
-import { ThemeProvider } from '../lib/providers/theme-provider';
-import '../styles/globals.css';
+import { siteConfig } from '../shared/config/site';
+import { ThemeProvider } from '../shared/providers/theme-provider';
+import './global.css';
+import { fontSans } from '@/shared/fonts';
 
 export const metadata: Metadata = {
   title: {

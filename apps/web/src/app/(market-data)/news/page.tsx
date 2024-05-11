@@ -4,8 +4,12 @@ import { Dot } from 'lucide-react';
 import Image from 'next/image';
 import { marketDataApi } from '../api/market-data.api';
 
+async function getNews() {
+  return await marketDataApi.getNews();
+}
+
 export default async function NewsPage() {
-  const newsData = await marketDataApi.getNews();
+  const newsData = await getNews();
 
   return (
     <div className="container min-h-screen p-3 m-auto">

@@ -28,8 +28,8 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:4200',
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Set this to true
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
   });
   app.enableVersioning({
     type: VersioningType.URI,

@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { authApi } from '../../lib/api/auth.api';
 import { useRouter } from 'next/navigation';
-import { handleApiError } from '@/utils/handle-api-error';
 import { toast } from '@finlerk/shadcn-ui';
 
 export default function Confirmation() {
@@ -29,7 +28,6 @@ export default function Confirmation() {
         .confirmEamil({ hash })
         .then(() => router.push('/'))
         .catch((error) => {
-          handleApiError(error);
           setIsLoading(false);
         });
     }

@@ -1,47 +1,97 @@
+import * as jose from 'jose';
+import { parseSetCookie } from 'next/dist/compiled/@edge-runtime/cookies';
+import {
+  RequestCookies,
+  ResponseCookies,
+} from 'next/dist/server/web/spec-extension/cookies';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-const publicRoutes = ['/login', '/register', '/'];
-
-export async function middleware(request: NextRequest) {
-  const accessToken = request.cookies.get('access_token');
-  // const refreshToken = request.cookies.get('refresh_token');
-
-  const isPublicPage = publicRoutes.includes(request.nextUrl.pathname);
-
-  if (isPublicPage) {
-    if (accessToken) {
-      return NextResponse.redirect(new URL('/news', request.url));
-    }
-
-    return null;
+function getRedirectResponse(req: NextRequest) {
+  let from = req.nextUrl.pathname;
+  if (req.nextUrl.search) {
+    from += req.nextUrl.search;
   }
 
-  if (!accessToken) {
-    // if (refreshToken) {
-    //   console.log("refreshing in middleware...")
-    //   const response = await fetch(
-    //     `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/v1/auth/refresh`,
-    //     {
-    //       method: 'POST',
-    //       credentials: 'include',
-    //       headers: request.headers,
-    //     },
-    //   );
+  return NextResponse.redirect(
+    new URL(`/login?from=${encodeURIComponent(from)}`, req.url),
+  );
+}
 
-    //   if (response.ok) return NextResponse.next(response.clone());
-    // }
-    let from = request.nextUrl.pathname;
-    if (request.nextUrl.search) {
-      from += request.nextUrl.search;
+/**
+ * Copy cookies from the Set-Cookie header of the response to the Cookie header of the request,
+ * so that it will appear to SSR/RSC as if the user already has the new cookies.
+ */
+function applySetCookie(req: NextRequest, res: NextResponse): void {
+  // parse the outgoing Set-Cookie header
+  const setCookies = new ResponseCookies(res.headers);
+  // Build a new Cookie header for the request by adding the setCookies
+  const newReqHeaders = new Headers(req.headers);
+  const newReqCookies = new RequestCookies(newReqHeaders);
+  setCookies.getAll().forEach((cookie) => newReqCookies.set(cookie));
+  // set “request header overrides” on the outgoing response
+  NextResponse.next({
+    request: { headers: newReqHeaders },
+  }).headers.forEach((value, key) => {
+    if (
+      key === 'x-middleware-override-headers' ||
+      key.startsWith('x-middleware-request-')
+    ) {
+      res.headers.set(key, value);
     }
+  });
+}
 
-    return NextResponse.redirect(
-      new URL(`/login?from=${encodeURIComponent(from)}`, request.url),
-    );
+async function getResponseWithRefreshedTokens(req: NextRequest) {
+  const refreshResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/v1/auth/refresh`,
+    {
+      method: 'POST',
+      credentials: 'include',
+      headers: req.headers,
+    },
+  );
+  if (!refreshResponse.ok) return getRedirectResponse(req);
+
+  const response = NextResponse.next();
+
+  const responseCookies = refreshResponse.headers
+    .get('set-cookie')
+    .split(/,\s(?=refresh_token)/);
+
+  responseCookies.forEach((cookie) => {
+    response.cookies.set(parseSetCookie(cookie));
+  });
+
+  applySetCookie(req, response);
+
+  return response;
+}
+
+export async function middleware(req: NextRequest) {
+  if (req.method === 'OPTIONS') {
+    return NextResponse.json({});
+  }
+
+  const accessToken = req.cookies.get('access_token');
+  const refreshToken = req.cookies.get('refresh_token');
+
+  if (!accessToken && !refreshToken) return getRedirectResponse(req);
+
+  if (accessToken) {
+    const secretKeyBuffer = Buffer.from(process.env.AUTH_JWT_SECRET, 'utf-8');
+    try {
+      await jose.jwtVerify(accessToken.value, secretKeyBuffer);
+      return NextResponse.next();
+    } catch (error) {
+      return getRedirectResponse(req);
+    }
+  } else if (refreshToken) {
+    const response = await getResponseWithRefreshedTokens(req);
+    return response;
   }
 }
 
 export const config = {
-  matcher: ['/login', '/register', '/', '/profile'],
+  matcher: ['/news', '/profile'],
 };
