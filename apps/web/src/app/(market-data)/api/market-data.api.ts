@@ -1,4 +1,5 @@
-import { Api } from '@/lib/api';
+import { Api } from '@/shared/api';
+import { unauthorizedInterceptor } from '@/shared/decorators';
 import {
   Asset,
   GetBarsDto,
@@ -17,18 +18,17 @@ export class MarketDataApi extends Api {
    * Get market data news.
    *
    */
-  public getNews() {
-    return this.get<NewsResponseType>('/api/v1/market-data/news').then(
-      this.success,
-    );
+  public getNews(): Promise<NewsResponseType> {
+    return this.get('/api/v1/market-data/news').then((res) => res.json());
   }
 
   /**
    * Get market data assets.
    *
    */
-  public assetsFetcher(url) {
-    return this.get<Array<Asset>>(url).then(this.success);
+  @unauthorizedInterceptor
+  public assetsFetcher(url): Promise<Asset[]> {
+    return this.get(url).then((res) => res.json());
   }
 
   /**
@@ -37,9 +37,9 @@ export class MarketDataApi extends Api {
    */
   public getHistoricalBars(params: GetBarsDto): Promise<StockBarsResponseType> {
     const searchParams = new URLSearchParams({ ...params });
-    return this.get<StockBarsResponseType>(
-      `/api/v1/market-data/stocks-bars?${searchParams}`,
-    ).then(this.success);
+    return this.get(`/api/v1/market-data/stocks-bars?${searchParams}`).then(
+      (res) => res.json(),
+    );
   }
 }
 

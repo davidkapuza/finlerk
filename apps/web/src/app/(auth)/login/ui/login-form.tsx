@@ -1,5 +1,4 @@
 'use client';
-import { handleApiError } from '@/utils/handle-api-error';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { Icons } from '@finlerk/lucide-react-icons';
 import {
@@ -41,14 +40,11 @@ export function LoginForm({
     },
   });
 
-  const { setError } = form;
-
   function onSubmit(values: LoginRequestType) {
     setIsLoading(true);
     authApi
       .login(values)
       .then(() => router.push('/news'))
-      .catch((error) => handleApiError(error, setError))
       .finally(() => setIsLoading(false));
   }
 

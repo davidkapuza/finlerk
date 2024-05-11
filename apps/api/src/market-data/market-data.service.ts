@@ -1,8 +1,4 @@
 import { ConfigType } from '@/shared/config/config.type';
-import { HttpService } from '@nestjs/axios';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   Asset,
   GetAssetsDto,
@@ -12,13 +8,17 @@ import {
   NewsResponseType,
   StockBarsResponseType,
 } from '@finlerk/shared';
+import { HttpService } from '@nestjs/axios';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { Cache } from 'cache-manager';
 import { catchError, firstValueFrom, map } from 'rxjs';
+import { MarketDataRepositoryInterface } from './repository/market-data-repository.interface';
 import { stockBarsResponseTransformer } from './transformers/stock-bars-response.transformer';
 import { AlpacaBarsResponseType } from './types/alpaca-bars-response.type';
 import { AssetsResponseType } from './types/assets-response.type';
-import { MarketDataRepositoryInterface } from './repository/market-data-repository.interface';
 
 @Injectable()
 export class MarketDataService {

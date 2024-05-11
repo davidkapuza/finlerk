@@ -1,6 +1,5 @@
 'use client';
 
-import { handleApiError } from '@/utils/handle-api-error';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { Icons } from '@finlerk/lucide-react-icons';
 import {
@@ -40,8 +39,6 @@ export function RegisterForm({ googleLoginUrl }: { googleLoginUrl: string }) {
     },
   });
 
-  const { setError } = form;
-
   function onSubmit(values: RegisterRequestType) {
     setIsLoading(true);
     authApi
@@ -53,7 +50,6 @@ export function RegisterForm({ googleLoginUrl }: { googleLoginUrl: string }) {
             'We sent you a login link. Be sure to check your spam too.',
         });
       })
-      .catch((error) => handleApiError(error, setError))
       .finally(() => setIsLoading(false));
   }
 

@@ -1,4 +1,4 @@
-import { userApi } from '@/lib/api/user.api';
+import { userApi } from '@/shared/api/user.api';
 import {
   Avatar,
   AvatarFallback,

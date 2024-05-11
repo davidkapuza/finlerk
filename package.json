@@ -66,6 +66,7 @@
     "embla-carousel-react": "^8.0.0",
     "google-auth-library": "^9.9.0",
     "handlebars": "^4.7.8",
+    "jose": "^5.2.4",
     "lightweight-charts": "^4.1.1",
     "lucide-react": "^0.301.0",
     "ms": "^2.1.3",

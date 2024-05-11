@@ -1,4 +1,4 @@
-import { Api } from '@/lib/api';
+import { Api } from '@/shared/api';
 import {
   AuthGoogleLoginDto,
   ConfirmEmailType,
@@ -8,6 +8,13 @@ import {
 } from '@finlerk/shared';
 
 export class AuthApi extends Api {
+  constructor() {
+    super();
+    this.login = this.login.bind(this);
+    this.getGoogleLoginUrl = this.getGoogleLoginUrl.bind(this);
+    this.register = this.register.bind(this);
+    this.confirmEamil = this.confirmEamil.bind(this);
+  }
   /**
    * Login user.
    *
@@ -17,10 +24,9 @@ export class AuthApi extends Api {
    * @returns {Promise<User>} user - user information,
    */
   public login(payload: LoginRequestType): Promise<User> {
-    return this.post<User, LoginRequestType>(
-      '/api/v1/auth/login',
-      payload,
-    ).then(this.success);
+    return this.post('/api/v1/auth/login', {
+      body: JSON.stringify(payload),
+    }).then((res) => res.json());
   }
 
   /**
@@ -29,9 +35,7 @@ export class AuthApi extends Api {
    * @returns {Promise<string>} string - login url,
    */
   public getGoogleLoginUrl(): Promise<{ url: string }> {
-    return this.get<{ url: string }>('/api/v1/auth/google/login-url').then(
-      this.success,
-    );
+    return this.get('/api/v1/auth/google/login-url').then((res) => res.json());
   }
 
   /**
@@ -40,10 +44,9 @@ export class AuthApi extends Api {
    * @returns {Promise<string>} string - login url,
    */
   public googleLogin(payload: AuthGoogleLoginDto): Promise<User> {
-    return this.post<User, AuthGoogleLoginDto>(
-      '/api/v1/auth/google/login',
-      payload,
-    ).then(this.success);
+    return this.post('/api/v1/auth/google/login', {
+      body: JSON.stringify(payload),
+    }).then((res) => res.json());
   }
 
   /**
@@ -57,10 +60,9 @@ export class AuthApi extends Api {
    * @returns {Promise<void>} successful request.
    */
   public register(payload: RegisterRequestType): Promise<void> {
-    return this.post<void, RegisterRequestType>(
-      '/api/v1/auth/register',
-      payload,
-    ).then(this.success);
+    return this.post('/api/v1/auth/register', {
+      body: JSON.stringify(payload),
+    }).then((res) => res.json());
   }
   /**
    * Register new user.
@@ -73,10 +75,9 @@ export class AuthApi extends Api {
    * @returns {Promise<void>} successful request.
    */
   public confirmEamil(payload: ConfirmEmailType): Promise<void> {
-    return this.post<void, ConfirmEmailType>(
-      '/api/v1/auth/confirm-email',
-      payload,
-    ).then(this.success);
+    return this.post('/api/v1/auth/confirm-email', {
+      body: JSON.stringify(payload),
+    }).then((res) => res.json());
   }
 }
 
