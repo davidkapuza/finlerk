@@ -7,6 +7,8 @@ import {
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+const AUTH_PAGES = ['/login', '/register', '/confirm-email'];
+
 function getRedirectResponse(req: NextRequest) {
   let from = req.nextUrl.pathname;
   if (req.nextUrl.search) {
@@ -42,7 +44,10 @@ function applySetCookie(req: NextRequest, res: NextResponse): void {
   });
 }
 
-async function getResponseWithRefreshedTokens(req: NextRequest) {
+async function getResponseWithRefreshedTokens(
+  req: NextRequest,
+  isAuthPage: boolean,
+) {
   const refreshResponse = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/v1/auth/refresh`,
     {
@@ -53,7 +58,9 @@ async function getResponseWithRefreshedTokens(req: NextRequest) {
   );
   if (!refreshResponse.ok) return getRedirectResponse(req);
 
-  const response = NextResponse.next();
+  const response = isAuthPage
+    ? NextResponse.redirect(new URL('/news', req.url))
+    : NextResponse.next();
 
   const responseCookies = refreshResponse.headers
     .get('set-cookie')
@@ -73,6 +80,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.json({});
   }
 
+  const isAuthPage = AUTH_PAGES.some((page) =>
+    req.nextUrl.pathname.startsWith(page),
+  );
+
   const accessToken = req.cookies.get('access_token');
   const refreshToken = req.cookies.get('refresh_token');
 
@@ -82,16 +93,26 @@ export async function middleware(req: NextRequest) {
     const secretKeyBuffer = Buffer.from(process.env.AUTH_JWT_SECRET, 'utf-8');
     try {
       await jose.jwtVerify(accessToken.value, secretKeyBuffer);
+      if (isAuthPage) return NextResponse.redirect(new URL('/news', req.url));
       return NextResponse.next();
     } catch (error) {
       return getRedirectResponse(req);
     }
   } else if (refreshToken) {
-    const response = await getResponseWithRefreshedTokens(req);
+    const response = await getResponseWithRefreshedTokens(req, isAuthPage);
     return response;
   }
 }
 
 export const config = {
-  matcher: ['/news', '/profile'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 };
