@@ -1,30 +1,34 @@
+import { GetHistoricalSymbolBarsDto } from '@finlerk/shared';
+import { formatISO, isBefore, subDays } from 'date-fns';
 import { marketDataApi } from '../../api/market-data.api';
-import { Separator } from '@finlerk/shadcn-ui';
-
-async function getHistoricalBars(symbol: string) {
-  console.log(symbol);
-  return await marketDataApi.getHistoricalBars({
-    symbols: symbol,
-    timeframe: '1Min',
-    start: '2024-03-02',
-    end: '2024-03-14',
-  });
-}
-
+import { AssetChart } from '../ui/asset-chart';
 interface StockDetailsPageProps {
   params: { symbol: string };
 }
 
+async function getHistoricalBars({
+  symbol,
+  ...params
+}: GetHistoricalSymbolBarsDto) {
+  return await marketDataApi.getHistoricalBars({
+    url: `/api/v1/market-data/historical-bars/${symbol}`,
+    ...params,
+  });
+}
+
+let start = new Date();
+start.setHours(9, 30, 0, 0);
+
+if (isBefore(new Date(), start)) start = subDays(start, 1);
+
 export default async function StockDetailsPage({
   params,
 }: StockDetailsPageProps) {
-  await getHistoricalBars(params.symbol);
+  const historicalBars = await getHistoricalBars({
+    symbol: params.symbol,
+    timeframe: '1Min',
+    start: formatISO(start),
+  });
 
-  // TODO Stock details
-  return (
-    <div className="container m-auto m-h-screen">
-      <div className="h-[52px]">{params.symbol}</div>
-      <Separator />
-    </div>
-  );
+  return <AssetChart symbol={params.symbol} historicalBars={historicalBars} />;
 }

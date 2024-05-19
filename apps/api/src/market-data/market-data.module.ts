@@ -1,16 +1,17 @@
-import { ConfigType } from '@/shared/config/config.type';
-import { HttpModule } from '@nestjs/axios';
+import { BrolerApiModule } from '@/alpaca/api/broker-api/broker-api.module';
+import { MarketDataApiModule } from '@/alpaca/api/market-data-api/market-data-api.module';
+import { TradingApiModule } from '@/alpaca/api/trading-api/trading-api.module';
+import { RedisPubSubModule } from '@/redis-pub-sub/redis-pub-sub.module';
+import { AssetEntity } from '@/shared/entities/asset.entity';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { NewBar } from './events/new-bar.event';
+import { NewTrade } from './events/new-trade.event';
 import { MarketDataController } from './market-data.controller';
 import { MarketDataGateway } from './market-data.gateway';
 import { MarketDataService } from './market-data.service';
-import { RedisPubSubModule } from '@/redis-pub-sub/redis-pub-sub.module';
-import { NewTrade } from './events/new-trade.event';
-import { NewBar } from './events/new-bar.event';
 import { MarketDataRepository } from './repository/market-data.repository';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AssetEntity } from '@/shared/entities/asset.entity';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([AssetEntity]),
@@ -18,24 +19,9 @@ import { AssetEntity } from '@/shared/entities/asset.entity';
       NewTrade.publishableEventName,
       NewBar.publishableEventName,
     ]),
-    HttpModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService<ConfigType>) => ({
-        baseURL: configService.getOrThrow('alpaca.market_data_api', {
-          infer: true,
-        }),
-        headers: {
-          'APCA-API-KEY-ID': configService.getOrThrow('alpaca.token', {
-            infer: true,
-          }),
-          'APCA-API-SECRET-KEY': configService.getOrThrow('alpaca.secret', {
-            infer: true,
-          }),
-          Accept: 'application/json',
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    MarketDataApiModule,
+    TradingApiModule,
+    BrolerApiModule,
   ],
   providers: [
     MarketDataService,

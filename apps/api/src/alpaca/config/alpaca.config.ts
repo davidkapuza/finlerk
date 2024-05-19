@@ -15,6 +15,18 @@ class EnvironmentVariablesValidator {
 
   @IsString()
   ALPACA_API_SECRET: string;
+
+  @IsUrl()
+  ALPACA_BROKER_API: string;
+
+  @IsString()
+  ALPACA_BROKER_API_USERNAME: string;
+
+  @IsString()
+  ALPACA_BROKER_API_PASSWORD: string;
+
+  @IsString()
+  ALPACA_BROKER_API_AUTH_HEADER: string;
 }
 
 export default registerAs<AlpacaConfig>('alpaca', () => {
@@ -25,5 +37,9 @@ export default registerAs<AlpacaConfig>('alpaca', () => {
     trading_api: process.env.ALPACA_TRADING_API,
     token: process.env.ALPACA_API_KEY,
     secret: process.env.ALPACA_API_SECRET,
+    broker_api: process.env.ALPACA_BROKER_API,
+    broker_api_username: process.env.ALPACA_BROKER_API_USERNAME,
+    broker_api_password: process.env.ALPACA_BROKER_API_PASSWORD,
+    broker_api_auth_header: process.env.ALPACA_BROKER_API_AUTH_HEADER,
   };
 });

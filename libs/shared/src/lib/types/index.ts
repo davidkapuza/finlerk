@@ -15,3 +15,4 @@ export * from './auth/register-request.type';
 export * from './market-data/stock-bar.type';
 export * from './market-data/stock-bars-response.type';
 export * from './market-data/news-response.type';
+export * from './market-data/market-calendar-item.type';

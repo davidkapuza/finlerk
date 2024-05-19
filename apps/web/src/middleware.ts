@@ -87,7 +87,8 @@ export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get('access_token');
   const refreshToken = req.cookies.get('refresh_token');
 
-  if (!accessToken && !refreshToken) return getRedirectResponse(req);
+  if (!accessToken && !refreshToken && !isAuthPage)
+    return getRedirectResponse(req);
 
   if (accessToken) {
     const secretKeyBuffer = Buffer.from(process.env.AUTH_JWT_SECRET, 'utf-8');

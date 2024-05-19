@@ -4,13 +4,21 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import { Asset, GetBarsDto, GetNewsDto, QueryAssetsDto } from '@finlerk/shared';
+import {
+  Asset,
+  GetBarsDto,
+  GetMarketCalendarDto,
+  GetNewsDto,
+  QueryAssetsDto,
+  SymbolDto,
+} from '@finlerk/shared';
 import { MarketDataService } from './market-data.service';
 
 @ApiCookieAuth()
@@ -52,15 +60,30 @@ export class MarketDataController {
     });
   }
 
-  @Get('stocks-bars')
+  @Get('historical-bars/:symbol')
   @HttpCode(HttpStatus.OK)
-  getStockBars(@Query() getBarsDto: GetBarsDto) {
-    return this.marketDataService.getStocksBars(getBarsDto);
+  getStockBars(@Param() params: SymbolDto, @Query() getBarsDto: GetBarsDto) {
+    return this.marketDataService.getHistoricalBars({
+      ...params,
+      ...getBarsDto,
+    });
   }
 
   @Get('most-active')
   @HttpCode(HttpStatus.OK)
   mostActive() {
     return this.marketDataService.mostActives();
+  }
+
+  @Get('market-clock')
+  @HttpCode(HttpStatus.OK)
+  getMarketClock() {
+    return this.marketDataService.getMarketClock();
+  }
+
+  @Get('market-calendar')
+  @HttpCode(HttpStatus.OK)
+  getMarketCalendar(@Query() query: GetMarketCalendarDto) {
+    return this.marketDataService.getMarketCalendar(query);
   }
 }

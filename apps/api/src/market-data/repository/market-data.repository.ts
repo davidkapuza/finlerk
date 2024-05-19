@@ -28,7 +28,7 @@ export class MarketDataRepository
     const whereConditions:
       | FindOptionsWhere<AssetEntity>
       | FindOptionsWhere<AssetEntity>[] = [];
-    console.log(globalFilter);
+
     if (globalFilter) {
       whereConditions.push(
         { name: ILike(`%${globalFilter}%`) },
