@@ -1,8 +1,9 @@
-import { IntersectionType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 import { GetBarsDto } from './get-bars.dto';
-import { SymbolDto } from './symbol.dto';
 
-export class GetHistoricalSymbolBarsDto extends IntersectionType(
-  GetBarsDto,
-  SymbolDto,
-) {}
+export class GetHistoricalSymbolBarsDto extends GetBarsDto {
+  @ApiProperty({ example: 'TSLA', description: 'The symbol to query for.' })
+  @IsString()
+  symbol: string;
+}

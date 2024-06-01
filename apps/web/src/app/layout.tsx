@@ -1,10 +1,10 @@
+import { fontSans } from '@/lib/fonts';
+import { SessionProivder, ThemeProvider } from '@/lib/providers';
 import { Toaster, TooltipProvider } from '@finlerk/shadcn-ui';
 import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import { Metadata } from 'next';
-import { siteConfig } from '../shared/config/site';
-import { ThemeProvider } from '../shared/providers/theme-provider';
+import { siteConfig } from '../lib/config/site';
 import './global.css';
-import { fontSans } from '@/shared/fonts';
 
 export const metadata: Metadata = {
   title: {
@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider delayDuration={0}>
             <Toaster />
-            {children}
+            <SessionProivder>{children}</SessionProivder>
           </TooltipProvider>
         </ThemeProvider>
       </body>

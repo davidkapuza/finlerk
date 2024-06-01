@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { ProfileSidebar } from './ui/profile-sidebar';
 import { Separator } from '@finlerk/shadcn-ui';
-import { Header } from '@/shared/ui/header';
+import { Header } from '@/lib/ui/header';
 
 export const metadata: Metadata = {
   title: 'Forms',

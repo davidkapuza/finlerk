@@ -15,7 +15,7 @@ export default async function NewsPage() {
     <div className="container min-h-screen p-3 m-auto">
       <h1 className="py-6 text-3xl font-bold">News</h1>
       <div className="grid gap-4 mb-4 md:grid-cols-2">
-        {newsData.news.map((n) => (
+        {newsData.news?.map((n) => (
           <a
             key={n.id}
             href={n.url}

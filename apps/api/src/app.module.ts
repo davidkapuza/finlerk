@@ -1,3 +1,6 @@
+import appConfig from '@/lib/config/app.config';
+import databaseConfig from '@/lib/database/config/database.config';
+import { AuthModule, MarketDataModule, RedisPubSubModule } from '@/modules';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -5,36 +8,16 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import redisStore from 'cache-manager-redis-store';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import alpacaConfig from './alpaca/config/alpaca.config';
-import { AuthModule } from './auth/auth.module';
-import authConfig from './auth/config/auth.config';
-import mailConfig from './mail/config/mail.config';
-import { MailModule } from './mail/mail.module';
-import { MailerModule } from './mailer/mailer.module';
-import { MarketDataModule } from './market-data/market-data.module';
-import redisConfig from './redis-pub-sub/config/redis.config';
-import { RedisPubSubModule } from './redis-pub-sub/redis-pub-sub.module';
-import appConfig from './shared/config/app.config';
-import { ConfigType } from './shared/config/config.type';
-import databaseConfig from './shared/database/config/database.config';
-import { TypeOrmConfigService } from './shared/database/typeorm-config.service';
-import { ScheduleModule } from '@nestjs/schedule';
-import { AuthGoogleModule } from './auth-google/auth-google.module';
-import googleConfig from './auth-google/config/google.config';
+import { ConfigType } from './lib/config/config.type';
+import { TypeOrmConfigService } from './lib/database/typeorm-config.service';
+import alpacaConfig from './modules/alpaca/config/alpaca.config';
+import redisConfig from './modules/redis-pub-sub/config/redis.config';
+
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [
-        appConfig,
-        authConfig,
-        databaseConfig,
-        mailConfig,
-        redisConfig,
-        alpacaConfig,
-        googleConfig,
-      ],
+      load: [appConfig, databaseConfig, redisConfig, alpacaConfig],
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
@@ -73,10 +56,7 @@ import googleConfig from './auth-google/config/google.config';
       global: true,
     }),
     AuthModule,
-    MailModule,
-    MailerModule,
     MarketDataModule,
-    AuthGoogleModule,
   ],
 })
 export class AppModule {}

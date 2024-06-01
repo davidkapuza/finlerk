@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/shared/utils/cn';
+import { cn } from '@/lib/utils/cn';
 import { StockBarsResponseType } from '@finlerk/shared';
 import { formatISO, isBefore, subDays, subMonths, subYears } from 'date-fns';
 import {

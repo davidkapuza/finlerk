@@ -8,9 +8,8 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
-import { ConfigType } from './shared/config/config.type';
-import cookieParser from 'cookie-parser';
-import validationOptions from '@/shared/utils/validation-options';
+import { ConfigType } from './lib/config/config.type';
+import validationOptions from '@/lib/utils/validation-options';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,7 +23,6 @@ async function bootstrap() {
       exclude: ['/'],
     },
   );
-  app.use(cookieParser());
   app.enableCors({
     origin: 'http://localhost:4200',
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
@@ -41,7 +39,7 @@ async function bootstrap() {
     .setTitle('API')
     .setDescription('API docs')
     .setVersion('1.0')
-    .addCookieAuth()
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

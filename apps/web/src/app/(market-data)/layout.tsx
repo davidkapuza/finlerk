@@ -1,4 +1,4 @@
-import { Header } from '@/shared/ui/header';
+import { Header } from '@/lib/ui/header';
 
 interface RootLayoutProps {
   children: React.ReactNode;
