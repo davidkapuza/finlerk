@@ -3,7 +3,7 @@ import { HttpResponseError } from '../errors';
 import { getParamNames } from '../utils';
 import _ from 'lodash';
 
-function getRequestUrl(url: string, config: RequestConfig): string {
+function getRequestUrl(url: string, config: ApiConfig & RequestConfig): string {
   let requestUrl =
     url.startsWith('/') && config.baseUrl ? `${config.baseUrl}${url}` : url;
 

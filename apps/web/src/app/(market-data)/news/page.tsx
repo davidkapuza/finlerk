@@ -4,18 +4,14 @@ import { Dot } from 'lucide-react';
 import Image from 'next/image';
 import { marketDataApi } from '../api/market-data.api';
 
-async function getNews() {
-  return await marketDataApi.getNews();
-}
-
 export default async function NewsPage() {
-  const newsData = await getNews();
+  const data = await marketDataApi.getNews();
 
   return (
     <div className="container min-h-screen p-3 m-auto">
       <h1 className="py-6 text-3xl font-bold">News</h1>
       <div className="grid gap-4 mb-4 md:grid-cols-2">
-        {newsData.news?.map((n) => (
+        {data.news.map((n) => (
           <a
             key={n.id}
             href={n.url}

@@ -8,11 +8,14 @@ import {
 
 export class MarketDataApi extends Api {
   public async getNews(): Promise<NewsResponseType> {
-    return this.get('/api/v1/market-data/news');
+    return this.get<NewsResponseType>('/api/v1/market-data/news').then(
+      (response) => response.data,
+    );
   }
 
-  public async assetsFetcher(url): Promise<Asset[]> {
-    return this.get(url);
+  public async assetsFetcher(url: string): Promise<Asset[]> {
+    console.log('assetsFetcher', url);
+    return this.get<Asset[]>(url).then((response) => response.data);
   }
 
   public async getHistoricalBars({
@@ -24,12 +27,9 @@ export class MarketDataApi extends Api {
     },
     'symbol'
   >): Promise<StockBarsResponseType> {
-    const searchParams = new URLSearchParams(params);
-    return this.get(`${url}/?${searchParams}`);
-  }
-
-  public async getMarketClock() {
-    return this.get('/api/v1/market-data/market-clock');
+    return this.get<StockBarsResponseType>(url, {
+      params,
+    }).then((response) => response.data);
   }
 }
 

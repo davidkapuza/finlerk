@@ -3,7 +3,7 @@ import { UseApiMethods } from '../decorators';
 export type ApiConfig = RequestInit & { baseUrl: string };
 
 export type RequestConfig = Omit<
-  ApiConfig & {
+  RequestInit & {
     params?: Record<string, string>;
   },
   'body'
