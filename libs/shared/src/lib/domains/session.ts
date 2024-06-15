@@ -1,10 +1,9 @@
 import { User } from './user';
 
 export class Session {
-  id: number;
+  id: number | string;
   user: User;
-  sessionToken: string;
-  expires: Date;
+  hash: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;

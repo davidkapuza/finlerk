@@ -3,7 +3,6 @@ import { ROOT } from '@/routes';
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -14,18 +13,20 @@ import {
   DropdownMenuTrigger,
 } from '@finlerk/shadcn-ui';
 import Link from 'next/link';
+import { authApi } from '../api/auth.api';
 
 export async function NavMenu() {
   const session = await auth();
+
+  if (!session) return null;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative w-8 h-8 rounded-full">
           <Avatar className="w-8 h-8">
-            <AvatarImage src={session.user.image} alt="avatar" />
             <AvatarFallback>
-              {session.user.name[0].toUpperCase()}
+              {session.user.firstName[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -34,7 +35,7 @@ export async function NavMenu() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {session.user.name}
+              {session.user.firstName} {session.user.lastName}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
               {session.user.email}
@@ -51,6 +52,7 @@ export async function NavMenu() {
         <form
           action={async () => {
             'use server';
+            await authApi.addBearerAuth(session).logout();
             await signOut({ redirectTo: ROOT });
           }}
         >

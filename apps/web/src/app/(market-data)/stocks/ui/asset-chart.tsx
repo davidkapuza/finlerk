@@ -11,7 +11,7 @@ import {
 } from 'lightweight-charts';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
-import { useHistoricalBars } from '../../api/hooks/useHistoricalBars';
+import { useHistoricalBars } from '../../../../lib/api/hooks/useHistoricalBars';
 
 // const { theme } = resolveConfig(tailwindConfig);
 
@@ -178,7 +178,7 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
     return () => {
       chart.current.remove();
     };
-  }, [data]);
+  }, [data, layout]);
 
   React.useEffect(() => {
     const resizeListener = () => {

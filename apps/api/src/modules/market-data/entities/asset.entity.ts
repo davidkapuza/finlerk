@@ -11,7 +11,7 @@ import { Asset, AssetClassesEnum, AssetExchangesEnum } from '@finlerk/shared';
 import { RelationalEntityHelper } from '@/lib/utils/relational-entity-helper';
 
 @Entity({
-  name: 'asset',
+  name: 'assets',
 })
 export class AssetEntity extends RelationalEntityHelper implements Asset {
   @PrimaryGeneratedColumn('uuid')

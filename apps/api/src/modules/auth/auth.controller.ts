@@ -1,20 +1,30 @@
 import {
+  AuthConfirmEmailDto,
+  AuthEmailLoginDto,
+  AuthForgotPasswordDto,
+  AuthRegisterLoginDto,
+  AuthResetPasswordDto,
+  AuthUpdateDto,
+  LoginResponseDto,
+  NullableType,
+  RefreshResponseDto,
+  User,
+} from '@finlerk/shared';
+import {
   Body,
   Controller,
   Delete,
   Get,
-  Param,
+  HttpCode,
+  HttpStatus,
   Patch,
   Post,
-  Query,
+  Request,
+  SerializeOptions,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import {
-  AdapterAccount,
-  AdapterSession,
-  AdapterUser,
-  VerificationToken,
-} from 'next-auth/adapters';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 
 @ApiTags('Auth')
@@ -23,90 +33,122 @@ import { AuthService } from './auth.service';
   version: '1',
 })
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly service: AuthService) {}
 
-  @Post()
-  async createUser(@Body() user: AdapterUser) {
-    return await this.authService.createUser(user);
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Post('email/login')
+  @ApiOkResponse({
+    type: LoginResponseDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  public login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
+    return this.service.validateLogin(loginDto);
   }
 
-  @Get()
-  async getUserByEmail(@Query('email') email: string) {
-    return await this.authService.getUserByEmail(email);
+  @Post('email/register')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
+    return this.service.register(createUserDto);
   }
 
-  @Get('account/:provider/:id')
-  async getUserByAccount(
-    @Param('id') id: string,
-    @Param('provider') provider: string,
-  ) {
-    return await this.authService.getUserByAccount(id, provider);
+  @Post('email/confirm')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async confirmEmail(
+    @Body() confirmEmailDto: AuthConfirmEmailDto,
+  ): Promise<void> {
+    return this.service.confirmEmail(confirmEmailDto.hash);
   }
 
-  @Get(':id')
-  async getUser(@Param('id') id: string) {
-    return await this.authService.getUser(id);
+  @Post('email/confirm/new')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async confirmNewEmail(
+    @Body() confirmEmailDto: AuthConfirmEmailDto,
+  ): Promise<void> {
+    return this.service.confirmNewEmail(confirmEmailDto.hash);
   }
 
-  @Patch()
-  async updateUser(
-    @Body() user: Partial<AdapterUser> & Pick<AdapterUser, 'id'>,
-  ) {
-    return await this.authService.updateUser(user);
+  @Post('forgot/password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async forgotPassword(
+    @Body() forgotPasswordDto: AuthForgotPasswordDto,
+  ): Promise<void> {
+    return this.service.forgotPassword(forgotPasswordDto.email);
   }
 
-  @Delete(':id')
-  async deleteUser(@Param('id') id: string) {
-    return await this.authService.deleteUser(id);
+  @Post('reset/password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<void> {
+    return this.service.resetPassword(
+      resetPasswordDto.hash,
+      resetPasswordDto.password,
+    );
   }
 
-  @Post('account')
-  async linkAccount(@Body() account: AdapterAccount) {
-    return await this.authService.linkAccount(account);
+  @ApiBearerAuth()
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse({
+    type: User,
+  })
+  @HttpCode(HttpStatus.OK)
+  public me(@Request() request): Promise<NullableType<User>> {
+    return this.service.me(request.user);
   }
 
-  @Delete('account/:provider/:id')
-  async unlinkAccount(
-    @Param('id') id: string,
-    @Param('provider') provider: string,
-  ) {
-    return await this.authService.unlinkAccount(id, provider);
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: RefreshResponseDto,
+  })
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Post('refresh')
+  @UseGuards(AuthGuard('jwt-refresh'))
+  @HttpCode(HttpStatus.OK)
+  public refresh(@Request() request): Promise<RefreshResponseDto> {
+    return this.service.refreshToken({
+      sessionId: request.user.sessionId,
+      hash: request.user.hash,
+    });
   }
 
-  @Post('session')
-  async createSession(
-    @Body() session: { sessionToken: string; userId: string; expires: Date },
-  ) {
-    return await this.authService.createSession(session);
+  @ApiBearerAuth()
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async logout(@Request() request): Promise<void> {
+    await this.service.logout({
+      sessionId: request.user.sessionId,
+    });
   }
 
-  @Get('session/:sessionToken')
-  async getSessionAndUser(@Param('sessionToken') sessionToken: string) {
-    return await this.authService.getSessionAndUser(sessionToken);
+  @ApiBearerAuth()
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Patch('me')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: User,
+  })
+  public update(
+    @Request() request,
+    @Body() userDto: AuthUpdateDto,
+  ): Promise<NullableType<User>> {
+    return this.service.update(request.user, userDto);
   }
 
-  @Patch('session')
-  async updateSession(
-    @Body()
-    session: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>,
-  ) {
-    return await this.authService.updateSession(session);
-  }
-
-  @Delete('session/:sessionToken')
-  async deleteSession(@Param('sessionToken') sessionToken: string) {
-    return await this.authService.deleteSession(sessionToken);
-  }
-
-  @Post('verification')
-  async createVerificationToken(@Body() verificationToken: VerificationToken) {
-    return await this.authService.createVerificationToken(verificationToken);
-  }
-
-  @Patch('verification')
-  async useVerificationToken(
-    @Body() params: { identifier: string; token: string },
-  ) {
-    return await this.authService.useVerificationToken(params);
+  @ApiBearerAuth()
+  @Delete('me')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async delete(@Request() request): Promise<void> {
+    return this.service.softDelete(request.user);
   }
 }

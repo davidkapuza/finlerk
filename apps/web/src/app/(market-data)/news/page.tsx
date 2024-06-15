@@ -1,11 +1,16 @@
+import { auth } from '@/auth';
+import { marketDataApi } from '@/lib/api/market-data.api';
 import { Badge } from '@finlerk/shadcn-ui';
 import { formatDistanceToNow } from 'date-fns';
 import { Dot } from 'lucide-react';
 import Image from 'next/image';
-import { marketDataApi } from '../api/market-data.api';
 
 export default async function NewsPage() {
-  const data = await marketDataApi.getNews();
+  const session = await auth();
+
+  if (!session) return null;
+
+  const data = await marketDataApi.addBearerAuth(session).getNews();
 
   return (
     <div className="container min-h-screen p-3 m-auto">

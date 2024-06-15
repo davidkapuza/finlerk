@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
 import { DEFAULT_REDIRECT, PUBLIC_ROUTES, ROOT } from './routes';
 
-export default auth((req) => {
+export default auth(async (req) => {
   const { nextUrl } = req;
 
   const isAuthenticated = !!req.auth;

@@ -1,5 +1,4 @@
 import { ThemeToggle } from '@/lib/ui/theme-toggle';
-
 interface RootLayoutProps {
   children: React.ReactNode;
 }

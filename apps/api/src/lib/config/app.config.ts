@@ -20,7 +20,7 @@ enum Environment {
 class EnvironmentVariablesValidator {
   @IsEnum(Environment)
   @IsOptional()
-  APP_ENV: Environment;
+  NODE_ENV: Environment;
 
   @IsInt()
   @Min(0)
@@ -53,7 +53,7 @@ export default registerAs<AppConfig>('app', () => {
   validateConfig(process.env, EnvironmentVariablesValidator);
 
   return {
-    nodeEnv: process.env.APP_ENV || 'development',
+    nodeEnv: process.env.NODE_ENV || 'development',
     name: process.env.APP_NAME || 'app',
     workingDirectory: process.env.PWD || process.cwd(),
     frontendDomain: process.env.FRONTEND_DOMAIN,

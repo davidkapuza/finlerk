@@ -1,3 +1,5 @@
+import { RelationalEntityHelper } from '@/lib/utils/relational-entity-helper';
+import { UserEntity } from '@/modules/users/infrastructure/persistence/relational/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,8 +10,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { RelationalEntityHelper } from '@/lib/utils/relational-entity-helper';
-import { UserEntity } from '@/modules/users/infrastructure/persistence/relational/user.entity';
 
 @Entity({
   name: 'sessions',
@@ -24,11 +24,8 @@ export class SessionEntity extends RelationalEntityHelper {
   @Index()
   user: UserEntity;
 
-  @Column('timestamptz')
-  expires: Date;
-
-  @Column('varchar')
-  sessionToken: string;
+  @Column()
+  hash: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -10,12 +10,14 @@ import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
 import { ConfigType } from './lib/config/config.type';
 import validationOptions from '@/lib/utils/validation-options';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const configService = app.get(ConfigService<ConfigType>);
 
+  app.use(cookieParser());
   app.enableShutdownHooks();
   app.setGlobalPrefix(
     configService.getOrThrow('app.apiPrefix', { infer: true }),
@@ -26,7 +28,7 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:4200',
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
   app.enableVersioning({

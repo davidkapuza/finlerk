@@ -1,6 +1,13 @@
 import appConfig from '@/lib/config/app.config';
 import databaseConfig from '@/lib/database/config/database.config';
-import { AuthModule, MarketDataModule, RedisPubSubModule } from '@/modules';
+import {
+  AuthGoogleModule,
+  AuthModule,
+  MailModule,
+  MailerModule,
+  MarketDataModule,
+  UsersModule,
+} from '@/modules';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -11,13 +18,24 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { ConfigType } from './lib/config/config.type';
 import { TypeOrmConfigService } from './lib/database/typeorm-config.service';
 import alpacaConfig from './modules/alpaca/config/alpaca.config';
-import redisConfig from './modules/redis-pub-sub/config/redis.config';
+import authConfig from './modules/auth/config/auth.config';
+import mailConfig from './modules/mail/config/mail.config';
+import redisConfig from './modules/redis/config/redis.config';
+import googleConfig from './modules/auth-google/config/google.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, redisConfig, alpacaConfig],
+      load: [
+        appConfig,
+        authConfig,
+        googleConfig,
+        mailConfig,
+        databaseConfig,
+        redisConfig,
+        alpacaConfig,
+      ],
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
@@ -39,23 +57,14 @@ import redisConfig from './modules/redis-pub-sub/config/redis.config';
       }),
       inject: [ConfigService],
     }),
-    RedisPubSubModule.registerAsync({
-      isGlobal: true,
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService<ConfigType>) => ({
-        host: configService.get('redis.host', {
-          infer: true,
-        }),
-        port: configService.get('redis.port', {
-          infer: true,
-        }),
-      }),
-      inject: [ConfigService],
-    }),
     EventEmitterModule.forRoot({
       global: true,
     }),
     AuthModule,
+    AuthGoogleModule,
+    UsersModule,
+    MailModule,
+    MailerModule,
     MarketDataModule,
   ],
 })

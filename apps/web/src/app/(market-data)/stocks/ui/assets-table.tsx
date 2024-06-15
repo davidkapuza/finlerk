@@ -20,8 +20,8 @@ import {
 } from '@tanstack/react-table';
 import React from 'react';
 import useSWRInfinite from 'swr/infinite';
-import { marketDataApi } from '../../api/market-data.api';
 import Link from 'next/link';
+import { marketDataApi } from '@/lib/api/market-data.api';
 
 const PAGE_SIZE = 30;
 

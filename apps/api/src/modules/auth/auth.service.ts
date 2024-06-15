@@ -1,87 +1,595 @@
-import { pool } from '@/lib/database/pool';
-import { Injectable } from '@nestjs/common';
-import type {
-  Adapter,
-  AdapterAccount,
-  AdapterSession,
-  AdapterUser,
-  VerificationToken,
-} from 'next-auth/adapters';
-import AuthPgAdapter from './auth-pg-adapter';
+import { ConfigType } from '@/lib/config/config.type';
+import {
+  AuthEmailLoginDto,
+  AuthProvidersEnum,
+  AuthRegisterLoginDto,
+  AuthUpdateDto,
+  LoginResponseDto,
+  NullableType,
+  Session,
+  User,
+} from '@finlerk/shared';
+import {
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import ms from 'ms';
+import { MailService } from '../mail/mail.service';
+import { RolesEnum } from '../roles/roles.enum';
+import { SessionsService } from '../sessions/sessions.service';
+import { SocialInterface } from '../social/interfaces/social.interface';
+import { StatusesEnum } from '../statuses/statuses.enum';
+import { UsersService } from '../users/users.service';
+import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
 
 @Injectable()
 export class AuthService {
-  adapter: Adapter;
+  constructor(
+    private jwtService: JwtService,
+    private usersService: UsersService,
+    private sessionService: SessionsService,
+    private mailService: MailService,
+    private configService: ConfigService<ConfigType>,
+  ) {}
 
-  constructor() {
-    this.adapter = AuthPgAdapter(pool);
+  async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
+    const user = await this.usersService.findByEmail(loginDto.email);
+
+    if (!user) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          email: 'notFound',
+        },
+      });
+    }
+
+    if (user.provider !== AuthProvidersEnum.email) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          email: `needLoginViaProvider:${user.provider}`,
+        },
+      });
+    }
+
+    if (!user.password) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          password: 'incorrectPassword',
+        },
+      });
+    }
+
+    const isValidPassword = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
+
+    if (!isValidPassword) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          password: 'incorrectPassword',
+        },
+      });
+    }
+
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    const session = await this.sessionService.create({
+      user,
+      hash,
+    });
+
+    const { token, refreshToken, tokenExpires } = await this.getTokensData({
+      id: user.id,
+      role: user.role,
+      sessionId: session.id,
+      hash,
+    });
+
+    return {
+      refreshToken,
+      token,
+      tokenExpires,
+      user,
+    };
   }
 
-  async createUser(user: AdapterUser) {
-    return this.adapter.createUser(user);
+  async validateSocialLogin(
+    authProvider: string,
+    socialData: SocialInterface,
+  ): Promise<LoginResponseDto> {
+    let user: NullableType<User> = null;
+    const socialEmail = socialData.email?.toLowerCase();
+    let userByEmail: NullableType<User> = null;
+
+    if (socialEmail) {
+      userByEmail = await this.usersService.findByEmail(socialEmail);
+    }
+
+    if (socialData.id) {
+      user = await this.usersService.findBySocialIdAndProvider({
+        socialId: socialData.id,
+        provider: authProvider,
+      });
+    }
+
+    if (user) {
+      if (socialEmail && !userByEmail) {
+        user.email = socialEmail;
+      }
+      await this.usersService.update(user.id, user);
+    } else if (userByEmail) {
+      user = userByEmail;
+    } else if (socialData.id) {
+      const role = {
+        id: RolesEnum.user,
+      };
+      const status = {
+        id: StatusesEnum.active,
+      };
+
+      user = await this.usersService.create({
+        email: socialEmail ?? null,
+        firstName: socialData.firstName ?? null,
+        lastName: socialData.lastName ?? null,
+        socialId: socialData.id,
+        provider: authProvider,
+        role,
+        status,
+      });
+
+      user = await this.usersService.findById(user.id);
+    }
+
+    if (!user) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          user: 'userNotFound',
+        },
+      });
+    }
+
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    const session = await this.sessionService.create({
+      user,
+      hash,
+    });
+
+    const {
+      token: jwtToken,
+      refreshToken,
+      tokenExpires,
+    } = await this.getTokensData({
+      id: user.id,
+      role: user.role,
+      sessionId: session.id,
+      hash,
+    });
+
+    return {
+      refreshToken,
+      token: jwtToken,
+      tokenExpires,
+      user,
+    };
   }
 
-  async getUserByEmail(email: string) {
-    return this.adapter.getUserByEmail(email);
-  }
+  async register(dto: AuthRegisterLoginDto): Promise<void> {
+    const user = await this.usersService.create({
+      ...dto,
+      email: dto.email,
+      role: {
+        id: RolesEnum.user,
+      },
+      status: {
+        id: StatusesEnum.inactive,
+      },
+    });
 
-  async getUserByAccount(id: string, provider: string) {
-    return this.adapter.getUserByAccount({
-      providerAccountId: id,
-      provider,
+    const hash = await this.jwtService.signAsync(
+      {
+        confirmEmailUserId: user.id,
+      },
+      {
+        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+          infer: true,
+        }),
+        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+          infer: true,
+        }),
+      },
+    );
+
+    await this.mailService.userSignUp({
+      to: dto.email,
+      data: {
+        hash,
+      },
     });
   }
 
-  async getUser(id: string) {
-    return this.adapter.getUser(id);
+  async confirmEmail(hash: string): Promise<void> {
+    let userId: User['id'];
+
+    try {
+      const jwtData = await this.jwtService.verifyAsync<{
+        confirmEmailUserId: User['id'];
+      }>(hash, {
+        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+          infer: true,
+        }),
+      });
+
+      userId = jwtData.confirmEmailUserId;
+    } catch {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          hash: `invalidHash`,
+        },
+      });
+    }
+
+    const user = await this.usersService.findById(userId);
+
+    if (
+      !user ||
+      user?.status?.id?.toString() !== StatusesEnum.inactive.toString()
+    ) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        error: `notFound`,
+      });
+    }
+
+    user.status = {
+      id: StatusesEnum.active,
+    };
+
+    await this.usersService.update(user.id, user);
   }
 
-  async updateUser(user: Partial<AdapterUser> & Pick<AdapterUser, 'id'>) {
-    return this.adapter.updateUser(user);
+  async confirmNewEmail(hash: string): Promise<void> {
+    let userId: User['id'];
+    let newEmail: User['email'];
+
+    try {
+      const jwtData = await this.jwtService.verifyAsync<{
+        confirmEmailUserId: User['id'];
+        newEmail: User['email'];
+      }>(hash, {
+        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+          infer: true,
+        }),
+      });
+
+      userId = jwtData.confirmEmailUserId;
+      newEmail = jwtData.newEmail;
+    } catch {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          hash: `invalidHash`,
+        },
+      });
+    }
+
+    const user = await this.usersService.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        error: `notFound`,
+      });
+    }
+
+    user.email = newEmail;
+    user.status = {
+      id: StatusesEnum.active,
+    };
+
+    await this.usersService.update(user.id, user);
   }
 
-  async deleteUser(userId: string) {
-    return this.adapter.deleteUser?.(userId);
-  }
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.usersService.findByEmail(email);
 
-  async linkAccount(account: AdapterAccount) {
-    return this.adapter.linkAccount(account);
-  }
+    if (!user) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          email: 'emailNotExists',
+        },
+      });
+    }
 
-  async unlinkAccount(id: string, provider: string) {
-    return this.adapter.unlinkAccount?.({
-      providerAccountId: id,
-      provider,
+    const tokenExpiresIn = this.configService.getOrThrow('auth.forgotExpires', {
+      infer: true,
+    });
+
+    const tokenExpires = Date.now() + ms(tokenExpiresIn);
+
+    const hash = await this.jwtService.signAsync(
+      {
+        forgotUserId: user.id,
+      },
+      {
+        secret: this.configService.getOrThrow('auth.forgotSecret', {
+          infer: true,
+        }),
+        expiresIn: tokenExpiresIn,
+      },
+    );
+
+    await this.mailService.forgotPassword({
+      to: email,
+      data: {
+        hash,
+        tokenExpires,
+      },
     });
   }
 
-  async createSession(session: {
-    sessionToken: string;
-    userId: string;
-    expires: Date;
+  async resetPassword(hash: string, password: string): Promise<void> {
+    let userId: User['id'];
+
+    try {
+      const jwtData = await this.jwtService.verifyAsync<{
+        forgotUserId: User['id'];
+      }>(hash, {
+        secret: this.configService.getOrThrow('auth.forgotSecret', {
+          infer: true,
+        }),
+      });
+
+      userId = jwtData.forgotUserId;
+    } catch {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          hash: `invalidHash`,
+        },
+      });
+    }
+
+    const user = await this.usersService.findById(userId);
+
+    if (!user) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          hash: `notFound`,
+        },
+      });
+    }
+
+    user.password = password;
+
+    await this.sessionService.deleteByUserId({
+      userId: user.id,
+    });
+
+    await this.usersService.update(user.id, user);
+  }
+
+  async me(userJwtPayload: JwtPayloadType): Promise<NullableType<User>> {
+    return this.usersService.findById(userJwtPayload.id);
+  }
+
+  async update(
+    userJwtPayload: JwtPayloadType,
+    userDto: AuthUpdateDto,
+  ): Promise<NullableType<User>> {
+    const currentUser = await this.usersService.findById(userJwtPayload.id);
+
+    if (!currentUser) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          user: 'userNotFound',
+        },
+      });
+    }
+
+    if (userDto.password) {
+      if (!userDto.oldPassword) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            oldPassword: 'missingOldPassword',
+          },
+        });
+      }
+
+      if (!currentUser.password) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            oldPassword: 'incorrectOldPassword',
+          },
+        });
+      }
+
+      const isValidOldPassword = await bcrypt.compare(
+        userDto.oldPassword,
+        currentUser.password,
+      );
+
+      if (!isValidOldPassword) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            oldPassword: 'incorrectOldPassword',
+          },
+        });
+      } else {
+        await this.sessionService.deleteByUserIdWithExclude({
+          userId: currentUser.id,
+          excludeSessionId: userJwtPayload.sessionId,
+        });
+      }
+    }
+
+    if (userDto.email && userDto.email !== currentUser.email) {
+      const userByEmail = await this.usersService.findByEmail(userDto.email);
+
+      if (userByEmail && userByEmail.id !== currentUser.id) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            email: 'emailExists',
+          },
+        });
+      }
+
+      const hash = await this.jwtService.signAsync(
+        {
+          confirmEmailUserId: currentUser.id,
+          newEmail: userDto.email,
+        },
+        {
+          secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+            infer: true,
+          }),
+          expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+            infer: true,
+          }),
+        },
+      );
+
+      await this.mailService.confirmNewEmail({
+        to: userDto.email,
+        data: {
+          hash,
+        },
+      });
+    }
+
+    delete userDto.email;
+    delete userDto.oldPassword;
+
+    await this.usersService.update(userJwtPayload.id, userDto);
+
+    return this.usersService.findById(userJwtPayload.id);
+  }
+
+  async refreshToken(
+    data: Pick<JwtRefreshPayloadType, 'sessionId' | 'hash'>,
+  ): Promise<Omit<LoginResponseDto, 'user'>> {
+    const session = await this.sessionService.findById(data.sessionId);
+
+    if (!session) {
+      throw new UnauthorizedException();
+    }
+
+    if (session.hash !== data.hash) {
+      throw new UnauthorizedException();
+    }
+
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    const user = await this.usersService.findById(session.user.id);
+
+    if (!user?.role) {
+      throw new UnauthorizedException();
+    }
+
+    await this.sessionService.update(session.id, {
+      hash,
+    });
+
+    const { token, refreshToken, tokenExpires } = await this.getTokensData({
+      id: session.user.id,
+      role: {
+        id: user.role.id,
+      },
+      sessionId: session.id,
+      hash,
+    });
+
+    return {
+      token,
+      refreshToken,
+      tokenExpires,
+    };
+  }
+
+  async softDelete(user: User): Promise<void> {
+    await this.usersService.remove(user.id);
+  }
+
+  async logout(data: Pick<JwtRefreshPayloadType, 'sessionId'>) {
+    return this.sessionService.deleteById(data.sessionId);
+  }
+
+  private async getTokensData(data: {
+    id: User['id'];
+    role: User['role'];
+    sessionId: Session['id'];
+    hash: Session['hash'];
   }) {
-    return this.adapter.createSession(session);
-  }
+    const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
+      infer: true,
+    });
 
-  async getSessionAndUser(sessionToken: string) {
-    return this.adapter.getSessionAndUser(sessionToken);
-  }
+    const tokenExpires = Date.now() + ms(tokenExpiresIn);
 
-  async updateSession(
-    session: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>,
-  ) {
-    return this.adapter.updateSession(session);
-  }
+    const [token, refreshToken] = await Promise.all([
+      await this.jwtService.signAsync(
+        {
+          id: data.id,
+          role: data.role,
+          sessionId: data.sessionId,
+        },
+        {
+          secret: this.configService.getOrThrow('auth.secret', { infer: true }),
+          expiresIn: tokenExpiresIn,
+        },
+      ),
+      await this.jwtService.signAsync(
+        {
+          sessionId: data.sessionId,
+          hash: data.hash,
+        },
+        {
+          secret: this.configService.getOrThrow('auth.refreshSecret', {
+            infer: true,
+          }),
+          expiresIn: this.configService.getOrThrow('auth.refreshExpires', {
+            infer: true,
+          }),
+        },
+      ),
+    ]);
 
-  async deleteSession(sessionToken: string) {
-    return this.adapter.deleteSession(sessionToken);
-  }
-
-  async createVerificationToken(verificationToken: VerificationToken) {
-    return this.adapter.createVerificationToken?.(verificationToken);
-  }
-
-  async useVerificationToken({ identifier, token }) {
-    return this.adapter.useVerificationToken?.({ identifier, token });
+    return {
+      token,
+      refreshToken,
+      tokenExpires,
+    };
   }
 }

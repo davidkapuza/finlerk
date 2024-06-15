@@ -4,6 +4,7 @@ import { Toaster, TooltipProvider } from '@finlerk/shadcn-ui';
 import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import { Metadata } from 'next';
 import { siteConfig } from '../lib/config/site';
+import '../../reflect-metadata-client-side';
 import './global.css';
 
 export const metadata: Metadata = {
@@ -12,15 +13,6 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
-  },
 };
 
 interface RootLayoutProps {

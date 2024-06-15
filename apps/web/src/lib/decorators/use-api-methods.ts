@@ -1,4 +1,4 @@
-import { ApiConfig, RequestConfig } from '../api';
+import { ApiConfig, RequestConfig } from '../api/api-client';
 import { HttpResponseError } from '../errors';
 import { getParamNames } from '../utils';
 import _ from 'lodash';

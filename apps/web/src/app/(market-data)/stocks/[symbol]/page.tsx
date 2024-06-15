@@ -1,7 +1,7 @@
 import { GetHistoricalSymbolBarsDto } from '@finlerk/shared';
 import { formatISO, isBefore, subDays } from 'date-fns';
-import { marketDataApi } from '../../api/market-data.api';
 import { AssetChart } from '../ui/asset-chart';
+import { marketDataApi } from '@/lib/api/market-data.api';
 interface StockDetailsPageProps {
   params: { symbol: string };
 }

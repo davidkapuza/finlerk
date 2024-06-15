@@ -23,10 +23,6 @@ const nextConfig = {
     ],
   },
   webpack: (config) => {
-    // config.resolve.alias['@nestjs/swagger'] = path.resolve(
-    //   __dirname,
-    //   '../../node_modules/@nestjs/swagger/dist/extra/swagger-shim',
-    // );
     config.module.rules.push({
       test: /\.ts$/,
       loader: path.resolve(__dirname, './dto-adapter.loader.ts'),

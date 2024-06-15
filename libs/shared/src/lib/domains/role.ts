@@ -1,9 +1,17 @@
-import { Allow, IsNumber } from 'class-validator';
+import { ApiResponseProperty } from '@nestjs/swagger';
+import { Allow } from 'class-validator';
 
 export class Role {
-  @IsNumber()
+  @Allow()
+  @ApiResponseProperty({
+    type: Number,
+  })
   id: number;
 
   @Allow()
+  @ApiResponseProperty({
+    type: String,
+    example: 'admin',
+  })
   name?: string;
 }
