@@ -11,17 +11,22 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  useToast,
 } from '@finlerk/shadcn-ui';
 import { AuthRegisterLoginDto } from '@finlerk/shared';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { OAuthProviders } from './oauth-providers';
+import { authApi } from '../api/auth.api';
+import { HttpResponseError } from '../errors';
 
 const resolver = classValidatorResolver(AuthRegisterLoginDto);
 
 export function RegisterForm() {
+  const { toast } = useToast();
   // const router = useRouter();
-  const [isLoading] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const form = useForm<AuthRegisterLoginDto>({
     resolver,
@@ -33,8 +38,31 @@ export function RegisterForm() {
     },
   });
 
-  function onSubmit(values: AuthRegisterLoginDto) {
-    // TODO
+  const { setError } = form;
+
+  async function onSubmit(credentials: AuthRegisterLoginDto) {
+    try {
+      setIsLoading(true);
+      await authApi.credentialsRegistration(credentials);
+    } catch (error) {
+      if (error instanceof HttpResponseError) {
+        if (error.data) {
+          Object.entries(error.data.errors).map(([field, message]) =>
+            setError(field as keyof AuthRegisterLoginDto, {
+              message,
+            }),
+          );
+        } else {
+          toast({
+            variant: 'destructive',
+            title: error.message,
+            description: error.statusText,
+          });
+        }
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -136,16 +164,7 @@ export function RegisterForm() {
           </div>
         </div>
         <div className="flex flex-row gap-4">
-          <Button
-            variant="outline"
-            type="button"
-            className="flex-1"
-            disabled={isLoading}
-            // onClick={onGoogleLogin}
-          >
-            <Icons.google className="w-4 h-4 mr-2" />
-            Google
-          </Button>
+          <OAuthProviders />
         </div>
       </form>
     </Form>

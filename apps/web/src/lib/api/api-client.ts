@@ -1,7 +1,7 @@
-import _ from 'lodash';
-import { HttpResponseError } from '../errors';
-import { Session } from 'next-auth';
 import { User } from '@finlerk/shared';
+import _ from 'lodash';
+import { Session } from 'next-auth';
+import { HttpResponseError } from '../errors';
 
 export type ApiConfig = RequestInit & { baseUrl: string };
 
@@ -134,6 +134,20 @@ export class ApiClient {
     return this;
   }
 
+  private async _throwError(response: Response) {
+    const errorBody = await response.json().catch(() => null);
+
+    const { status, statusText, headers } = response;
+    const errorObject = {
+      status,
+      statusText,
+      headers,
+      data: errorBody,
+    };
+
+    throw new HttpResponseError(errorObject);
+  }
+
   private async _request(
     url: string,
     method:
@@ -189,7 +203,7 @@ export class ApiClient {
           },
         );
 
-        if (!refreshResponse.ok) throw new HttpResponseError(response);
+        if (!refreshResponse.ok) return this._throwError(response);
 
         const updatedTokens = await refreshResponse.json();
         await this.update({ ...this.session, ...updatedTokens });
@@ -199,10 +213,8 @@ export class ApiClient {
 
         response = await original(requestConfig);
 
-        if (!response.ok) throw new HttpResponseError(response);
-      } else {
-        throw new HttpResponseError(response);
-      }
+        if (!response.ok) return this._throwError(response);
+      } else return this._throwError(response);
     }
 
     const responseBody = await response.json().catch(() => null);

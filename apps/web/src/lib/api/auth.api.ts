@@ -1,10 +1,12 @@
 import {
+  AuthConfirmEmailDto,
   AuthEmailLoginDto,
   AuthGoogleLoginDto,
+  AuthRegisterLoginDto,
   LoginResponseDto,
   RefreshResponseDto,
 } from '@finlerk/shared';
-import { ApiClient } from './api-client';
+import { ApiClient, RequestResponse } from './api-client';
 
 export class AuthApi extends ApiClient {
   async googleLogin(payload: AuthGoogleLoginDto): Promise<LoginResponseDto> {
@@ -15,12 +17,21 @@ export class AuthApi extends ApiClient {
     return response.data;
   }
 
+  async credentialsRegistration(
+    credentials: AuthRegisterLoginDto,
+  ): Promise<RequestResponse<void>> {
+    return this.post<void, AuthRegisterLoginDto>(
+      '/api/v1/auth/email/register',
+      credentials,
+    );
+  }
+
   async credentialsLogin(
-    payload: AuthEmailLoginDto,
+    credentials: AuthEmailLoginDto,
   ): Promise<LoginResponseDto> {
     const response = await this.post<LoginResponseDto, AuthEmailLoginDto>(
       '/api/v1/auth/email/login',
-      payload,
+      credentials,
     );
     return response.data;
   }
@@ -36,6 +47,15 @@ export class AuthApi extends ApiClient {
       },
     );
     return response.data;
+  }
+
+  async confirmEmail(
+    payload: AuthConfirmEmailDto,
+  ): Promise<RequestResponse<void>> {
+    return await this.post<void, AuthConfirmEmailDto>(
+      '/api/v1/auth/email/confirm',
+      payload,
+    );
   }
 
   async logout(): Promise<void> {

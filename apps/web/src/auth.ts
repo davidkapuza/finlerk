@@ -1,8 +1,8 @@
 import Google from '@auth/core/providers/google';
-import Credentials from 'next-auth/providers/credentials';
 import { LoginResponseDto, User as UserDomain } from '@finlerk/shared';
 import NextAuth, { User } from 'next-auth';
 import 'next-auth/jwt';
+import Credentials from 'next-auth/providers/credentials';
 import { authApi } from './lib/api/auth.api';
 
 declare module 'next-auth' {

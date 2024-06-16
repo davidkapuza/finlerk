@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MailData } from './interfaces/mail-data.interface';
 import { ConfigType } from '@/lib/config/config.type';
-import { MaybeType } from '@finlerk/shared';
 import path from 'path';
 import { MailerService } from '../mailer/mailer.service';
 
@@ -14,10 +13,10 @@ export class MailService {
   ) {}
 
   async userSignUp(mailData: MailData<{ hash: string }>): Promise<void> {
-    let emailConfirmTitle: MaybeType<string>;
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
-    let text3: MaybeType<string>;
+    const emailConfirmTitle = 'Confirm email';
+    const text1 = 'Hey!';
+    const text2 = 'You’re almost there';
+    const text3 = 'Simply click the button below to verify your email address.';
 
     const url = new URL(
       this.configService.getOrThrow('app.frontendDomain', {
@@ -57,11 +56,13 @@ export class MailService {
   async forgotPassword(
     mailData: MailData<{ hash: string; tokenExpires: number }>,
   ): Promise<void> {
-    let resetPasswordTitle: MaybeType<string>;
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
-    let text3: MaybeType<string>;
-    let text4: MaybeType<string>;
+    const resetPasswordTitle = 'Reset password';
+    const text1 = 'Trouble signing in?';
+    const text2 = 'Resetting your password is easy.';
+    const text3 =
+      'Just press the button below and follow the instructions. We’ll have you up and running in no time.';
+    const text4 =
+      'If you did not make this request then please ignore this email.';
 
     const url = new URL(
       this.configService.getOrThrow('app.frontendDomain', {
@@ -103,10 +104,11 @@ export class MailService {
   }
 
   async confirmNewEmail(mailData: MailData<{ hash: string }>): Promise<void> {
-    let emailConfirmTitle: MaybeType<string>;
-    let text1: MaybeType<string>;
-    let text2: MaybeType<string>;
-    let text3: MaybeType<string>;
+    const emailConfirmTitle = 'Confirm email';
+    const text1 = 'Hey!';
+    const text2 = 'Confirm your new email address.';
+    const text3 =
+      'Simply click the big green button below to verify your email address.';
 
     const url = new URL(
       this.configService.getOrThrow('app.frontendDomain', {

@@ -14,15 +14,13 @@ import {
 import { AuthEmailLoginDto } from '@finlerk/shared';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { OAuthProviders } from './oauth-providers';
 
 const resolver = classValidatorResolver(AuthEmailLoginDto);
 
 export function LoginForm() {
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const form = useForm<AuthEmailLoginDto>({
@@ -35,21 +33,12 @@ export function LoginForm() {
 
   async function onSubmit(values: AuthEmailLoginDto) {
     setIsLoading(true);
-    try {
-      await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-      });
-      router.push('/news');
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  function handleLogin() {
-    signIn('google');
+    // TODO Improve handling of invalid credentials, displaying errors returned from login endpoint under inputs
+    await signIn('credentials', {
+      email: values.email,
+      password: values.password,
+    });
+    setIsLoading(false);
   }
 
   return (
@@ -113,16 +102,7 @@ export function LoginForm() {
           </div>
         </div>
         <div className="flex flex-row gap-4">
-          <Button
-            variant="outline"
-            type="button"
-            className="flex-1"
-            disabled={isLoading}
-            onClick={handleLogin}
-          >
-            <Icons.google className="w-4 h-4 mr-2" />
-            Google
-          </Button>
+          <OAuthProviders />
         </div>
       </form>
     </Form>

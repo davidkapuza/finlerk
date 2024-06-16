@@ -1,11 +1,30 @@
+// TODO improve error handling
 export class HttpResponseError extends Error {
-  private readonly _response: Response;
-  constructor(response: Response) {
-    super(`${response.status} ${response.statusText}`);
-    this._response = response;
-  }
-
-  get response() {
-    return this._response;
+  status: number;
+  statusText: string;
+  headers: Headers;
+  data?: {
+    errors: Record<string, string>;
+    status: number;
+  };
+  constructor({
+    status,
+    statusText,
+    headers,
+    data,
+  }: {
+    status: number;
+    statusText: string;
+    headers: Headers;
+    data?: {
+      errors: Record<string, string>;
+      status: number;
+    };
+  }) {
+    super(`${status} ${statusText}`);
+    this.status = status;
+    this.statusText = statusText;
+    this.headers = headers;
+    this.data = data;
   }
 }

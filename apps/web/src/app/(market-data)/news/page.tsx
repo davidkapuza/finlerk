@@ -8,6 +8,8 @@ import Image from 'next/image';
 export default async function NewsPage() {
   const session = await auth();
 
+  // TODO fix session is null when refreshing tokens in jwt callback and rendering server components
+
   if (!session) return null;
 
   const data = await marketDataApi.addBearerAuth(session).getNews();
