@@ -59,14 +59,15 @@ export const {
         token = { ...token, session };
         return token;
       }
+      // TODO fix this mess
       try {
-        if (user) {
-          token = { ...token, session: user as unknown as LoginResponseDto };
-        } else if (account) {
+        if (account) {
           const session = await authApi.googleLogin({
             idToken: account.id_token,
           });
           token = { ...token, session };
+        } else if (user) {
+          token = { ...token, session: user as unknown as LoginResponseDto };
         } else if (token && token.session.tokenExpires < Date.now()) {
           const refreshedTokens = await authApi.refreshToken(
             token.session.refreshToken,

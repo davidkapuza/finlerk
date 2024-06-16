@@ -23,7 +23,7 @@ export default async function RegisterPage() {
           Already have an account?{' '}
           <Link
             href="/login"
-            className="underline underline-offset-4 text-primary"
+            className="font-medium hover:underline underline-offset-4 text-primary"
           >
             Login
           </Link>

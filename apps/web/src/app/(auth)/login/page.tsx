@@ -14,14 +14,11 @@ export default async function LoginPage() {
         </p>
       </div>
       <LoginForm />
-      <Link href="#" className="mt-6 mb-4 text-sm underline underline-offset-4">
-        Forgot password?
-      </Link>
       <p className="text-sm text-muted-foreground">
         Don&apos;t have account?{' '}
         <Link
           href="/register"
-          className="underline underline-offset-4 text-primary"
+          className="hover:underline underline-offset-4 text-primary font-medium"
         >
           Sign up
         </Link>

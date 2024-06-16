@@ -7,6 +7,8 @@ import { useToast } from '@finlerk/shadcn-ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 
+// TODO improve confirmation -> automatic user login after confirmation
+
 export default function ConfirmEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();

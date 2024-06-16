@@ -23,9 +23,10 @@ import { HttpResponseError } from '../errors';
 
 const resolver = classValidatorResolver(AuthRegisterLoginDto);
 
+// TODO Provide resend email UI
+
 export function RegisterForm() {
   const { toast } = useToast();
-  // const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const form = useForm<AuthRegisterLoginDto>({
@@ -44,6 +45,10 @@ export function RegisterForm() {
     try {
       setIsLoading(true);
       await authApi.credentialsRegistration(credentials);
+      toast({
+        title: 'Check your email',
+        description: `To start using finlerk, confirm your email address with the email we sent to: ${credentials.email}`,
+      });
     } catch (error) {
       if (error instanceof HttpResponseError) {
         if (error.data) {
