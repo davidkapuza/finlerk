@@ -1,20 +1,16 @@
 import Google from '@auth/core/providers/google';
-import { LoginResponseDto, User as UserDomain } from '@finlerk/shared';
-import NextAuth, { User } from 'next-auth';
+import { LoginResponseDto } from '@finlerk/shared';
+import NextAuth from 'next-auth';
 import 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
 import { authApi } from './lib/api/auth.api';
 
 declare module 'next-auth' {
-  interface User extends UserDomain {}
-  interface Session extends LoginResponseDto {
-    user: UserDomain;
-  }
+  interface User extends LoginResponseDto {}
+  interface Session extends LoginResponseDto {}
 }
 declare module 'next-auth/jwt' {
-  interface JWT {
-    session: LoginResponseDto;
-  }
+  interface JWT extends LoginResponseDto {}
 }
 
 export const {
@@ -27,6 +23,7 @@ export const {
   pages: {
     signIn: '/login',
   },
+  session: { strategy: 'jwt' },
   providers: [
     Credentials({
       credentials: {
@@ -34,11 +31,11 @@ export const {
         password: {},
       },
       async authorize(credentials) {
-        const session = await authApi.credentialsLogin({
+        const loginResponseDto = await authApi.credentialsLogin({
           email: credentials.email as string,
           password: credentials.password as string,
         });
-        return session as unknown as User;
+        return loginResponseDto;
       },
     }),
     Google({
@@ -56,25 +53,26 @@ export const {
   callbacks: {
     async jwt({ token, account, trigger, session, user }) {
       if (trigger === 'update' && session) {
-        token = { ...token, session };
+        token = { ...token, ...session };
         return token;
       }
-      // TODO fix this mess
       try {
         if (account) {
-          const session = await authApi.googleLogin({
-            idToken: account.id_token,
-          });
-          token = { ...token, session };
-        } else if (user) {
-          token = { ...token, session: user as unknown as LoginResponseDto };
-        } else if (token && token.session.tokenExpires < Date.now()) {
+          if (account.provider === 'credentials') {
+            token = { ...token, ...user };
+          } else {
+            const loginResponseDto = await authApi.googleLogin({
+              idToken: account.id_token,
+            });
+            token = { ...token, ...loginResponseDto };
+          }
+        } else if (token && token.tokenExpires < Date.now()) {
           const refreshedTokens = await authApi.refreshToken(
-            token.session.refreshToken,
+            token.refreshToken,
           );
           token = {
             ...token,
-            session: { ...token.session, ...refreshedTokens },
+            ...refreshedTokens,
           };
         }
       } catch (error) {
@@ -84,7 +82,7 @@ export const {
     },
     async session({ session, token }) {
       if (session) {
-        session = Object.assign({}, session, token.session);
+        session = Object.assign({}, session, token);
       }
       return session;
     },
