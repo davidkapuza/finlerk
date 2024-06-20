@@ -18,8 +18,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MarketDataService } from './market-data.service';
+import {
+  InfinityPaginationResponse,
+  InfinityPaginationResponseDto,
+} from '@/lib/dto/infinity-pagination-response.dto';
+import { infinityPagination } from '@/lib/utils/infinity-pagination';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -42,22 +47,30 @@ export class MarketDataController {
     return this.marketDataService.getNews(getNewsDto);
   }
 
+  @ApiOkResponse({
+    type: InfinityPaginationResponse(Asset),
+  })
   @Get('assets')
   @HttpCode(HttpStatus.OK)
-  async findAll(@Query() query: QueryAssetsDto): Promise<Array<Asset>> {
+  async findAll(
+    @Query() query: QueryAssetsDto,
+  ): Promise<InfinityPaginationResponseDto<Asset>> {
     const globalFilter = query.globalFilter;
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
       limit = 50;
     }
-    return await this.marketDataService.findManyWithPagination({
-      paginationOptions: {
-        page,
-        limit,
-      },
-      globalFilter,
-    });
+    return infinityPagination(
+      await this.marketDataService.findManyWithPagination({
+        paginationOptions: {
+          page,
+          limit,
+        },
+        globalFilter,
+      }),
+      { page, limit },
+    );
   }
 
   @Get('historical-bars/:symbol')

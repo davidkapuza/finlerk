@@ -21,7 +21,7 @@ import { catchError, firstValueFrom, map } from 'rxjs';
 import { stockBarsResponseTransformer } from './transformers/stock-bars-response.transformer';
 import { AlpacaSymbolBarsResponseType } from './types/alpaca-symbol-bars-response.type';
 import { AssetsResponseType } from './types/assets-response.type';
-import { MarketDataRepository } from './repository/market-data.repository';
+import { AssetRepository } from './infrastructure/persistence/asset.repository';
 
 @Injectable()
 export class MarketDataService {
@@ -29,9 +29,7 @@ export class MarketDataService {
 
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
-    // @Inject(EVENT_EMITTER_TOKEN)
-    // private readonly eventEmitter: EventEmitterInterface,
-    private readonly marketDataRepository: MarketDataRepository,
+    private readonly assetRepository: AssetRepository,
     private readonly marketDataApi: MarketDataApiService,
     private readonly tradingApi: TradingApiService,
     private readonly brokerApi: BrokerApiService,
@@ -64,7 +62,7 @@ export class MarketDataService {
     paginationOptions: IPaginationOptions;
     globalFilter?: string;
   }): Promise<Asset[]> {
-    return this.marketDataRepository.findManyWithPagination({
+    return this.assetRepository.findManyWithPagination({
       paginationOptions,
       globalFilter,
     });

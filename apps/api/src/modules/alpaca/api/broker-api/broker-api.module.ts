@@ -31,4 +31,4 @@ import { BrokerApiService } from './broker-api.service';
   ],
   exports: [BrokerApiService],
 })
-export class BrolerApiModule {}
+export class BrokerApiModule {}

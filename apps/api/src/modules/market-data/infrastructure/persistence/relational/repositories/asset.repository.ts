@@ -1,11 +1,13 @@
+import { Asset, IPaginationOptions } from '@finlerk/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IPaginationOptions } from '@finlerk/shared';
 import { FindOptionsWhere, ILike, Repository } from 'typeorm';
+import { AssetRepository } from '../../asset.repository';
 import { AssetEntity } from '../entities/asset.entity';
+import { AssetMapper } from '../mappers/asset.mapper';
 
 @Injectable()
-export class MarketDataRepository {
+export class AssetRelationalRepository implements AssetRepository {
   constructor(
     @InjectRepository(AssetEntity)
     private readonly repository: Repository<AssetEntity>,
@@ -17,21 +19,19 @@ export class MarketDataRepository {
   }: {
     paginationOptions: IPaginationOptions;
     globalFilter?: string;
-  }): Promise<AssetEntity[]> {
-    const whereConditions:
-      | FindOptionsWhere<AssetEntity>
-      | FindOptionsWhere<AssetEntity>[] = [];
+  }): Promise<Asset[]> {
+    const where: FindOptionsWhere<AssetEntity> = {};
 
-    if (globalFilter) {
-      whereConditions.push(
-        { name: ILike(`%${globalFilter}%`) },
-        { symbol: ILike(`%${globalFilter}%`) },
-      );
+    if (globalFilter?.length) {
+      where.name = ILike(`%${globalFilter}%`);
+      where.symbol = ILike(`%${globalFilter}%`);
     }
-    return await this.repository.find({
-      where: whereConditions.length > 0 ? whereConditions : undefined,
+    const entities = await this.repository.find({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
+      where: where,
     });
+
+    return entities.map((asset) => AssetMapper.toDomain(asset));
   }
 }
