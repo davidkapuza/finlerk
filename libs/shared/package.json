@@ -5,7 +5,8 @@
     "tslib": "^2.3.0",
     "class-validator": "^0.14.0",
     "class-transformer": "^0.5.1",
-    "@nestjs/swagger": "^7.1.16"
+    "@nestjs/swagger": "^7.1.16",
+    "@nestjs/common": "^10.0.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",
