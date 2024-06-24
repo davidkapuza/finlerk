@@ -1,6 +1,6 @@
 import { GetHistoricalSymbolBarsDto } from '@finlerk/shared';
 import useSWR, { SWRConfiguration } from 'swr';
-import { useApi } from './useApi';
+import { useApi } from './use-api';
 import { MarketDataApi } from '../market-data.api';
 
 export function useHistoricalBars(

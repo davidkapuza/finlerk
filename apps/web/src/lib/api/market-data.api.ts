@@ -1,6 +1,7 @@
 import {
   Asset,
   GetHistoricalSymbolBarsDto,
+  InfinityPaginationResponseDto,
   NewsResponseType,
   StockBarsResponseType,
 } from '@finlerk/shared';
@@ -11,6 +12,7 @@ export class MarketDataApi extends ApiClient {
     super(config);
     this.getNews = this.getNews.bind(this);
     this.getHistoricalBars = this.getHistoricalBars.bind(this);
+    this.assetsFetcher = this.assetsFetcher.bind(this);
   }
 
   async getNews(): Promise<NewsResponseType> {
@@ -20,8 +22,10 @@ export class MarketDataApi extends ApiClient {
     return response.data;
   }
 
-  async assetsFetcher(url: string): Promise<Asset[]> {
-    const response = await this.get<Asset[]>(url);
+  async assetsFetcher(
+    url: string,
+  ): Promise<InfinityPaginationResponseDto<Asset>> {
+    const response = await this.get<InfinityPaginationResponseDto<Asset>>(url);
     return response.data;
   }
 

@@ -20,16 +20,16 @@ export class AssetRelationalRepository implements AssetRepository {
     paginationOptions: IPaginationOptions;
     globalFilter?: string;
   }): Promise<Asset[]> {
-    const where: FindOptionsWhere<AssetEntity> = {};
+    const where: FindOptionsWhere<AssetEntity>[] = [];
 
     if (globalFilter?.length) {
-      where.name = ILike(`%${globalFilter}%`);
-      where.symbol = ILike(`%${globalFilter}%`);
+      where.push({ name: ILike(`%${globalFilter}%`) });
+      where.push({ symbol: ILike(`%${globalFilter}%`) });
     }
     const entities = await this.repository.find({
+      where: globalFilter ? where : {},
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
-      where: where,
     });
 
     return entities.map((asset) => AssetMapper.toDomain(asset));

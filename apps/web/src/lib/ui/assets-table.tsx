@@ -2,7 +2,6 @@
 import { Icons } from '@finlerk/lucide-react-icons';
 import {
   Button,
-  Input,
   Skeleton,
   Table,
   TableBody,
@@ -19,11 +18,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import React from 'react';
-import useSWRInfinite from 'swr/infinite';
 import Link from 'next/link';
-import { marketDataApi } from '@/lib/api/market-data.api';
-
-const PAGE_SIZE = 30;
+import { ASSETS_PAGE_SIZE, useAssets } from '../api/hooks/use-assets';
+import { DebouncedInput } from './debounced-input';
 
 const columns: ColumnDef<Asset>[] = [
   {
@@ -48,82 +45,32 @@ const columns: ColumnDef<Asset>[] = [
   },
 ];
 
-function DebouncedInput({
-  value: initialValue,
-  onChange,
-  debounce = 500,
-  ...props
-}: {
-  value: string | number;
-  onChange: (value: string | number) => void;
-  debounce?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
-  const [value, setValue] = React.useState(initialValue);
-
-  React.useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  React.useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value);
-    }, debounce);
-
-    return () => clearTimeout(timeout);
-  }, [value, onChange, debounce]);
-
-  return (
-    <Input
-      {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
-  );
-}
-
 export default function AssetsTable() {
   const bottom = React.useRef(null);
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const { data, size, setSize, isLoading } = useSWRInfinite(
-    (index) =>
-      `/api/v1/market-data/assets?page=${
-        index + 1
-      }&limit=${PAGE_SIZE}&globalFilter=${globalFilter}`,
-    marketDataApi.assetsFetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateFirstPage: false,
-    },
-  );
+
+  const { data, size, setSize, isLoading, error } = useAssets(globalFilter);
 
   const assets = React.useMemo(() => {
-    if (isLoading) return Array(PAGE_SIZE).fill(30);
-    return data ? [].concat(...data) : [];
+    if (isLoading) return Array(ASSETS_PAGE_SIZE).fill(30);
+    return data ? data.reduce((acc, item) => acc.concat(item.data), []) : [];
   }, [data, isLoading]);
 
-  const [isLoadingMore, isReachingEnd] = React.useMemo(() => {
-    const isLoadingMore =
-      isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
-    const isReachingEnd =
-      data?.[0]?.length === 0 || (data && data.at(-1)?.length < PAGE_SIZE);
-
-    return [isLoadingMore, isReachingEnd];
-  }, [isLoading, size, data]);
+  const isLoadingInitialData = !data && !error;
+  const isLoadingMore =
+    isLoadingInitialData ||
+    (size > 0 && data && typeof data[size - 1] === 'undefined');
+  const hasNextPage = data?.at(-1)?.hasNextPage;
 
   React.useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (
-        entries[0].isIntersecting &&
-        !isLoadingMore &&
-        !isReachingEnd &&
-        data
-      ) {
+      if (entries[0].isIntersecting && !isLoadingMore && hasNextPage) {
         setSize((prev) => prev + 1);
       }
     });
     observer.observe(bottom.current);
     return () => observer.disconnect();
-  }, [isLoadingMore, setSize, data, isReachingEnd]);
+  }, [isLoadingMore, setSize, hasNextPage]);
 
   const tableColumns = React.useMemo(
     () =>

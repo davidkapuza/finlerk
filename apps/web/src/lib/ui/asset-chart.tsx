@@ -11,7 +11,7 @@ import {
 } from 'lightweight-charts';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
-import { useHistoricalBars } from '../../../../lib/api/hooks/useHistoricalBars';
+import { useHistoricalBars } from '../api/hooks/use-historical-bars';
 
 // const { theme } = resolveConfig(tailwindConfig);
 

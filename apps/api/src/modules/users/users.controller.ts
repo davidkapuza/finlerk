@@ -1,10 +1,8 @@
-import {
-  InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
-} from '@/lib/dto/infinity-pagination-response.dto';
 import { infinityPagination } from '@/lib/utils/infinity-pagination';
 import {
   CreateUserDto,
+  InfinityPaginationResponse,
+  InfinityPaginationResponseDto,
   NullableType,
   QueryUserDto,
   UpdateUserDto,

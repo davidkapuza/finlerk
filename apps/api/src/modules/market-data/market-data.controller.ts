@@ -3,6 +3,8 @@ import {
   GetBarsDto,
   GetMarketCalendarDto,
   GetNewsDto,
+  InfinityPaginationResponse,
+  InfinityPaginationResponseDto,
   QueryAssetsDto,
   SymbolDto,
 } from '@finlerk/shared';
@@ -20,10 +22,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MarketDataService } from './market-data.service';
-import {
-  InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
-} from '@/lib/dto/infinity-pagination-response.dto';
+
 import { infinityPagination } from '@/lib/utils/infinity-pagination';
 
 @ApiBearerAuth()

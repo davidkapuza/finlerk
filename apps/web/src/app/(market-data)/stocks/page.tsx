@@ -1,4 +1,4 @@
-import AssetsTable from './ui/assets-table';
+import AssetsTable from '../../../lib/ui/assets-table';
 
 export default async function StocksPage() {
   return (
