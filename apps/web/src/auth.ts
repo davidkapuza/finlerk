@@ -3,7 +3,7 @@ import { LoginResponseDto } from '@finlerk/shared';
 import NextAuth from 'next-auth';
 import 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
-import { authApi } from './lib/api/auth.api';
+import { authApi } from './entities/auth';
 
 declare module 'next-auth' {
   interface User extends LoginResponseDto {}
@@ -32,8 +32,10 @@ export const {
       },
       async authorize(credentials) {
         const loginResponseDto = await authApi.credentialsLogin({
-          email: credentials.email as string,
-          password: credentials.password as string,
+          credentials: {
+            email: credentials.email as string,
+            password: credentials.password as string,
+          },
         });
         return loginResponseDto;
       },
@@ -56,29 +58,33 @@ export const {
         token = { ...token, ...session };
         return token;
       }
-      try {
-        if (account) {
-          if (account.provider === 'credentials') {
-            token = { ...token, ...user };
-          } else {
-            const loginResponseDto = await authApi.googleLogin({
+      if (account) {
+        if (account.provider === 'credentials') {
+          return { ...token, ...user };
+        } else {
+          const loginResponseDto = await authApi.googleLogin({
+            loginDto: {
               idToken: account.id_token,
-            });
-            token = { ...token, ...loginResponseDto };
-          }
-        } else if (token && token.tokenExpires < Date.now()) {
-          const refreshedTokens = await authApi.refreshToken(
-            token.refreshToken,
-          );
-          token = {
+            },
+          });
+          return { ...token, ...loginResponseDto };
+        }
+      } else if (Date.now() < token.tokenExpires) {
+        return token;
+      } else {
+        if (!token.refreshToken) throw new Error('Missing refresh token');
+        try {
+          const refreshedTokens = await authApi.refreshToken({
+            token: token.refreshToken,
+          });
+          return {
             ...token,
             ...refreshedTokens,
           };
+        } catch (error) {
+          return null;
         }
-      } catch (error) {
-        return null;
       }
-      return token;
     },
     async session({ session, token }) {
       if (session) {
