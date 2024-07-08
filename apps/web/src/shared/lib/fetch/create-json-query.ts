@@ -6,6 +6,7 @@ interface JsonQueryConfig {
   method: 'HEAD' | 'GET';
   headers?: FetchApiRecord;
   query?: FetchApiRecord;
+  withToken?: boolean;
 }
 
 export async function createJsonQuery<

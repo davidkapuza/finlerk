@@ -1,5 +1,5 @@
 import { baseUrl } from '@/shared/api';
-import { FetchApiRecord, createJsonMutation } from '@/shared/lib/fetch';
+import { createJsonMutation } from '@/shared/lib/fetch';
 import {
   AuthConfirmEmailDto,
   AuthEmailLoginDto,
@@ -10,9 +10,6 @@ import {
   LoginResponseDto,
   RefreshResponseDto,
 } from '@finlerk/shared';
-import { isServer } from '@/shared/constants';
-import { auth } from '@/auth';
-import { accessAuthorizationHeader } from './auth.model';
 
 export async function credentialsLogin(params: {
   credentials: AuthEmailLoginDto;
@@ -96,19 +93,10 @@ export async function resetPassword(params: {
 }
 
 export async function logout() {
-  let authHeader: FetchApiRecord;
-  if (isServer) {
-    const session = await auth();
-    authHeader = { Authorization: `Bearer ${session.token}` };
-  } else {
-    authHeader = { ...accessAuthorizationHeader() };
-  }
-
   return createJsonMutation({
     request: {
       url: baseUrl('/v1/auth/logout'),
       method: 'POST',
-      headers: authHeader,
     },
   });
 }

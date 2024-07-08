@@ -1,7 +1,5 @@
-import { auth } from '@/auth';
 import { baseUrl } from '@/shared/api';
-import { isServer } from '@/shared/constants';
-import { FetchApiRecord, createJsonQuery } from '@/shared/lib/fetch';
+import { createJsonQuery } from '@/shared/lib/fetch';
 import {
   Asset,
   GetHistoricalSymbolBarsDto,
@@ -9,21 +7,13 @@ import {
   NewsResponseType,
   StockBarsResponseType,
 } from '@finlerk/shared';
-import { accessAuthorizationHeader } from '../auth/auth.model';
 
 export async function newsQuery() {
-  let authHeader: FetchApiRecord;
-  if (isServer) {
-    const session = await auth();
-    authHeader = { Authorization: `Bearer ${session.token}` };
-  } else {
-    authHeader = { ...accessAuthorizationHeader() };
-  }
   return createJsonQuery<NewsResponseType>({
     request: {
       url: baseUrl('/v1/market-data/news'),
       method: 'GET',
-      headers: { ...authHeader },
+      withToken: true,
     },
   });
 }
@@ -33,18 +23,11 @@ export async function infiniteAssetsQuery(params: {
   pageSize: number;
   globalFilter: string;
 }) {
-  let authHeader: FetchApiRecord;
-  if (isServer) {
-    const session = await auth();
-    authHeader = { Authorization: `Bearer ${session.token}` };
-  } else {
-    authHeader = { ...accessAuthorizationHeader() };
-  }
   return createJsonQuery<InfinityPaginationResponseDto<Asset>>({
     request: {
       url: baseUrl('/v1/market-data/assets'),
       method: 'GET',
-      headers: { ...authHeader },
+      withToken: true,
       query: {
         page: params.pageIndex + 1,
         limit: params.pageSize,
@@ -59,18 +42,11 @@ export async function historicalBarsQuery({
 }: {
   query: GetHistoricalSymbolBarsDto;
 }) {
-  let authHeader: FetchApiRecord;
-  if (isServer) {
-    const session = await auth();
-    authHeader = { Authorization: `Bearer ${session.token}` };
-  } else {
-    authHeader = { ...accessAuthorizationHeader() };
-  }
   return createJsonQuery<StockBarsResponseType>({
     request: {
       url: baseUrl(`/v1/market-data/historical-bars/${symbol}`),
       method: 'GET',
-      headers: { ...authHeader },
+      withToken: true,
       query: query,
     },
   });

@@ -1,6 +1,11 @@
+import { isServer } from '@/shared/constants';
 import { httpError, networkError, preparationError } from './fetch.errors';
 import { formatUrl, formatHeaders } from './fetch.lib';
 import { HttpMethod, RequestBody, FetchApiRecord } from './fetch.types';
+import { getSession } from 'next-auth/react';
+import { auth } from '@/auth';
+import { accessAuthorizationHeader } from '@/entities/auth/auth.model';
+import { authModel } from '@/entities/auth';
 
 interface ApiRequest {
   method: HttpMethod;
@@ -8,6 +13,7 @@ interface ApiRequest {
   headers?: FetchApiRecord;
   query?: FetchApiRecord;
   url: string;
+  withToken?: boolean;
 }
 
 interface ApiConfig {
@@ -16,20 +22,52 @@ interface ApiConfig {
 }
 
 export async function createApiRequest(config: ApiConfig) {
-  const response = await fetch(
-    formatUrl({ href: config.request.url, query: config.request.query || {} }),
-    {
-      method: config.request.method,
-      headers: formatHeaders(config.request.headers || {}),
-      body: config.request.body,
-      signal: config?.abort,
-    },
-  ).catch((error) => {
-    throw networkError({
-      reason: error?.message ?? null,
-      cause: error,
+  const headers: FetchApiRecord = config.request.headers || {};
+
+  if (config.request.withToken) {
+    if (isServer) {
+      const session = await auth();
+      Object.assign(headers, { Authorization: `Bearer ${session.token}` });
+    } else {
+      Object.assign(headers, { ...accessAuthorizationHeader() });
+    }
+  }
+
+  async function request(): Promise<Response> {
+    return fetch(
+      formatUrl({
+        href: config.request.url,
+        query: config.request.query || {},
+      }),
+      {
+        method: config.request.method,
+        headers: formatHeaders(headers),
+        body: config.request.body,
+        signal: config?.abort,
+      },
+    ).catch((error) => {
+      throw networkError({
+        reason: error?.message ?? null,
+        cause: error,
+      });
     });
-  });
+  }
+
+  let response = await request();
+
+  if (
+    !response.ok &&
+    !isServer &&
+    response.status === 401 &&
+    config.request.withToken
+  ) {
+    const session = await getSession();
+    Object.assign(headers, { Authorization: `Bearer ${session.token}` });
+    authModel.sessionStore
+      .getState()
+      .updateTokens(session.token, session.refreshToken);
+    response = await request();
+  }
 
   if (!response.ok) {
     throw httpError({

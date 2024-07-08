@@ -4,7 +4,7 @@ import { DEFAULT_REDIRECT, PUBLIC_ROUTES, ROOT } from './src/routes';
 export default auth(async (req) => {
   const { nextUrl } = req;
 
-  const isAuthenticated = req.auth && req.auth.tokenExpires > Date.now();
+  const isAuthenticated = !!req.auth;
 
   const isPublicRoute = PUBLIC_ROUTES.includes(nextUrl.pathname);
 
