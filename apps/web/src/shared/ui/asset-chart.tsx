@@ -12,13 +12,11 @@ import { useTheme } from 'next-themes';
 import * as React from 'react';
 import { marketDataQuery } from '@/entities/market-data';
 import { cn } from '../lib/clsx';
-
-// const { theme } = resolveConfig(tailwindConfig);
+import { io } from 'socket.io-client';
 
 interface AssetChartProps {
   symbol: string;
   historicalBars: StockBarsResponseType;
-  // marketCalendar: MarketCalendarItemType[];
 }
 
 function getVisibleLogicalRange(
@@ -218,32 +216,34 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
     chart.current.applyOptions({ layout });
   }, [layout]);
 
-  // React.useEffect(() => {
-  //   const socket = io('http://localhost:3000');
+  const [bar, setBar] = React.useState(null);
 
-  //   socket.on('connect', () => {
-  //     socket.emit('fetch-stock-bars', ['TSLA']);
-  //   });
-  //   socket.on('stock-bars-stream', (data) => {
-  //     setBar(data.bar);
-  //   });
+  React.useEffect(() => {
+    const socket = io('http://localhost:3000');
 
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
+    socket.on('connect', () => {
+      socket.emit('bars', { bars: [symbol] });
+    });
+    socket.on('new-bar', (data) => {
+      setBar(data);
+    });
 
-  // React.useEffect(() => {
-  //   if (!candlestickSeries || !chart) {
-  //     return;
-  //   }
-  //   if (bar) {
-  //     candlestickSeries.update(bar);
-  //     chart
-  //       .timeScale()
-  //       .setVisibleLogicalRange(getVisibleLogicalRange(chartData.length, 1));
-  //   }
-  // }, [candlestickSeries, bar, chart, chartData.length]);
+    return () => {
+      socket.disconnect();
+    };
+  }, [symbol]);
+
+  React.useEffect(() => {
+    if (bar) {
+      candleSeries.current.update({
+        time: Date.parse(bar.t) / 1000,
+        open: bar.o,
+        high: bar.h,
+        low: bar.l,
+        close: bar.c,
+      });
+    }
+  }, [bar]);
 
   return (
     <>

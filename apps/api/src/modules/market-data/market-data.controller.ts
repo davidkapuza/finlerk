@@ -22,9 +22,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MarketDataService } from './market-data.service';
-
 import { infinityPagination } from '@/lib/utils/infinity-pagination';
-
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('Market data')

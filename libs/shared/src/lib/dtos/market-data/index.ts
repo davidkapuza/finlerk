@@ -5,3 +5,4 @@ export { QueryAssetsDto } from './query-assets.dto';
 export { SymbolDto } from './symbol.dto';
 export { GetHistoricalSymbolBarsDto } from './get-historical-symbol-bars.dto';
 export { GetMarketCalendarDto } from './get-market-calendar.dto';
+export { SubscribeToBarsDto } from './subscribe-to-bars.dto';

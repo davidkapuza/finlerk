@@ -5,6 +5,7 @@ import { Module } from '@nestjs/common';
 import { RelationalMarketDataPersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
 import { MarketDataController } from './market-data.controller';
 import { MarketDataService } from './market-data.service';
+import { WebsocketsGateway } from './market-data.gateway';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { MarketDataService } from './market-data.service';
     BrokerApiModule,
     RelationalMarketDataPersistenceModule,
   ],
-  providers: [MarketDataService],
+  providers: [MarketDataService, WebsocketsGateway],
   controllers: [MarketDataController],
   exports: [MarketDataService, RelationalMarketDataPersistenceModule],
 })
