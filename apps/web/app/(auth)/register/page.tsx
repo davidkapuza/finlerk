@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { RegisterForm } from '../../../src/shared/ui/register-form';
+import { RegisterForm } from '@/widgets/register-form';
 import Link from 'next/link';
 
 export const metadata: Metadata = {

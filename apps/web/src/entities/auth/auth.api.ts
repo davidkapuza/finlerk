@@ -56,14 +56,12 @@ export async function refreshToken(params: { token: string }) {
   });
 }
 
-export async function confirmEmail(params: {
-  confirmEmailDto: AuthConfirmEmailDto;
-}) {
+export async function confirmEmail(params: { payload: AuthConfirmEmailDto }) {
   return createJsonMutation({
     request: {
       url: baseUrl('/v1/auth/email/confirm'),
       method: 'POST',
-      body: JSON.stringify(params.confirmEmailDto),
+      body: JSON.stringify(params.payload),
     },
   });
 }

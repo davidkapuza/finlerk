@@ -1,8 +1,7 @@
 'use client';
 
-import { authApi } from '@/lib/api/auth.api';
-import { HttpResponseError } from '@/lib/errors';
-import { DEFAULT_REDIRECT, ROOT } from '@/routes';
+import { authApi } from '@/entities/auth';
+import { DEFAULT_REDIRECT, ROOT } from '@/shared/constants';
 import { useToast } from '@finlerk/shadcn-ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
@@ -19,21 +18,15 @@ export default function ConfirmEmailPage() {
     const hash = searchParams.get('hash');
     if (!hash) return router.push(ROOT);
     authApi
-      .confirmEmail({ hash })
+      .confirmEmail({ payload: { hash } })
       .then(() => {
         toast({
           title: 'The email has been successfully confirmed',
         });
         router.push(DEFAULT_REDIRECT);
       })
-      .catch((error) => {
-        if (error instanceof HttpResponseError) {
-          toast({
-            variant: 'destructive',
-            title: error.message,
-            description: error.statusText,
-          });
-        }
+      .catch(() => {
+        // TODO Better error handilng
         router.push(DEFAULT_REDIRECT);
       });
   }, [searchParams, router, toast]);

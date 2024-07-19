@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LoginForm } from '../../../src/shared/ui/login-form';
+import { LoginForm } from '@/widgets/login-form';
 
 export default async function LoginPage() {
   return (

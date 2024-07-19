@@ -3,9 +3,9 @@ import { httpError, networkError, preparationError } from './fetch.errors';
 import { formatUrl, formatHeaders } from './fetch.lib';
 import { HttpMethod, RequestBody, FetchApiRecord } from './fetch.types';
 import { getSession } from 'next-auth/react';
-import { auth } from '@/auth';
 import { accessAuthorizationHeader } from '@/entities/auth/auth.model';
 import { authModel } from '@/entities/auth';
+import { auth } from '../next-auth';
 
 interface ApiRequest {
   method: HttpMethod;

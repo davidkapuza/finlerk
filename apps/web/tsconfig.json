@@ -21,13 +21,29 @@
     ],
     "types": ["jest", "node"],
     "paths": {
-      "@finlerk/lucide-react-icons": ["libs/lucide-react-icons/src/index.ts"],
+      "@finlerk/lucide-react-icons": ["libs/lucide-react-icons/src"],
       "@finlerk/lucide-react-icons/*": ["libs/lucide-react-icons/src/*"],
-      "@finlerk/shadcn-ui": ["libs/shadcn-ui/src/index.ts"],
+
+      "@finlerk/shadcn-ui": ["libs/shadcn-ui/src"],
       "@finlerk/shadcn-ui/*": ["libs/shadcn-ui/src/*"],
-      "@finlerk/shared": ["libs/shared/src/index.ts"],
+
+      "@finlerk/shared": ["libs/shared/src"],
       "@finlerk/shared/*": ["libs/shared/src/*"],
-      "@/*": ["apps/web/src/*"]
+
+      "@/app": ["apps/web/src/app"],
+      "@/app/*": ["apps/web/src/app/*"],
+
+      "@/widgets": ["apps/web/src/widgets"],
+      "@/widgets/*": ["apps/web/src/widgets/*"],
+
+      "@/features": ["apps/web/src/features"],
+      "@/features/*": ["apps/web/src/features/*"],
+
+      "@/entities": ["apps/web/src/entities"],
+      "@/entities/*": ["apps/web/src/entities/*"],
+
+      "@/shared": ["apps/web/src/shared"],
+      "@/shared/*": ["apps/web/src/shared/*"]
     }
   },
   "include": [

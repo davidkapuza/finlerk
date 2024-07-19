@@ -1,3 +1,3 @@
 'use client';
-// [ ] Fix reflect metadata throwing errors in client components
+// TODO Fix reflect metadata throwing errors in client components
 import 'reflect-metadata';

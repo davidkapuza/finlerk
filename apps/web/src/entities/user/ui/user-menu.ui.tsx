@@ -1,21 +1,19 @@
-import { auth, signOut } from '@/auth';
 import { authApi } from '@/entities/auth';
-import { ROOT } from '@/routes';
+import { ROOT } from '@/shared/constants';
+import { auth, signOut } from '@/shared/lib/next-auth';
 import {
   Avatar,
   AvatarFallback,
   Button,
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@finlerk/shadcn-ui';
-import Link from 'next/link';
 
-export async function NavMenu() {
+export async function UserMenu() {
   const session = await auth();
 
   if (!session) return null;
@@ -42,12 +40,6 @@ export async function NavMenu() {
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <Link href="/profile">
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-          </Link>
-        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <form
           action={async () => {

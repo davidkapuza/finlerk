@@ -1,4 +1,4 @@
-import AssetsTable from '@/shared/ui/assets-table';
+import { AssetsTable } from '@/widgets/asset-table';
 
 export default async function StocksPage() {
   return (

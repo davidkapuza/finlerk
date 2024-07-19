@@ -16,8 +16,8 @@ import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { signIn } from 'next-auth/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { OAuthProviders } from './oauth-providers';
-import { PasswordResetDialog } from './password-reset-dialog';
+import { OAuthProviders } from '../../entities/auth/ui/oauth-providers';
+import { PasswordResetDialog } from '../../features/auth/password-reset/password-reset.ui';
 
 const resolver = classValidatorResolver(AuthEmailLoginDto);
 

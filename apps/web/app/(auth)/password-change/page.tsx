@@ -1,5 +1,5 @@
-import { PasswordChangeForm } from '@/shared/ui/password-change-form';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/shared/utils';
+import { PasswordChangeForm } from '@/widgets/password-change-form';
 import { Icons } from '@finlerk/lucide-react-icons';
 import { buttonVariants } from '@finlerk/shadcn-ui';
 import Link from 'next/link';

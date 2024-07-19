@@ -1,9 +1,9 @@
+import { authApi } from '@/entities/auth';
 import Google from '@auth/core/providers/google';
 import { LoginResponseDto } from '@finlerk/shared';
 import NextAuth from 'next-auth';
 import 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
-import { authApi } from './entities/auth';
 
 declare module 'next-auth' {
   interface User extends LoginResponseDto {}

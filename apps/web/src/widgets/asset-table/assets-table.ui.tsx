@@ -19,8 +19,8 @@ import {
 } from '@tanstack/react-table';
 import React from 'react';
 import Link from 'next/link';
-import { DebouncedInput } from './debounced-input';
 import { marketDataQuery } from '@/entities/market-data';
+import { DebouncedInput } from '@/shared/ui/debounced-input';
 
 const columns: ColumnDef<Asset>[] = [
   {
@@ -45,7 +45,7 @@ const columns: ColumnDef<Asset>[] = [
   },
 ];
 
-export default function AssetsTable() {
+export function AssetsTable() {
   const bottom = React.useRef(null);
   const [globalFilter, setGlobalFilter] = React.useState('');
 

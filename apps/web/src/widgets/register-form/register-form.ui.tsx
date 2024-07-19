@@ -17,7 +17,7 @@ import { AuthRegisterLoginDto } from '@finlerk/shared';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { OAuthProviders } from './oauth-providers';
+import { OAuthProviders } from '../../entities/auth/ui/oauth-providers';
 import { authApi } from '../api/auth.api';
 import { HttpResponseError } from '../errors';
 

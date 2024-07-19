@@ -10,13 +10,13 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
 
-interface MostActiveStocksCarouselProps {
+interface MostActiveAssetsCarouselProps {
   stocks: unknown;
 }
 
-export default function MostActiveStocksCarousel({
+export function MostActiveAssetsCarousel({
   stocks,
-}: MostActiveStocksCarouselProps) {
+}: MostActiveAssetsCarouselProps) {
   return (
     <Carousel
       opts={{

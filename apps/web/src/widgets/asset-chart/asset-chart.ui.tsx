@@ -1,5 +1,7 @@
 'use client';
 
+import { marketDataQuery } from '@/entities/market-data';
+import { cn } from '@/shared/utils';
 import { StockBarsResponseType } from '@finlerk/shared';
 import { formatISO, isBefore, subDays, subMonths, subYears } from 'date-fns';
 import {
@@ -10,8 +12,6 @@ import {
 } from 'lightweight-charts';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
-import { marketDataQuery } from '@/entities/market-data';
-import { cn } from '../lib/clsx';
 import { io } from 'socket.io-client';
 
 interface AssetChartProps {
@@ -180,6 +180,8 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
 
   React.useEffect(() => {
     const resizeListener = () => {
+      if (!chartContainerRef.current || !chart.current) return;
+
       const { width, height } =
         chartContainerRef.current.getBoundingClientRect();
       chart.current.resize(width, height);

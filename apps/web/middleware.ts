@@ -1,5 +1,6 @@
-import { auth } from '@/auth';
-import { DEFAULT_REDIRECT, PUBLIC_ROUTES, ROOT } from './src/routes';
+import 'reflect-metadata';
+import { auth } from '@/shared/lib/next-auth';
+import { DEFAULT_REDIRECT, PUBLIC_ROUTES, ROOT } from '@/shared/constants';
 
 export default auth(async (req) => {
   const { nextUrl } = req;

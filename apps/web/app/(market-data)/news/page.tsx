@@ -1,5 +1,5 @@
-import { auth } from '@/auth';
 import { marketDataApi } from '@/entities/market-data';
+import { auth } from '@/shared/lib/next-auth';
 import { Badge } from '@finlerk/shadcn-ui';
 import { formatDistanceToNow } from 'date-fns';
 import { Dot } from 'lucide-react';

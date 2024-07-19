@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { siteConfig } from '../config/site';
-import { NavItem } from '../types/nav';
-import { cn } from '@finlerk/shadcn-ui/lib/utils';
+import { siteConfig } from '../../shared/config/site';
+import { NavItem } from '../../shared/types/nav';
 import { useSelectedLayoutSegment } from 'next/navigation';
+import { cn } from '@/shared/utils';
 
-interface MainNavProps {
+interface NavigationProps {
   items?: NavItem[];
 }
 
-export function Navigation({ items }: MainNavProps) {
+export function Navigation({ items }: NavigationProps) {
   const segment = useSelectedLayoutSegment();
 
   return (
