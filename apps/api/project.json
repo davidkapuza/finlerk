@@ -5,18 +5,25 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/js:swc",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
+        "target": "node",
+        "compiler": "swc",
+        "swcrc": "apps/api/.swcrc",
         "outputPath": "dist/apps/api",
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": ["apps/api/*.md"],
-        "transformers": [
-          {
-            "name": "typescript-transform-paths/nx-transformer"
-          }
-        ]
+        "assets": ["apps/api/*.md"]
+      }
+    },
+    "configurations": {
+      "development": {
+        "swcrc": "apps/api/.swcrc"
+      },
+      "production": {
+        "swcrc": "apps/api/.swcrc"
       }
     },
     "serve": {
