@@ -13,6 +13,16 @@ export class AssetRelationalRepository implements AssetRepository {
     private readonly repository: Repository<AssetEntity>,
   ) {}
 
+  async upsertAssets(assets: Asset[]): Promise<void> {
+    const chunkSize = 1000;
+    const persistenceModels = assets.map(AssetMapper.toPersistence);
+
+    for (let i = 0; i < persistenceModels.length; i += chunkSize) {
+      const chunk = persistenceModels.slice(i, i + chunkSize);
+      await this.repository.save(chunk, { chunk: chunkSize });
+    }
+  }
+
   async findManyWithPagination({
     paginationOptions,
     globalFilter,

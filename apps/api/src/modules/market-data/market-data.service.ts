@@ -22,6 +22,7 @@ import { stockBarsResponseTransformer } from './transformers/stock-bars-response
 import { AlpacaSymbolBarsResponseType } from './types/alpaca-symbol-bars-response.type';
 import { AssetsResponseType } from './types/assets-response.type';
 import { AssetRepository } from './infrastructure/persistence/asset.repository';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class MarketDataService {
@@ -68,7 +69,8 @@ export class MarketDataService {
     });
   }
 
-  async getAssets(getAssetsDto?: GetAssetsDto): Promise<AssetsResponseType> {
+  @Cron(CronExpression.EVERY_WEEK)
+  async fetchAndUpsertAssets(getAssetsDto?: GetAssetsDto): Promise<void> {
     const { data } = await firstValueFrom(
       this.tradingApi
         .get<AssetsResponseType>('/v2/assets', {
@@ -84,7 +86,7 @@ export class MarketDataService {
           }),
         ),
     );
-    return data;
+    await this.assetRepository.upsertAssets(data);
   }
 
   async mostActives() {

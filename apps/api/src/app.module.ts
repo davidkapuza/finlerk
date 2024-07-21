@@ -22,9 +22,11 @@ import authConfig from './modules/auth/config/auth.config';
 import mailConfig from './modules/mail/config/mail.config';
 import redisConfig from './modules/redis/config/redis.config';
 import googleConfig from './modules/auth-google/config/google.config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [

@@ -14,6 +14,8 @@ const runSeed = async () => {
   await app.get(AssetSeedService).run();
 
   await app.close();
+
+  process.exit(1);
 };
 
 void runSeed();
