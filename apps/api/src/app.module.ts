@@ -56,6 +56,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           infer: true,
         }),
         store: redisStore,
+        ttl: 86400000, // 1 day
       }),
       inject: [ConfigService],
     }),

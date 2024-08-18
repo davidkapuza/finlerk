@@ -5,8 +5,8 @@ import {
   GetHistoricalSymbolBarsDto,
   InfinityPaginationResponseDto,
   NewsResponseType,
-  StockBarsResponseType,
 } from '@finlerk/shared';
+import { mapHistoricalBars } from './market-data.lib';
 
 export async function newsQuery() {
   return createJsonQuery<NewsResponseType>({
@@ -42,12 +42,15 @@ export async function historicalBarsQuery({
 }: {
   query: GetHistoricalSymbolBarsDto;
 }) {
-  return createJsonQuery<StockBarsResponseType>({
+  return createJsonQuery({
     request: {
       url: baseUrl(`/v1/market-data/historical-bars/${symbol}`),
       method: 'GET',
       withToken: true,
       query: query,
+    },
+    response: {
+      mapData: mapHistoricalBars,
     },
   });
 }

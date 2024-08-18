@@ -2,6 +2,7 @@
 
 import { marketDataQuery } from '@/entities/market-data';
 import { cn } from '@/shared/utils';
+import { Separator } from '@finlerk/shadcn-ui';
 import { StockBarsResponseType } from '@finlerk/shared';
 import { formatISO, isBefore, subDays, subMonths, subYears } from 'date-fns';
 import {
@@ -224,7 +225,7 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
     const socket = io('http://localhost:3000');
 
     socket.on('connect', () => {
-      socket.emit('bars', { bars: [symbol] });
+      socket.emit('subscribe', { asset: symbol });
     });
     socket.on('new-bar', (data) => {
       setBar(data);
@@ -247,8 +248,19 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
     }
   }, [bar]);
 
+  const lastPrice = bar?.c ?? data.bars.at(-1).close;
+  const diff = (data.bars[0].close - lastPrice).toFixed(2);
+
   return (
     <>
+      <div className="py-8">
+        <p className="text-xl">{symbol}</p>
+        <div>
+          <span className="text-4xl font-semibold">{lastPrice}</span>{' '}
+          <span className="text-sm text-muted-foreground">USD</span> {diff}
+        </div>
+      </div>
+      <Separator />
       <div ref={chartContainerRef} className="h-[500px]" />
       <div className="flex flex-row w-full gap-3 mt-4">
         {timeRanges.map((range) => (

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 export * from './lib/types';
 export * from './lib/domains';
 export * from './lib/dtos';

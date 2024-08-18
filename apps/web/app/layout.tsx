@@ -1,9 +1,9 @@
+import 'reflect-metadata';
+import '../reflect-metadata-client-side';
 import { Provider } from '@/app';
 import { fontSans } from '@/shared/fonts';
 import { cn } from '@finlerk/shadcn-ui/lib/utils';
 import { Metadata } from 'next';
-import 'reflect-metadata';
-import '../reflect-metadata-client-side';
 import { siteConfig } from '../src/shared/config/site';
 import './global.css';
 

@@ -2,6 +2,7 @@ import { BrokerApiService } from '@/modules/alpaca/api/broker-api/broker-api.ser
 import { MarketDataApiService } from '@/modules/alpaca/api/market-data-api/market-data-api.service';
 import { TradingApiService } from '@/modules/alpaca/api/trading-api/trading-api.service';
 import {
+  AlpacaSymbolBarsResponseType,
   Asset,
   GetAssetsDto,
   GetHistoricalSymbolBarsDto,
@@ -10,16 +11,13 @@ import {
   IPaginationOptions,
   MarketCalendarItemType,
   NewsResponseType,
-  StockBarsResponseType,
 } from '@finlerk/shared';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { Cache } from 'cache-manager';
 import { formatISO, parseISO, subDays } from 'date-fns';
-import { catchError, firstValueFrom, map } from 'rxjs';
-import { stockBarsResponseTransformer } from './transformers/stock-bars-response.transformer';
-import { AlpacaSymbolBarsResponseType } from './types/alpaca-symbol-bars-response.type';
+import { catchError, firstValueFrom } from 'rxjs';
 import { AssetsResponseType } from './types/assets-response.type';
 import { AssetRepository } from './infrastructure/persistence/asset.repository';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -115,21 +113,18 @@ export class MarketDataService {
     symbol,
     start,
     ...params
-  }: GetHistoricalSymbolBarsDto): Promise<StockBarsResponseType> {
-    const marketOpenedStartDay = await this.getMarketOpenedStartDay(
-      parseISO(start),
-    );
+  }: GetHistoricalSymbolBarsDto): Promise<AlpacaSymbolBarsResponseType> {
+    const marketOpenTime = await this.getUSMarketOpenTime(parseISO(start));
 
     const { data } = await firstValueFrom(
       this.marketDataApi
         .get<AlpacaSymbolBarsResponseType>(`/v2/stocks/${symbol}/bars`, {
           params: {
-            start: formatISO(marketOpenedStartDay),
+            start: marketOpenTime,
             ...params,
           },
         })
         .pipe(
-          map(stockBarsResponseTransformer),
           catchError((error: AxiosError) => {
             this.logger.error(error.response?.data);
             throw error;
@@ -139,25 +134,25 @@ export class MarketDataService {
     return data;
   }
 
-  private async getMarketOpenedStartDay(start: Date): Promise<Date> {
+  private async getUSMarketOpenTime(start: Date): Promise<string> {
     const marketCalendar = await this.getMarketCalendar({
       start: formatISO(subDays(start, 7)),
       end: formatISO(start),
     });
 
-    let bestDate = marketCalendar.at(-1),
+    let openDate = marketCalendar.at(-1),
       bestDiff = -new Date(0, 0, 0).valueOf(),
       currDiff = 0;
 
     for (let i = 0; i < marketCalendar.length; i++) {
       currDiff = Math.abs(Date.parse(marketCalendar[i].date) - +start);
       if (currDiff < bestDiff) {
-        bestDate = marketCalendar[i];
+        openDate = marketCalendar[i];
         bestDiff = currDiff;
       }
     }
 
-    return new Date(`${bestDate.date}T${bestDate.open}`);
+    return `${openDate.date}T${openDate.open}:00-04:00`;
   }
 
   async getMarketClock() {
