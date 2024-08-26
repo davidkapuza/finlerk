@@ -91,6 +91,14 @@ export class MarketDataController {
     return this.marketDataService.mostActives();
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get('stock-snapshot')
+  @HttpCode(HttpStatus.OK)
+  stockSnapshot(@Query() query: SymbolDto) {
+    return this.marketDataService.stockSnapshot(query);
+  }
+
   @Get('most-active-stocks-snapshots')
   @HttpCode(HttpStatus.OK)
   mostActiveStocksSnapshot() {

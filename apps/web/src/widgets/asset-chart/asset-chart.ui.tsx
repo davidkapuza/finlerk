@@ -2,7 +2,7 @@
 
 import { marketDataQuery } from '@/entities/market-data';
 import { cn } from '@/shared/utils';
-import { Separator } from '@finlerk/shadcn-ui';
+import { Separator, Skeleton } from '@finlerk/shadcn-ui';
 import { StockBarsResponseType } from '@finlerk/shared';
 import { formatISO, isBefore, subDays, subMonths, subYears } from 'date-fns';
 import {
@@ -116,6 +116,16 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
     timeRanges[0],
   );
 
+  const { data: stockSnapshot, isLoading: isLoadingSnapshot } =
+    marketDataQuery.useStockSnapshotQuery(
+      {
+        symbol,
+      },
+      {
+        refreshInterval: 5000,
+      },
+    );
+
   const { data } = marketDataQuery.useHistoricalBarsQuery(
     {
       symbol,
@@ -134,6 +144,8 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
   const layout = useThemeAwareLayoutOptions();
 
   React.useEffect(() => {
+    if (!chartContainerRef.current) return;
+
     chart.current = createChart(chartContainerRef.current, {
       layout,
       rightPriceScale: {
@@ -175,13 +187,15 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
     }
 
     return () => {
-      chart.current.remove();
+      if (chart.current) chart.current.remove();
     };
   }, [data, layout]);
 
   React.useEffect(() => {
+    if (!chartContainerRef.current) return;
+
     const resizeListener = () => {
-      if (!chartContainerRef.current || !chart.current) return;
+      if (!chart.current) return;
 
       const { width, height } =
         chartContainerRef.current.getBoundingClientRect();
@@ -216,7 +230,7 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
   }, []);
 
   React.useEffect(() => {
-    chart.current.applyOptions({ layout });
+    if (chart.current) chart.current.applyOptions({ layout });
   }, [layout]);
 
   const [bar, setBar] = React.useState(null);
@@ -248,18 +262,32 @@ export function AssetChart({ symbol, historicalBars }: AssetChartProps) {
     }
   }, [bar]);
 
-  const lastPrice = bar?.c ?? data.bars.at(-1).close;
-  const diff = (data.bars[0].close - lastPrice).toFixed(2);
+  const currentClose = stockSnapshot?.dailyBar.c;
+  const prevClose = stockSnapshot?.prevDailyBar.c;
+  const percentDiff = ((currentClose - prevClose) / prevClose) * 100;
 
   return (
     <>
-      <div className="py-8">
-        <p className="text-xl">{symbol}</p>
-        <div>
-          <span className="text-4xl font-semibold">{lastPrice}</span>{' '}
-          <span className="text-sm text-muted-foreground">USD</span> {diff}
+      {isLoadingSnapshot ? (
+        <Skeleton className="w-20 h-8 my-8" />
+      ) : (
+        <div className="py-8">
+          <p className="mb-2 text-2xl">{symbol}</p>
+          <div>
+            <span className="text-4xl font-semibold">{currentClose}</span>{' '}
+            <span className="ml-1 text-sm text-muted-foreground">USD</span>{' '}
+            <span
+              className={cn(
+                'ml-3',
+                percentDiff >= 0 ? 'text-green-500' : 'text-red-500',
+              )}
+            >
+              {percentDiff > 0 ? '+' : ''}
+              {percentDiff.toFixed(2)}%
+            </span>
+          </div>
         </div>
-      </div>
+      )}
       <Separator />
       <div ref={chartContainerRef} className="h-[500px]" />
       <div className="flex flex-row w-full gap-3 mt-4">

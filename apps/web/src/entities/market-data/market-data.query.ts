@@ -2,6 +2,7 @@ import {
   Asset,
   GetHistoricalSymbolBarsDto,
   InfinityPaginationResponseDto,
+  SymbolDto,
 } from '@finlerk/shared';
 import React from 'react';
 import useSWRInfinite from 'swr/infinite';
@@ -9,6 +10,7 @@ import {
   historicalBarsQuery,
   infiniteAssetsQuery,
   mostActiveStocksSnapshotsQuery,
+  stockSnapshotQuery,
 } from './market-data.api';
 import useSWR, { SWRConfiguration } from 'swr';
 
@@ -30,6 +32,10 @@ const keys = {
     ...query,
   }),
   mostActiveStocksSnapshotsQuery: () => 'most-active-stocks-snapshot',
+  stockSnapshotQuery: (params: SymbolDto) => ({
+    url: 'stock-snapshot',
+    symbol: params.symbol,
+  }),
 };
 
 export function useInfiniteAssetsQuery(globalFilter: string) {
@@ -69,6 +75,17 @@ export function useMostActiveStocksSnapshotsQuery(config?: SWRConfiguration) {
   return useSWR(
     keys.mostActiveStocksSnapshotsQuery(),
     () => mostActiveStocksSnapshotsQuery(),
+    config,
+  );
+}
+
+export function useStockSnapshotQuery(
+  query: SymbolDto,
+  config?: SWRConfiguration,
+) {
+  return useSWR(
+    keys.stockSnapshotQuery(query),
+    () => stockSnapshotQuery(query),
     config,
   );
 }

@@ -10,9 +10,11 @@ import {
   GetNewsDto,
   IPaginationOptions,
   MarketCalendarItemType,
+  MostActiveStockSnapshotsResponseType,
   MostActiveStocksResponseType,
   MostActiveStocksSnapshotsResponseType,
   NewsResponseType,
+  SymbolDto,
 } from '@finlerk/shared';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
@@ -126,6 +128,27 @@ export class MarketDataService {
             ...params,
           },
         })
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response?.data);
+            throw error;
+          }),
+        ),
+    );
+    return data;
+  }
+
+  async stockSnapshot(query: SymbolDto) {
+    const { data } = await firstValueFrom(
+      this.marketDataApi
+        .get<MostActiveStockSnapshotsResponseType>(
+          `/v2/stocks/${query.symbol}/snapshot`,
+          {
+            params: {
+              feed: 'iex',
+            },
+          },
+        )
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response?.data);

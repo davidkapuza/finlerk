@@ -8,6 +8,15 @@ export type MostActiveStocksSnapshotsResponseType = {
   };
 };
 
+export type MostActiveStockSnapshotsResponseType = {
+  dailyBar: Bar;
+  latestQuote: Quote;
+  latestTrade: Trade;
+  minuteBar: Bar;
+  prevDailyBar: Bar;
+  symbol: string;
+};
+
 type Bar = {
   c: number;
   h: number;

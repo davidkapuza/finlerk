@@ -4,8 +4,10 @@ import {
   Asset,
   GetHistoricalSymbolBarsDto,
   InfinityPaginationResponseDto,
+  MostActiveStockSnapshotsResponseType,
   MostActiveStocksSnapshotsResponseType,
   NewsResponseType,
+  SymbolDto,
 } from '@finlerk/shared';
 import { mapHistoricalBars } from './market-data.lib';
 
@@ -43,6 +45,19 @@ export async function mostActiveStocksSnapshotsQuery() {
     request: {
       url: baseUrl('/v1/market-data/most-active-stocks-snapshots'),
       method: 'GET',
+    },
+  });
+}
+
+export async function stockSnapshotQuery(query: SymbolDto) {
+  return createJsonQuery<MostActiveStockSnapshotsResponseType>({
+    request: {
+      url: baseUrl('/v1/market-data/stock-snapshot'),
+      method: 'GET',
+      withToken: true,
+      query: {
+        symbol: query.symbol,
+      },
     },
   });
 }
