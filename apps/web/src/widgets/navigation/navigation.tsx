@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { siteConfig } from '../../shared/config/site';
 import { NavItem } from '../../shared/types/nav';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { cn } from '@/shared/utils';
+import { TrendingUp } from 'lucide-react';
 
 interface NavigationProps {
   items?: NavItem[];
@@ -16,7 +16,7 @@ export function Navigation({ items }: NavigationProps) {
   return (
     <div className="flex gap-6 md:gap-10">
       <Link href="/" className="flex items-center space-x-2">
-        <span className="inline-block font-bold">{siteConfig.name}</span>
+        <TrendingUp className="w-6 h-6" />
       </Link>
       {items?.length ? (
         <nav className="flex gap-6">

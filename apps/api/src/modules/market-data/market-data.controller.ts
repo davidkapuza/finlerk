@@ -23,8 +23,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MarketDataService } from './market-data.service';
 import { infinityPagination } from '@/lib/utils/infinity-pagination';
-@ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
 @ApiTags('Market data')
 @Controller({
   path: 'market-data',
@@ -33,6 +31,8 @@ import { infinityPagination } from '@/lib/utils/infinity-pagination';
 export class MarketDataController {
   constructor(private readonly marketDataService: MarketDataService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(3600)
   @Get('news')
@@ -44,6 +44,8 @@ export class MarketDataController {
     return this.marketDataService.getNews(getNewsDto);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     type: InfinityPaginationResponse(Asset),
   })
@@ -70,6 +72,8 @@ export class MarketDataController {
     );
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('historical-bars/:symbol')
   @HttpCode(HttpStatus.OK)
   getStockBars(@Param() params: SymbolDto, @Query() getBarsDto: GetBarsDto) {
@@ -79,18 +83,30 @@ export class MarketDataController {
     });
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('most-active')
   @HttpCode(HttpStatus.OK)
   mostActive() {
     return this.marketDataService.mostActives();
   }
 
+  @Get('most-active-stocks-snapshots')
+  @HttpCode(HttpStatus.OK)
+  mostActiveStocksSnapshot() {
+    return this.marketDataService.mostActiveStocksSnapshots();
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('market-clock')
   @HttpCode(HttpStatus.OK)
   getMarketClock() {
     return this.marketDataService.getMarketClock();
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('market-calendar')
   @HttpCode(HttpStatus.OK)
   getMarketCalendar(@Query() query: GetMarketCalendarDto) {

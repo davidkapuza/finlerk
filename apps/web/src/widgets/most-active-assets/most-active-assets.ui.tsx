@@ -1,5 +1,7 @@
 'use client';
 
+import { marketDataQuery } from '@/entities/market-data';
+import { cn } from '@/shared/utils';
 import {
   Carousel,
   CarouselContent,
@@ -7,16 +9,21 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@finlerk/shadcn-ui';
+import { MostActiveStocksSnapshotsResponseType } from '@finlerk/shared';
 import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
 
-interface MostActiveAssetsCarouselProps {
-  stocks: unknown;
-}
+type MostActiveAssetsCarouselProps = {
+  initialData: MostActiveStocksSnapshotsResponseType;
+};
 
-export function MostActiveAssetsCarousel({
-  stocks,
-}: MostActiveAssetsCarouselProps) {
+export function MostActiveAssetsCarousel(props: MostActiveAssetsCarouselProps) {
+  const { data } = marketDataQuery.useMostActiveStocksSnapshotsQuery({
+    fallbackData: props.initialData,
+  });
+
+  if (!data) return null;
+
   return (
     <Carousel
       opts={{
@@ -31,20 +38,34 @@ export function MostActiveAssetsCarousel({
       className="w-full py-8"
     >
       <CarouselContent>
-        {Object.keys(stocks).map((stock, index) => {
-          const tradeData = stocks[stock];
+        {Object.entries(data).map(([stock, data]) => {
+          const currentClose = data.dailyBar.c;
+          const prevClose = data.prevDailyBar.c;
+          const percentDiff = ((currentClose - prevClose) / prevClose) * 100;
 
           return (
             <CarouselItem
-              key={index}
+              key={stock}
               className="sm:basis-1/2 md:basis-1/3 lg:basis-1/5"
             >
               <Link
-                href={`/stocks/${tradeData.Symbol}`}
+                href={`/stocks/${stock}`}
                 className="flex flex-col items-start gap-2 p-3 text-sm text-left transition-all border rounded-lg hover:bg-accent"
               >
-                {tradeData.Symbol}
-                <div className="text-2xl font-bold">${tradeData.Price}</div>
+                {stock}
+                <div>
+                  <span className="text-2xl font-bold">
+                    ${data?.dailyBar?.c}
+                  </span>
+                  <span
+                    className={cn(
+                      'ms-4',
+                      percentDiff >= 0 ? 'text-green-500' : 'text-red-500',
+                    )}
+                  >
+                    {percentDiff.toFixed(2)}%
+                  </span>
+                </div>
               </Link>
             </CarouselItem>
           );

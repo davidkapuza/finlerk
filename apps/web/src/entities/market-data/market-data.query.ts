@@ -5,7 +5,11 @@ import {
 } from '@finlerk/shared';
 import React from 'react';
 import useSWRInfinite from 'swr/infinite';
-import { historicalBarsQuery, infiniteAssetsQuery } from './market-data.api';
+import {
+  historicalBarsQuery,
+  infiniteAssetsQuery,
+  mostActiveStocksSnapshotsQuery,
+} from './market-data.api';
 import useSWR, { SWRConfiguration } from 'swr';
 
 export const ASSETS_PAGE_SIZE = 30;
@@ -25,6 +29,7 @@ const keys = {
     url: `/api/v1/market-data/historical-bars`,
     ...query,
   }),
+  mostActiveStocksSnapshotsQuery: () => 'most-active-stocks-snapshot',
 };
 
 export function useInfiniteAssetsQuery(globalFilter: string) {
@@ -56,6 +61,14 @@ export function useHistoricalBarsQuery(
   return useSWR(
     keys.historicalBarsQuery(query),
     () => historicalBarsQuery({ query }),
+    config,
+  );
+}
+
+export function useMostActiveStocksSnapshotsQuery(config?: SWRConfiguration) {
+  return useSWR(
+    keys.mostActiveStocksSnapshotsQuery(),
+    () => mostActiveStocksSnapshotsQuery(),
     config,
   );
 }

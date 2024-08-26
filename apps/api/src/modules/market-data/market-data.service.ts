@@ -10,6 +10,8 @@ import {
   GetNewsDto,
   IPaginationOptions,
   MarketCalendarItemType,
+  MostActiveStocksResponseType,
+  MostActiveStocksSnapshotsResponseType,
   NewsResponseType,
 } from '@finlerk/shared';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -87,8 +89,8 @@ export class MarketDataService {
     await this.assetRepository.upsertAssets(data);
   }
 
-  async mostActives() {
-    const cached = await this.cacheService.get(
+  async mostActives(): Promise<MostActiveStocksResponseType> {
+    const cached: MostActiveStocksResponseType = await this.cacheService.get(
       '/v1beta1/screener/stocks/most-actives',
     );
 
@@ -122,6 +124,30 @@ export class MarketDataService {
           params: {
             start: marketOpenTime,
             ...params,
+          },
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            this.logger.error(error.response?.data);
+            throw error;
+          }),
+        ),
+    );
+    return data;
+  }
+
+  async mostActiveStocksSnapshots() {
+    const mostActive = await this.mostActives();
+
+    const { data } = await firstValueFrom(
+      this.marketDataApi
+        .get<MostActiveStocksSnapshotsResponseType>(`/v2/stocks/snapshots`, {
+          params: {
+            symbols: mostActive.most_actives
+              .map((stock) => stock.symbol)
+              .join(','),
+            // TODO Change feed based on user subscription
+            feed: 'iex',
           },
         })
         .pipe(
