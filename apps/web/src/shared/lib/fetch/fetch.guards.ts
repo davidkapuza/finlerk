@@ -14,8 +14,13 @@ export function isPreparationError(
   return error?.errorType === PREPARATION;
 }
 
-export function isHttpError(error: GenericError): error is HttpError {
-  return error?.errorType === HTTP;
+export function isHttpError(error: unknown): error is HttpError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'errorType' in error &&
+    error?.errorType === HTTP
+  );
 }
 
 export function isHttpErrorCode<Code extends number>(code: Code | Code[]) {

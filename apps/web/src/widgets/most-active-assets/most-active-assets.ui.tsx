@@ -63,6 +63,7 @@ export function MostActiveAssetsCarousel(props: MostActiveAssetsCarouselProps) {
                       percentDiff >= 0 ? 'text-green-500' : 'text-red-500',
                     )}
                   >
+                    {percentDiff >= 0 ? '+' : ''}
                     {percentDiff.toFixed(2)}%
                   </span>
                 </div>

@@ -95,6 +95,7 @@ export async function logout() {
     request: {
       url: baseUrl('/v1/auth/logout'),
       method: 'POST',
+      withToken: true,
     },
   });
 }

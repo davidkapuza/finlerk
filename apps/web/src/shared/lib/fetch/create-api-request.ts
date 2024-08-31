@@ -1,5 +1,5 @@
 import { isServer } from '@/shared/constants';
-import { httpError, networkError, preparationError } from './fetch.errors';
+import { httpError, networkError } from './fetch.errors';
 import { formatUrl, formatHeaders } from './fetch.lib';
 import { HttpMethod, RequestBody, FetchApiRecord } from './fetch.types';
 import { getSession } from 'next-auth/react';
@@ -27,7 +27,9 @@ export async function createApiRequest(config: ApiConfig) {
   if (config.request.withToken) {
     if (isServer) {
       const session = await auth();
-      Object.assign(headers, { Authorization: `Bearer ${session.token}` });
+      if (session) {
+        Object.assign(headers, { Authorization: `Bearer ${session.token}` });
+      }
     } else {
       Object.assign(headers, { ...accessAuthorizationHeader() });
     }
@@ -81,12 +83,7 @@ export async function createApiRequest(config: ApiConfig) {
 
   const data = !response.body
     ? null
-    : await response.json().catch(async (error) => {
-        throw preparationError({
-          response: await clonedResponse.text(),
-          reason: error?.message ?? null,
-        });
-      });
+    : await response.json().catch(() => clonedResponse.text());
 
   return data;
 }

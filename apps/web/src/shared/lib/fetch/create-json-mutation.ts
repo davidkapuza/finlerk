@@ -7,6 +7,7 @@ interface JsonMutationConfig {
   headers?: FetchApiRecord;
   query?: FetchApiRecord;
   body?: RequestBody;
+  withToken?: boolean;
 }
 
 export async function createJsonMutation<

@@ -1,18 +1,28 @@
 import { authApi } from '@/entities/auth';
 import Google from '@auth/core/providers/google';
-import { LoginResponseDto } from '@finlerk/shared';
-import NextAuth from 'next-auth';
+import { LoginResponseDto, User as UserDto } from '@finlerk/shared';
+import NextAuth, { AuthError } from 'next-auth';
 import 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
+import { HttpError } from '../fetch';
 
 declare module 'next-auth' {
   interface User extends LoginResponseDto {}
-  interface Session extends LoginResponseDto {}
+  interface Session extends LoginResponseDto {
+    user: UserDto;
+  }
 }
 declare module 'next-auth/jwt' {
   interface JWT extends LoginResponseDto {}
 }
 
+export class InvalidLoginError extends AuthError {
+  error: HttpError;
+  constructor(error: HttpError) {
+    super();
+    this.error = error;
+  }
+}
 export const {
   handlers,
   signIn,
@@ -27,17 +37,21 @@ export const {
   providers: [
     Credentials({
       credentials: {
-        email: {},
+        username: {},
         password: {},
       },
       async authorize(credentials) {
-        const loginResponseDto = await authApi.credentialsLogin({
-          credentials: {
-            email: credentials.email as string,
-            password: credentials.password as string,
-          },
-        });
-        return loginResponseDto;
+        try {
+          const loginResponseDto = await authApi.credentialsLogin({
+            credentials: {
+              email: credentials.username as string,
+              password: credentials.password as string,
+            },
+          });
+          return loginResponseDto;
+        } catch (error) {
+          throw new InvalidLoginError(error as HttpError);
+        }
       },
     }),
     Google({

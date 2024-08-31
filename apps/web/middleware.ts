@@ -1,19 +1,27 @@
 import 'reflect-metadata';
 import { auth } from '@/shared/lib/next-auth';
-import { DEFAULT_REDIRECT, PUBLIC_ROUTES, ROOT } from '@/shared/constants';
+
+const authRoutes = [
+  '/login',
+  '/register',
+  '/confirm-email',
+  '/password-change',
+];
+const publicRoutes = ['/', ...authRoutes];
 
 export default auth(async (req) => {
   const { nextUrl } = req;
 
   const isAuthenticated = !!req.auth;
 
-  const isPublicRoute = PUBLIC_ROUTES.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
 
-  if (isPublicRoute && isAuthenticated)
-    return Response.redirect(new URL(DEFAULT_REDIRECT, nextUrl));
+  if (isAuthRoute && isAuthenticated)
+    return Response.redirect(new URL('/stocks', nextUrl));
 
   if (!isAuthenticated && !isPublicRoute)
-    return Response.redirect(new URL(ROOT, nextUrl));
+    return Response.redirect(new URL('/login', nextUrl));
 });
 
 export const config = {

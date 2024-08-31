@@ -1,7 +1,6 @@
 'use client';
 
 import { authApi } from '@/entities/auth';
-import { DEFAULT_REDIRECT, ROOT } from '@/shared/constants';
 import { useToast } from '@finlerk/shadcn-ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
@@ -16,18 +15,18 @@ export default function ConfirmEmailPage() {
 
   React.useEffect(() => {
     const hash = searchParams.get('hash');
-    if (!hash) return router.push(ROOT);
+    if (!hash) return router.push('/register');
     authApi
       .confirmEmail({ payload: { hash } })
       .then(() => {
         toast({
           title: 'The email has been successfully confirmed',
         });
-        router.push(DEFAULT_REDIRECT);
+        router.push('/login');
       })
       .catch(() => {
         // TODO Better error handilng
-        router.push(DEFAULT_REDIRECT);
+        router.push('/register');
       });
   }, [searchParams, router, toast]);
 

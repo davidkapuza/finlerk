@@ -1,4 +1,7 @@
 'use client';
+import { authLib } from '@/entities/auth';
+import { apiLib } from '@/shared/api';
+import { isHttpError } from '@/shared/lib/fetch';
 import { Icons } from '@finlerk/lucide-react-icons';
 import {
   Button,
@@ -13,7 +16,7 @@ import {
 } from '@finlerk/shadcn-ui';
 import { AuthEmailLoginDto } from '@finlerk/shared';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { OAuthProviders } from '../../entities/auth/ui/oauth-providers';
@@ -22,6 +25,7 @@ import { PasswordResetDialog } from '../../features/auth/password-reset/password
 const resolver = classValidatorResolver(AuthEmailLoginDto);
 
 export function LoginForm() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const form = useForm<AuthEmailLoginDto>({
@@ -34,12 +38,16 @@ export function LoginForm() {
 
   async function onSubmit(values: AuthEmailLoginDto) {
     setIsLoading(true);
-    // TODO Improve handling of invalid credentials, displaying errors returned from login endpoint under inputs
-    await signIn('credentials', {
-      email: values.email,
-      password: values.password,
-    });
-    setIsLoading(false);
+    try {
+      const res = await authLib.authenticate(values.email, values.password);
+      if (isHttpError(res.error)) {
+        apiLib.setFormErrors(form)(res.error.response);
+      } else router.push('/stocks');
+    } catch (error) {
+      // TODO
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

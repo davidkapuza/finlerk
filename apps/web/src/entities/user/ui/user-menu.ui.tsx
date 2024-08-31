@@ -1,5 +1,4 @@
 import { authApi } from '@/entities/auth';
-import { ROOT } from '@/shared/constants';
 import { auth, signOut } from '@/shared/lib/next-auth';
 import {
   Avatar,
@@ -45,7 +44,7 @@ export async function UserMenu() {
           action={async () => {
             'use server';
             await authApi.logout();
-            await signOut({ redirectTo: ROOT });
+            await signOut({ redirectTo: '/' });
           }}
         >
           <DropdownMenuItem asChild>

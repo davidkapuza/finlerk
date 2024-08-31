@@ -18,8 +18,9 @@ import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { OAuthProviders } from '../../entities/auth/ui/oauth-providers';
-import { authApi } from '../api/auth.api';
-import { HttpResponseError } from '../errors';
+import { authApi } from '@/entities/auth';
+import { isHttpError } from '@/shared/lib/fetch';
+import { apiLib } from '@/shared/api';
 
 const resolver = classValidatorResolver(AuthRegisterLoginDto);
 
@@ -39,31 +40,21 @@ export function RegisterForm() {
     },
   });
 
-  const { setError } = form;
-
-  async function onSubmit(credentials: AuthRegisterLoginDto) {
+  async function onSubmit(values: AuthRegisterLoginDto) {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      await authApi.credentialsRegistration(credentials);
+      await authApi.credentialsRegistration({
+        credentials: values,
+      });
       toast({
         title: 'Check your email',
-        description: `To start using finlerk, confirm your email address with the email we sent to: ${credentials.email}`,
+        description: `To start using finlerk, confirm your email address with the email we sent to: ${values.email}`,
       });
     } catch (error) {
-      if (error instanceof HttpResponseError) {
-        if (error.data) {
-          Object.entries(error.data.errors).map(([field, message]) =>
-            setError(field as keyof AuthRegisterLoginDto, {
-              message,
-            }),
-          );
-        } else {
-          toast({
-            variant: 'destructive',
-            title: error.message,
-            description: error.statusText,
-          });
-        }
+      if (isHttpError(error)) {
+        apiLib.setFormErrors(form)(error.response);
+      } else {
+        // TODO
       }
     } finally {
       setIsLoading(false);
